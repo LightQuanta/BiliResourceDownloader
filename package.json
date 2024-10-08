@@ -11,9 +11,10 @@
     "buildAll": "tauri build -b"
   },
   "dependencies": {
-    "vue": "^3.3.4",
     "@tauri-apps/api": ">=2.0.0",
-    "@tauri-apps/plugin-shell": ">=2.0.0"
+    "@tauri-apps/plugin-http": "^2.0.0",
+    "@tauri-apps/plugin-shell": ">=2.0.0",
+    "vue": "^3.3.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": ">=2.0.0",
