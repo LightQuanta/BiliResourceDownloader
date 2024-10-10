@@ -12,7 +12,7 @@ const test = async () => {
 <template>
   <!-- TODO 实现收藏集相关页面 -->
   <a href="https://baidu.com" target="_blank">111111</a>
-  <button @click="test">测试搜索</button>
+  <ElButton @click="test">测试搜索</ElButton>
   <div>result:
     <pre style="text-align:left;">{{ result }}</pre>
   </div>
