@@ -21,7 +21,6 @@
     <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
 
     <Lottery/>
-    <Greet/>
   </div>
 </template>
 

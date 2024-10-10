@@ -11,8 +11,8 @@ const test = async () => {
 </script>
 <template>
   <!-- TODO 实现收藏集相关页面 -->
-  <a href="https://baidu.com" target="_blank">111111</a>
-  <ElButton @click="test">测试搜索</ElButton>
+  <ElLink type="primary" href="https://baidu.com" target="_blank">111111</ElLink>
+  <ElButton class="w-20 mx-auto" @click="test">测试搜索</ElButton>
   <div>result:
     <pre style="text-align:left;">{{ result }}</pre>
   </div>
