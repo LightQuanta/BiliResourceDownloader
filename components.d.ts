@@ -8,6 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Greet: typeof import('./src/components/Greet.vue')['default']
-    Lottery: typeof import('./src/components/Lottery.vue')['default']
+    Lottery: typeof import('./src/pages/Lottery.vue')['default']
   }
 }

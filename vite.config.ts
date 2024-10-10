@@ -11,11 +11,14 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
     plugins: [
         AutoImport({
-            imports: ['vue'],
+            imports: ['vue', {
+                '@tauri-apps/plugin-http': ['fetch']
+            }],
         }),
         vue(),
         Components({
             dts: true,
+            dirs: ["src/components", "src/pages"],
         }),
     ],
 
