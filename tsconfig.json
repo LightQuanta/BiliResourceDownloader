@@ -20,7 +20,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": [
+      "unplugin-vue-router/client"
+    ]
   },
   "include": [
     "src/**/*.ts",
@@ -28,7 +31,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "components.d.ts",
-    "auto-imports.d.ts"
+    "auto-imports.d.ts",
+    "typed-router.d.ts"
   ],
   "references": [
     {
