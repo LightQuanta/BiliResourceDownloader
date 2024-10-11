@@ -43,7 +43,7 @@ const test = async () => {
     <ElInput type="text" v-model="searchText" placeholder="搜索收藏集"/>
     <ElButton class="w-20 mx-auto" @click="test">测试搜索</ElButton>
     <ElLink type="primary" :href="jumpLink" target="_blank">{{ name }}</ElLink>
-    <ElSpace wrap>
+    <ElSpace wrap class="justify-center">
       <LotteryCard v-for="card in cards" :key="card.card_type_id" :card="card"/>
     </ElSpace>
   </div>

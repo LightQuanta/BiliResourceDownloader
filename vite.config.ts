@@ -6,6 +6,8 @@ import VueRouter from 'unplugin-vue-router/vite'
 import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -18,12 +20,26 @@ export default defineConfig(async () => ({
             imports: ['vue', VueRouterAutoImports, {
                 '@tauri-apps/plugin-http': ['fetch']
             }],
+            resolvers: [
+                ElementPlusResolver(),
+                IconsResolver({
+                    prefix: 'Icon'
+                }),
+            ]
         }),
         vue(),
         Components({
             dts: true,
             dirs: ["src/components", "src/pages"],
-            resolvers: [ElementPlusResolver()],
+            resolvers: [
+                ElementPlusResolver(),
+                IconsResolver({
+                    enabledCollections: ['ep'],
+                })
+            ],
+        }),
+        Icons({
+            autoInstall: true,
         }),
     ],
 

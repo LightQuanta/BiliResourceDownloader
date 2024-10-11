@@ -14,14 +14,31 @@ const videoUrl = computed(() => {
   }
   return ''
 })
+
+const downloadFile = async (url: string) => {
+  const downloader = document.createElement("a")
+  downloader.style.display = 'none';
+  document.body.appendChild(downloader)
+
+  const data = await fetch(url).then(r => r.blob())
+  const dataURL = URL.createObjectURL(data)
+  downloader.href = dataURL
+
+  const suffix = url.split('.').pop()!.split('?')[0]
+  downloader.download = prop.card.card_name + '.' + suffix
+
+  downloader.click()
+  downloader.remove()
+}
 </script>
 
 <template>
-  <ElCard class="w-64 h-128">
+  <ElCard class="w-80">
     <template #header>
       <div class="flex">
-        <div>
-          {{ card.card_name }}
+        <div class="flex flex-col items-start">
+          <ElText size="large" class="w-full" type="primary">{{ card.card_name }}</ElText>
+          <ElText size="small" class="w-full" type="info">稀有度：{{ card.card_scarcity }}</ElText>
         </div>
         <ElSwitch class="ml-auto" size="small" v-model="hasWatermark" active-text="水印"/>
       </div>
@@ -34,9 +51,28 @@ const videoUrl = computed(() => {
              referrerpolicy="no-referrer"
     />
     <template #footer>
-      <div class="flex">
-        <div>稀有度：{{ card.card_scarcity }}</div>
-        <ElLink v-if="card.video_list" class="ml-auto" type="primary" :href="videoUrl" target="_blank">查看视频</ElLink>
+      <div class="flex h-4 items-center">
+        <ElButtonGroup v-if="hasVideo">
+          <ElButton type="primary" @click="downloadFile(imgUrl)">
+            图片
+            <ElIcon size="16">
+              <i-ep-download/>
+            </ElIcon>
+          </ElButton>
+          <ElButton type="primary" @click="downloadFile(videoUrl)">
+            视频
+            <ElIcon size="16">
+              <i-ep-download/>
+            </ElIcon>
+          </ElButton>
+        </ElButtonGroup>
+        <ElButton v-else type="primary" @click="downloadFile(imgUrl)">
+          图片
+          <ElIcon size="16">
+            <i-ep-download/>
+          </ElIcon>
+        </ElButton>
+        <ElLink v-if="hasVideo" class="ml-auto" type="primary" :href="videoUrl" target="_blank">查看视频</ElLink>
       </div>
     </template>
   </ElCard>
