@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const params = useUrlSearchParams('history')
-// const resp = ref('')
 
 const loading = ref(false)
 
@@ -20,8 +19,9 @@ onMounted(async () => {
 
   let data = null
   try {
-    data = await fetch(url).then(r => r.json()).then(d => d.data)
-    if (Object.keys(data).length == 0) throw '服务器未正确返回数据'
+    const resp = await fetch(url).then(r => r.json())
+    if (resp.code !== 0) throw resp.msg
+    data = resp.data
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -31,8 +31,6 @@ onMounted(async () => {
     loading.value = false
     return null
   }
-
-  // resp.value = data
 
   const { description, title, background, user_cover, keyframe, area_name } = data
 
@@ -58,7 +56,7 @@ onMounted(async () => {
       <ElDescriptionsItem label="直播间简介" :span="2">{{ liveroomDescription }}</ElDescriptionsItem>
     </ElDescriptions>
     <ElDivider/>
-    <ElSpace direction="vertical" class="w-full justify-center" v-if="loading == true">
+    <ElSpace direction="vertical" class="w-full justify-center" v-if="backgroundImage">
       <ElText size="large">直播间相关图片</ElText>
       <div>{{ params.roomId }}</div>
       <ElSpace wrap class="justify-center">
