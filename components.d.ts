@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    '[id]': typeof import('./src/pages/liveroom/[id].vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -30,11 +31,11 @@ declare module 'vue' {
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
     Greet: typeof import('./src/components/Greet.vue')['default']
     IEpDownload: typeof import('~icons/ep/download')['default']
     ImageCard: typeof import('./src/components/ImageCard.vue')['default']
-    Liveroom: typeof import('./src/pages/liveroom.vue')['default']
     Lottery: typeof import('./src/pages/lottery.vue')['default']
     LotteryCard: typeof import('./src/components/LotteryCard.vue')['default']
     Pages: typeof import('./src/pages/index.vue')['default']

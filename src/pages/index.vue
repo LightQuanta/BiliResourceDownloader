@@ -96,7 +96,7 @@ const jump = () => {
       })
       return
     }
-    router.push({ path: '/liveroom', query: { id: roomId } })
+    router.push({ path: `/liveroom/${roomId}` })
   } else if (type === 'dynamic') {
     if (getInferredType(processedInputText.value) !== 'dynamic') {
       ElMessage({
