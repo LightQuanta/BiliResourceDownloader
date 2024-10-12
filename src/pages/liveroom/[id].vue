@@ -57,20 +57,19 @@ onMounted(async () => {
     <ElDescriptions border :column="2">
       <template #title>
         <div>
-          <ElLink type="primary" :href="`https://live.bilibili.com/${roomId}`" target="_blank">直播间{{
-              roomId
-            }}
-          </ElLink>
-          基础信息
+          <ElText>直播间</ElText>
+          <ElLink type="primary" :href="`https://live.bilibili.com/${roomId}`" target="_blank">{{ roomId }}</ElLink>
+          <ElText> 基础信息</ElText>
         </div>
       </template>
-      <ElDescriptionsItem label="标题">{{ liveroomTitle }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="分区">{{ areaType }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="标题" min-width="80px">{{ liveroomTitle }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="分区" min-width="80px">{{ areaType }}</ElDescriptionsItem>
       <ElDescriptionsItem label="简介" :span="2">{{ liveroomDescription }}</ElDescriptionsItem>
       <ElDescriptionsItem label="标签" :span="2">
-        <ElSpace wrap>
+        <ElSpace wrap v-if="(roomTags[0]?.length ?? 0) > 0">
           <ElTag v-for="tag in roomTags" :key="tag">{{ tag }}</ElTag>
         </ElSpace>
+        <ElText v-else>无</ElText>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="空间" :span="2">
         <ElLink type="primary" :href="`/space/${uid}`">点击跳转</ElLink>
