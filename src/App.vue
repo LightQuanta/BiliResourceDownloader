@@ -15,9 +15,7 @@
 
     <RouterView class="p-4 flex-grow overflow-auto" v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
-        <KeepAlive>
-          <Component :is="Component"/>
-        </KeepAlive>
+        <Component :is="Component"/>
       </Transition>
     </RouterView>
   </div>
