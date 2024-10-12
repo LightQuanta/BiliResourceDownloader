@@ -17,9 +17,14 @@ export default defineConfig(async () => ({
     plugins: [
         VueRouter(),
         AutoImport({
-            imports: ['vue', VueRouterAutoImports, {
-                '@tauri-apps/plugin-http': ['fetch']
-            }],
+            imports: [
+                'vue',
+                '@vueuse/core',
+                VueRouterAutoImports,
+                {
+                    '@tauri-apps/plugin-http': ['fetch']
+                }
+            ],
             resolvers: [
                 ElementPlusResolver(),
                 IconsResolver({
