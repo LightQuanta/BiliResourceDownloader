@@ -17,6 +17,10 @@ interface LotteryProperties {
     // 销量
     dlc_lottery_sale_quantity: number
     image_cover: string
+
+    dlc_sale_start_time: string
+    dlc_sale_end_time: string
+
     type: "dlc_act"
 }
 
