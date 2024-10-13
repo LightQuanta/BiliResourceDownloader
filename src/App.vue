@@ -10,7 +10,9 @@
         :router="true"
     >
       <ElMenuItem index="/">主页</ElMenuItem>
-      <ElMenuItem index="lottery">收藏集（测试）</ElMenuItem>
+      <ElMenuItem index="/search/garb">装扮/收藏集搜索</ElMenuItem>
+      <ElMenuItem index="/settings">设置</ElMenuItem>
+      <ElMenuItem index="/about">关于</ElMenuItem>
     </ElMenu>
 
     <RouterView class="p-4 flex-grow overflow-auto" v-slot="{ Component }">
