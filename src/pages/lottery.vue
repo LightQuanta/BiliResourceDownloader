@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { LotteryCardInfo, LotteryInfo, LotteryDetail } from '../lottery.ts'
+import type { GarbSearchResult, LotteryCardInfo, LotteryProperties, LotteryDetail } from '../types.ts'
 
 const searchText = ref('')
 const name = ref('')
@@ -14,14 +14,14 @@ const test = async () => {
   let url = new URL('https://api.bilibili.com/x/garb/v2/mall/home/search')
   url.searchParams.set('key_word', searchText.value)
   url.searchParams.set('pn', '1')
-  const lotteryInfo: LotteryInfo[] = (await fetch(url)
+  const lotteryInfo: GarbSearchResult[] = (await fetch(url)
           .then(r => r.json())
-          .then(r => r.data.list)
+          .then(r => r.data.list as GarbSearchResult[])
   ).filter(i => i.properties.type === 'dlc_act')
 
   // TODO 实现收藏集选择
   const { name: lotteryName, jump_link: lotteryLink } = lotteryInfo[0]
-  const { dlc_act_id: actId, dlc_lottery_id: lotteryId } = lotteryInfo[0].properties
+  const { dlc_act_id: actId, dlc_lottery_id: lotteryId } = lotteryInfo[0].properties as LotteryProperties
 
   name.value = lotteryName
   jumpLink.value = lotteryLink

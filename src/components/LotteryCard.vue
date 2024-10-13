@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LotteryCardInfo } from '../lottery.ts'
+import type { LotteryCardInfo } from '../types.ts'
 
 const prop = defineProps<{
   card: LotteryCardInfo
@@ -21,8 +21,7 @@ const downloadFile = async (url: string) => {
   document.body.appendChild(downloader)
 
   const data = await fetch(url).then(r => r.blob())
-  const dataURL = URL.createObjectURL(data)
-  downloader.href = dataURL
+  downloader.href = URL.createObjectURL(data)
 
   const suffix = url.split('.').pop()!.split('?')[0]
   downloader.download = prop.card.card_name + '.' + suffix
