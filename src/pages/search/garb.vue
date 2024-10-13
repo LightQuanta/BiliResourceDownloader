@@ -4,16 +4,16 @@ import type { GarbSearchResult } from "../../types.ts";
 
 const params = useUrlSearchParams()
 
+const displayMode = ref('all')
 const keyword = ref('')
 const currentPage = ref(1)
-const totalCount = ref(0)
+const totalCount = ref(114514)
 
 const cards = ref<GarbSearchResult[]>([])
 const hasMore = computed(() => totalCount.value > 0)
 
 onMounted(() => {
   keyword.value = params.keyword as string
-  newSearch()
 })
 
 const newSearch = () => {
@@ -50,6 +50,12 @@ const load = async () => {
 
   cards.value = cards.value.concat(data) as GarbSearchResult[]
 }
+
+const filteredCards = computed(() => {
+  if (displayMode.value === 'lottery') return cards.value.filter(c => c.properties.type === 'dlc_act')
+  if (displayMode.value === 'suit') return cards.value.filter(c => c.properties.type === 'ip')
+  return cards.value
+})
 </script>
 
 <template>
@@ -66,9 +72,15 @@ const load = async () => {
       </template>
     </ElInput>
 
+    <ElRadioGroup v-model="displayMode">
+      <ElRadio value="all">全部显示</ElRadio>
+      <ElRadio value="lottery">只显示收藏集</ElRadio>
+      <ElRadio value="suit">只显示装扮</ElRadio>
+    </ElRadioGroup>
+
     <div class="flex flex-wrap gap-4 justify-center" v-infinite-scroll="load">
       <TransitionGroup name="list">
-        <GarbSearchCard v-for="card in cards" :key="card.jump_link" :garb="card"/>
+        <GarbSearchCard v-for="card in filteredCards" :key="card.name" :garb="card"/>
       </TransitionGroup>
     </div>
 
@@ -88,7 +100,7 @@ const load = async () => {
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateY(80px);
+  transform: translateY(160px);
 }
 
 .list-leave-active {
