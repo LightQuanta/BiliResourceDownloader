@@ -3,11 +3,13 @@ import type { LotteryCardInfo } from '../types.ts'
 
 const prop = defineProps<{
   card: LotteryCardInfo
+  previewImages?: string[]
+  index?: number
 }>()
 
 const hasWatermark = ref(false)
 const imgUrl = computed(() => hasWatermark.value ? prop.card.card_img_download : prop.card.card_img)
-const hasVideo = computed(() => prop.card.video_list != null)
+const hasVideo = computed(() => (prop.card.video_list?.length ?? 0) != 0)
 const videoUrl = computed(() => {
   if (hasVideo.value) {
     return hasWatermark.value ? prop.card.video_list_download![0] : prop.card.video_list![0]
@@ -45,7 +47,8 @@ const downloadFile = async (url: string) => {
     <ElImage fit="contain"
              :src="imgUrl"
              :alt="card.card_name"
-             :preview-src-list="[imgUrl]"
+             :preview-src-list="previewImages ?? [imgUrl]"
+             :initial-index="index ?? 0"
              :hide-on-click-modal="true"
              referrerpolicy="no-referrer"
              class="h-96 w-full"

@@ -51,6 +51,8 @@ onMounted(async () => {
   loading.value = false
 })
 
+const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
+
 </script>
 <template>
   <div class="flex flex-col gap-4" v-loading="loading">
@@ -65,8 +67,14 @@ onMounted(async () => {
     </ElDescriptions>
 
     <ElSpace wrap class="justify-center">
-      <ImageCard title="收藏集封面" :image="coverURL" :download-name="`${name}-封面`"/>
-      <LotteryCard v-for="card in cards" :key="card.card_type_id" :card="card"/>
+      <ImageCard title="收藏集封面" :image="coverURL" :download-name="`${name}-封面`" :preview-images="previewImages"/>
+      <LotteryCard
+          v-for="(card, index) in cards"
+          :key="card.card_type_id"
+          :card="card"
+          :preview-images="previewImages"
+          :index="index + 1"
+      />
     </ElSpace>
   </div>
 </template>

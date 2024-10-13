@@ -4,6 +4,8 @@ const prop = defineProps<{
   image: string
   title: string
   downloadName?: string
+  previewImages?: string[]
+  index?: number
 }>()
 
 const downloadFile = async (url: string) => {
@@ -36,9 +38,11 @@ const downloadFile = async (url: string) => {
     <ElImage fit="contain"
              :src="image"
              :alt="title"
-             :preview-src-list="[image]"
+             :preview-src-list="previewImages ?? [image]"
+             :initial-index="index ?? 0"
              :hide-on-click-modal="true"
              referrerpolicy="no-referrer"
+             class="w-full"
              lazy
     />
     <template #footer>

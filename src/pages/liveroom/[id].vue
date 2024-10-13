@@ -49,6 +49,12 @@ onMounted(async () => {
   loading.value = false
 })
 
+const previewImages = computed(() => {
+  let images = [backgroundImage.value, coverImage.value]
+  if (keyframeImage.value) images.push(keyframeImage.value)
+  return images
+})
+
 </script>
 
 <template>
@@ -79,9 +85,22 @@ onMounted(async () => {
     <ElSpace direction="vertical" class="w-full justify-center" v-if="backgroundImage">
       <ElText size="large">直播间相关图片</ElText>
       <ElSpace wrap class="justify-center">
-        <ImageCard :image="backgroundImage" title="网页端直播间背景图"/>
-        <ImageCard :image="coverImage" title="直播间封面"/>
-        <ImageCard v-if="keyframeImage != ''" :image="keyframeImage" title="直播间关键帧"/>
+        <ImageCard :image="backgroundImage"
+                   title="网页端直播间背景图"
+                   :preview-images="previewImages"
+                   :index="0"
+        />
+        <ImageCard :image="coverImage"
+                   title="直播间封面"
+                   :preview-images="previewImages"
+                   :index="1"
+        />
+        <ImageCard v-if="keyframeImage != ''"
+                   :image="keyframeImage"
+                   title="直播间关键帧"
+                   :preview-images="previewImages"
+                   :index="2"
+        />
       </ElSpace>
     </ElSpace>
   </div>
