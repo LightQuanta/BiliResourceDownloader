@@ -18,18 +18,22 @@ onMounted(() => {
   if (keyword.value !== undefined && keyword.value !== '') searched.value = true
 })
 
+let loading = false
+
 const newSearch = () => {
   currentPage.value = 1
   cards.value = []
   params.keyword = keyword.value
   totalCount.value = 114514
   searched.value = true
+  loading = false
   load()
 }
 
-
 const load = async () => {
-  if (!searched.value || totalCount.value === 0) return
+  if (loading || !searched.value || totalCount.value === 0) return
+  loading = true
+
   const url = new URL('https://api.bilibili.com/x/garb/v2/mall/home/search')
   url.searchParams.set('key_word', keyword.value)
   url.searchParams.set('pn', currentPage.value.toString())
@@ -52,6 +56,7 @@ const load = async () => {
   }
 
   cards.value = cards.value.concat(data) as GarbSearchResult[]
+  loading = false
 }
 
 const filteredCards = computed(() => {
@@ -84,7 +89,7 @@ const filteredCards = computed(() => {
 
     <div class="flex flex-wrap gap-4 justify-center" v-infinite-scroll="load">
       <TransitionGroup name="list">
-        <GarbSearchCard v-for="card in filteredCards" :key="card.name" :garb="card"/>
+        <GarbSearchCard v-for="card in filteredCards" :key="card.jump_link" :garb="card"/>
       </TransitionGroup>
     </div>
 
