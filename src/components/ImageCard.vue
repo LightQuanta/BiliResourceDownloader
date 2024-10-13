@@ -3,6 +3,7 @@
 const prop = defineProps<{
   image: string
   title: string
+  downloadName?: string
 }>()
 
 const downloadFile = async (url: string) => {
@@ -14,7 +15,11 @@ const downloadFile = async (url: string) => {
   downloader.href = URL.createObjectURL(data)
 
   const suffix = url.split('.').pop()!.split('?')[0]
-  downloader.download = prop.title + '.' + suffix
+  if (prop.downloadName) {
+    downloader.download = prop.downloadName + '.' + suffix
+  } else {
+    downloader.download = prop.title + '.' + suffix
+  }
 
   downloader.click()
   downloader.remove()
