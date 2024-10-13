@@ -56,10 +56,10 @@ onMounted(async () => {
     <!-- TODO 什么b玩意丑死了，谁能帮忙改改UI -->
     <ElDescriptions border :column="2">
       <template #title>
-        <div>
+        <div class="flex gap-1">
           <ElText>直播间</ElText>
           <ElLink type="primary" :href="`https://live.bilibili.com/${roomId}`" target="_blank">{{ roomId }}</ElLink>
-          <ElText> 基础信息</ElText>
+          <ElText>基础信息</ElText>
         </div>
       </template>
       <ElDescriptionsItem label="标题" min-width="80px">{{ liveroomTitle }}</ElDescriptionsItem>
