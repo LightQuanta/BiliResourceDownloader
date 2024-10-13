@@ -33,6 +33,9 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    Garb: typeof import('./src/pages/search/garb.vue')['default']
+    GarbSearchCard: typeof import('./src/components/GarbSearchCard.vue')['default']
     Greet: typeof import('./src/components/Greet.vue')['default']
     IEpDownload: typeof import('~icons/ep/download')['default']
     ImageCard: typeof import('./src/components/ImageCard.vue')['default']
@@ -43,6 +46,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
   }
   export interface ComponentCustomProperties {
+    vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

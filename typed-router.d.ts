@@ -23,5 +23,6 @@ declare module 'vue-router/auto-routes' {
       id: ParamValue<false>
     }>,
     '/lottery': RouteRecordInfo<'/lottery', '/lottery', Record<never, never>, Record<never, never>>,
+    '/search/garb': RouteRecordInfo<'/search/garb', '/search/garb', Record<never, never>, Record<never, never>>,
   }
 }

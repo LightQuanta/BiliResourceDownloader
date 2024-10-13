@@ -46,6 +46,14 @@ const onChange = () => {
 }
 
 const jump = () => {
+  if (processedInputText.value === '') {
+    ElMessage({
+      message: '请输入要搜索的内容！',
+      type: 'error',
+    })
+    return
+  }
+
   let type = selectedSearchType.value
   if (type === 'auto') {
     const inferredType = getInferredType(processedInputText.value)
@@ -62,8 +70,7 @@ const jump = () => {
   }
 
   if (type === 'garbSearch') {
-    // TODO 实现装扮和收藏集搜索界面
-
+    router.push({ path: '/search/garb', query: { keyword: processedInputText.value } })
   } else if (type === 'user') {
     let uid = ''
     if (getInferredType(processedInputText.value) === 'user') {
@@ -147,12 +154,12 @@ const jump = () => {
     >
       <template #prepend>
         <ElSelect class="!w-40" v-model="selectedSearchType" placeholder="选择搜索类型">
-          <ElOption label="自动推断" value="auto"></ElOption>
-          <ElOption label="直播间信息" value="liveroom"></ElOption>
-          <ElOption label="用户信息" value="user"></ElOption>
-          <ElOption label="动态" value="dynamic"></ElOption>
-          <ElOption label="视频" value="video"></ElOption>
-          <ElOption label="装扮/收藏集搜索" value="garbSearch"></ElOption>
+          <ElOption label="自动推断" value="auto"/>
+          <ElOption label="直播间信息" value="liveroom"/>
+          <ElOption label="用户信息" value="user"/>
+          <ElOption label="动态" value="dynamic"/>
+          <ElOption label="视频" value="video"/>
+          <ElOption label="装扮/收藏集搜索" value="garbSearch"/>
         </ElSelect>
       </template>
       <template #append>

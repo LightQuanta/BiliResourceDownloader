@@ -39,6 +39,7 @@ const downloadFile = async (url: string) => {
              :preview-src-list="[image]"
              :hide-on-click-modal="true"
              referrerpolicy="no-referrer"
+             lazy
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">
