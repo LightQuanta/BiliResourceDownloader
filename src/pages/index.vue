@@ -151,6 +151,8 @@ const jump = () => {
         autofocus
         clearable
         @input="onChange"
+        class="max-w-screen-sm"
+        autocomplete="on"
     >
       <template #prepend>
         <ElSelect class="!w-40" v-model="selectedSearchType" placeholder="选择搜索类型">
