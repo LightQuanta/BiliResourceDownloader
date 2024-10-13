@@ -8,12 +8,14 @@ const displayMode = ref('all')
 const keyword = ref('')
 const currentPage = ref(1)
 const totalCount = ref(114514)
+const searched = ref(false)
 
 const cards = ref<GarbSearchResult[]>([])
 const hasMore = computed(() => totalCount.value > 0)
 
 onMounted(() => {
   keyword.value = params.keyword as string
+  if (keyword.value !== undefined && keyword.value !== '') searched.value = true
 })
 
 const newSearch = () => {
@@ -21,12 +23,13 @@ const newSearch = () => {
   cards.value = []
   params.keyword = keyword.value
   totalCount.value = 114514
+  searched.value = true
   load()
 }
 
 
 const load = async () => {
-  if (keyword.value === undefined || totalCount.value === 0) return
+  if (!searched.value || totalCount.value === 0) return
   const url = new URL('https://api.bilibili.com/x/garb/v2/mall/home/search')
   url.searchParams.set('key_word', keyword.value)
   url.searchParams.set('pn', currentPage.value.toString())
@@ -65,6 +68,7 @@ const filteredCards = computed(() => {
         placeholder="输入要搜索的内容"
         autofocus
         clearable
+        @change="newSearch"
     >
       <template #append>
         <!-- TODO type为啥无效？ -->
@@ -84,7 +88,7 @@ const filteredCards = computed(() => {
       </TransitionGroup>
     </div>
 
-    <ElDivider v-if="keyword === undefined">请输入关键词进行搜索</ElDivider>
+    <ElDivider v-if="!searched">请输入关键词进行搜索</ElDivider>
     <ElDivider v-else-if="hasMore">正在加载...</ElDivider>
     <ElDivider v-else>已加载全部搜索结果</ElDivider>
   </div>
