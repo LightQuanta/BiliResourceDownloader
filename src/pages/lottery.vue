@@ -67,7 +67,8 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
     </ElDescriptions>
 
     <ElSpace wrap class="justify-center">
-      <ImageCard title="收藏集封面" :image="coverURL" :download-name="`${name}-封面`" :preview-images="previewImages"/>
+      <ImageCard v-if="!loading" title="收藏集封面" :image="coverURL" :download-name="`${name}-封面`"
+                 :preview-images="previewImages"/>
       <LotteryCard
           v-for="(card, index) in cards"
           :key="card.card_type_id"
