@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { GarbSearchResult, LotteryCardInfo, LotteryProperties, LotteryDetail } from '../types.ts'
+import { FormInstance } from "element-plus";
 
 const name = ref('')
 const jumpLink = ref('')
@@ -47,17 +48,49 @@ onMounted(async () => {
   saleEndTime.value = +dlc_sale_end_time * 1000
 
   cards.value = lotteryDetail.item_list.map(i => i.card_info).sort((a, b) => b.card_scarcity - a.card_scarcity)
+  downloadConfig.name = lotteryName
 
   loading.value = false
 })
 
 const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
 
+const showDialog = ref(false)
+const downloadConfig = reactive({
+  name: '',
+  downloadCover: false,
+  useWatermarkVersion: false,
+  downloadContents: ['image', 'video'],
+})
+
+const rules = reactive(({
+  name: [
+    { required: true, message: '请输入文件名称', trigger: 'blur' },
+    { min: 1, max: 200, message: '长度在 1 到 20 个字符', trigger: 'blur' }
+  ],
+}))
+
+const submit = async (form: FormInstance) => {
+  await form.validate((valid) => {
+    if (!valid) return
+
+    // TODO 实现文件下载
+  })
+}
 </script>
 <template>
   <div class="flex flex-col gap-4" v-loading="loading">
+    <!-- 收藏集详细信息 -->
     <ElDescriptions border :column="2">
-      <ElDescriptionsItem label="名称">
+      <template #title>
+        <ElText size="large">{{ name }}</ElText>
+      </template>
+
+      <template #extra>
+        <ElButton type="primary" @click="showDialog = true">批量下载</ElButton>
+      </template>
+
+      <ElDescriptionsItem label="名称" name="name">
         <ElLink type="primary" :href="jumpLink" target="_blank">{{ name }}</ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="销量">{{ saleQuantity }}</ElDescriptionsItem>
@@ -66,6 +99,7 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
       </ElDescriptionsItem>
     </ElDescriptions>
 
+    <!-- 收藏集图片展示 -->
     <ElSpace wrap class="justify-center">
       <ImageCard v-if="!loading" title="收藏集封面" :image="coverURL" :download-name="`${name}-封面`"
                  :preview-images="previewImages"/>
@@ -77,5 +111,37 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
           :index="index + 1"
       />
     </ElSpace>
+
+    <!-- 批量保存对话框 -->
+    <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
+      <ElForm label-width="auto"
+              :model="downloadConfig"
+              :rules="rules"
+              class="max-w-lg"
+      >
+        <ElFormItem label="文件名称" prop="name">
+          <ElInput v-model="downloadConfig.name">
+            <template #append>.zip</template>
+          </ElInput>
+        </ElFormItem>
+        <ElFormItem label="下载封面" prop="downloadCover">
+          <ElSwitch v-model="downloadConfig.downloadCover"/>
+        </ElFormItem>
+        <ElFormItem label="下载水印版本" prop="useWatermarkVersion">
+          <ElSwitch v-model="downloadConfig.useWatermarkVersion"/>
+        </ElFormItem>
+        <ElFormItem label="下载内容选择">
+          <ElCheckboxGroup v-model="downloadConfig.downloadContents">
+            <ElCheckbox label="图片" value="image"/>
+            <ElCheckbox label="视频" value="video"/>
+          </ElCheckboxGroup>
+        </ElFormItem>
+      </ElForm>
+
+      <template #footer class="w-full">
+        <ElButton type="primary" @click="submit">确定</ElButton>
+        <ElButton @click="showDialog = false">取消</ElButton>
+      </template>
+    </ElDialog>
   </div>
 </template>
