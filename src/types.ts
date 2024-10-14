@@ -183,4 +183,20 @@ interface LotteryCardInfo {
     video_list_download?: string[]
 }
 
-export type { GarbSearchResult, LotteryProperties, LotteryDetail, LotteryCardInfo, SuitProperties, SuitDetail }
+interface BatchDownloadInfo {
+    name: string
+    files: {
+        name: string,
+        url: string,
+    }[]
+}
+
+export type {
+    GarbSearchResult,
+    LotteryProperties,
+    LotteryDetail,
+    LotteryCardInfo,
+    SuitProperties,
+    SuitDetail,
+    BatchDownloadInfo
+}
