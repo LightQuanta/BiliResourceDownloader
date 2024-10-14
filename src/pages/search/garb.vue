@@ -24,13 +24,17 @@ const router = useRouter()
 const newSearch = () => {
   currentPage.value = 1
   cards.value = []
-
-  router.push({ query: { keyword: keyword.value, display: displayMode.value } })
-
   totalCount.value = 114514
   searched.value = true
   loading = false
   load()
+}
+
+watch(keyword, () => updateQuery())
+watch(displayMode, () => updateQuery())
+
+const updateQuery = () => {
+  router.push({ query: { keyword: keyword.value, display: displayMode.value } })
 }
 
 const load = async () => {
