@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import type { GarbSearchResult } from "../../types.ts";
 
@@ -47,8 +48,8 @@ const load = async () => {
 
   let data: GarbSearchResult[] = []
   try {
-    const resp = await fetch(url).then(r => r.json())
-    if (resp.code !== 0) throw resp.msg
+    const resp = await cachedAPIFetch(url)
+
     data = resp.data.list as GarbSearchResult[]
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return

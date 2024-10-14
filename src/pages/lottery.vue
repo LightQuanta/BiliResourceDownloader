@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import type {
   GarbSearchResult,
   LotteryCardInfo,
@@ -39,7 +40,7 @@ onMounted(async () => {
   url.searchParams.set('act_id', String(actId))
   url.searchParams.set('lottery_id', String(lotteryId))
 
-  const lotteryDetail: LotteryDetail = await fetch(url).then(r => r.json()).then(r => r.data)
+  const lotteryDetail: LotteryDetail = await cachedAPIFetch(url).then(r => r.data)
 
   const {
     image_cover,

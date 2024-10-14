@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+
 const route = useRoute<'/liveroom/[id]'>()
 
 const loading = ref(false)
@@ -22,8 +24,7 @@ onMounted(async () => {
 
   let data = null
   try {
-    const resp = await fetch(url).then(r => r.json())
-    if (resp.code !== 0) throw resp.msg
+    const resp = await cachedAPIFetch(url)
     data = resp.data
   } catch (e) {
     console.error(e)

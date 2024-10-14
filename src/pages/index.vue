@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import { Search } from '@element-plus/icons-vue'
 import { GarbSearchResult } from "../types.ts";
 
@@ -175,7 +176,7 @@ const jump = async () => {
     const url = URL.parse(processedInputText.value)!
 
     const actId = url.searchParams.get('id') ?? url.searchParams.get('act_id')
-    const resp = await fetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actId}`).then(r => r.json())
+    const resp = await cachedAPIFetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actId}`)
 
     if (resp.code !== 0) {
       ElMessage({
