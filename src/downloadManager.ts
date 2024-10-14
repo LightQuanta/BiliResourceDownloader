@@ -1,11 +1,19 @@
 import { BatchDownloadTask } from "./types.ts";
-import { createStore } from '@tauri-apps/plugin-store';
+import { createStore, Store } from '@tauri-apps/plugin-store';
 import { download } from "@tauri-apps/plugin-upload";
 import { emitter } from "./main.ts";
 
-const store = await createStore('download')
+let internalStore: Store | null = null
+
+async function getStore() {
+    if (internalStore === null) {
+        internalStore = await createStore('downloadManager')
+    }
+    return internalStore
+}
 
 async function pushNewTask(task: BatchDownloadTask) {
+    const store = await getStore()
     const tasks = (await store.get('tasks')) as BatchDownloadTask[]
     if (tasks === null) {
         await store.set('tasks', [task])
@@ -23,12 +31,14 @@ function pauseDownload() {
 
 async function clearDownload() {
     downloading = false
+    const store = await getStore()
     await store.clear()
 }
 
 async function startDownload() {
     if (downloading) return
     downloading = true
+    const store = await getStore()
     try {
         while (downloading && await store.get('tasks') !== null) {
             const tasks = (await store.get('tasks')) as BatchDownloadTask[]
@@ -73,6 +83,7 @@ async function startDownload() {
 }
 
 async function getAllDownloadTasks() {
+    const store = await getStore()
     return (await store.get('tasks') ?? []) as BatchDownloadTask[]
 }
 
