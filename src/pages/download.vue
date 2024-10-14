@@ -7,8 +7,13 @@ import { ElMessage } from "element-plus";
 const tasks = reactive<BatchDownloadTask[]>([])
 
 onMounted(async () => {
-  tasks.push(...await getAllDownloadTasks())
+  await refreshTasks()
 })
+
+const refreshTasks = async () => {
+  tasks.splice(0, tasks.length)
+  tasks.push(...await getAllDownloadTasks())
+}
 
 interface Progress {
   percentage?: number
@@ -63,18 +68,20 @@ emitter.on('downloadFinish', (info: { name: string }) => {
   })
 })
 
-const start = () => {
-  startDownload()
+const start = async () => {
+  await refreshTasks()
+  await startDownload()
 }
 
-const pause = () => {
-  pauseDownload()
+const pause = async () => {
+  await pauseDownload()
+  await refreshTasks()
   console.debug(tasks)
 }
 
-const clear = () => {
-  tasks.splice(0, tasks.length)
-  clearDownload()
+const clear = async () => {
+  await clearDownload()
+  await refreshTasks()
 }
 
 const getProgress = (file: Progress) => {
@@ -96,7 +103,6 @@ const getProgress = (file: Progress) => {
           <TransitionGroup name="list">
             <div v-for="file in task.files" :key="file.name">
               <ElText>{{ file.name }}</ElText>
-              <!-- TODO 解决抖动问题 -->
               <ElProgress :percentage="getProgress(file)"/>
             </div>
           </TransitionGroup>

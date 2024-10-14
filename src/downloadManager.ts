@@ -73,7 +73,7 @@ async function startDownload() {
 }
 
 async function getAllDownloadTasks() {
-    return await store.get('tasks') as BatchDownloadTask[]
+    return (await store.get('tasks') ?? []) as BatchDownloadTask[]
 }
 
 export { pushNewTask, pauseDownload, clearDownload, startDownload, getAllDownloadTasks }
