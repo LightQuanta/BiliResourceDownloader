@@ -1,5 +1,11 @@
 <script lang="ts" setup>
-import type { GarbSearchResult, LotteryCardInfo, LotteryProperties, LotteryDetail } from '../types.ts'
+import type {
+  GarbSearchResult,
+  LotteryCardInfo,
+  LotteryProperties,
+  LotteryDetail,
+  BatchDownloadInfo
+} from '../types.ts'
 import { FormInstance } from "element-plus";
 
 const name = ref('')
@@ -56,6 +62,7 @@ onMounted(async () => {
 const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
 
 const showDialog = ref(false)
+const formRef = ref<FormInstance>()
 const downloadConfig = reactive({
   name: '',
   downloadCover: false,
@@ -70,11 +77,56 @@ const rules = reactive(({
   ],
 }))
 
-const submit = async (form: FormInstance) => {
-  await form.validate((valid) => {
+const submit = async () => {
+  await formRef.value?.validate((valid) => {
     if (!valid) return
 
+    const downloadFileInfo: BatchDownloadInfo = {
+      name: downloadConfig.name + '.zip',
+      files: [],
+    }
+
+    if (downloadConfig.downloadCover) {
+      downloadFileInfo.files.push({
+        name: '封面',
+        url: coverURL.value,
+      })
+    }
+
+    if (downloadConfig.downloadContents.includes('image')) {
+      cards.value.forEach(c => {
+        if (downloadConfig.useWatermarkVersion) {
+          downloadFileInfo.files.push({
+            name: c.card_name + '（水印）',
+            url: c.card_img_download,
+          })
+        } else {
+          downloadFileInfo.files.push({
+            name: c.card_name,
+            url: c.card_img,
+          })
+        }
+      })
+    }
+
+    if (downloadConfig.downloadContents.includes('video')) {
+      cards.value.filter(c => c.video_list?.length ?? 0 > 0).forEach(c => {
+        if (downloadConfig.useWatermarkVersion) {
+          downloadFileInfo.files.push({
+            name: c.card_name + '（水印）',
+            url: c.video_list_download![0],
+          })
+        } else {
+          downloadFileInfo.files.push({
+            name: c.card_name,
+            url: c.video_list![0],
+          })
+        }
+      })
+    }
+
     // TODO 实现文件下载
+    console.log(downloadFileInfo)
   })
 }
 </script>
@@ -115,6 +167,7 @@ const submit = async (form: FormInstance) => {
     <!-- 批量保存对话框 -->
     <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
       <ElForm label-width="auto"
+              ref="formRef"
               :model="downloadConfig"
               :rules="rules"
               class="max-w-lg"
@@ -138,7 +191,7 @@ const submit = async (form: FormInstance) => {
         </ElFormItem>
       </ElForm>
 
-      <template #footer class="w-full">
+      <template #footer>
         <ElButton type="primary" @click="submit">确定</ElButton>
         <ElButton @click="showDialog = false">取消</ElButton>
       </template>
