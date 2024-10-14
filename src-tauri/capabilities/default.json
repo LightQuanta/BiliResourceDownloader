@@ -15,6 +15,7 @@
           "url": "https://*.*"
         }
       ]
-    }
+    },
+    "store:default"
   ]
 }

@@ -134,6 +134,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-http",
  "tauri-plugin-shell",
+    "tauri-plugin-store",
 ]
 
 [[package]]
@@ -3408,6 +3409,22 @@ dependencies = [
  "tauri-plugin",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "tauri-plugin-store"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5058f179f7215390fc5a68eeffcb805b7e2681d6e817a5d08094fae7ab649e68"
+dependencies = [
+    "dunce",
+    "log",
+    "serde",
+    "serde_json",
+    "tauri",
+    "tauri-plugin",
+    "thiserror",
+    "tokio",
 ]
 
 [[package]]

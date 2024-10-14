@@ -1,4 +1,6 @@
-const responseCache = new Map<string, CachedJSONResponse>()
+import { createStore } from '@tauri-apps/plugin-store';
+
+const responseCache = await createStore('responseCache')
 
 // 缓存5分钟
 const CACHE_TIME = 5 * 60 * 1000
@@ -11,8 +13,8 @@ interface CachedJSONResponse {
 async function cachedAPIFetch(url: URL | string): Promise<any> {
     const strURL = (url as URL).href ?? url
 
-    if (responseCache.has(strURL)) {
-        const cacheData = responseCache.get(strURL)!
+    if (await responseCache.has(strURL)) {
+        const cacheData = (await responseCache.get(strURL)) as CachedJSONResponse
         if (cacheData.cachedTime > Date.now()) {
             return cacheData.response
         }
@@ -23,7 +25,7 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
         throw (json as { msg: string }).msg as string
     }
 
-    responseCache.set(strURL, {
+    await responseCache.set(strURL, {
         cachedTime: Date.now() + CACHE_TIME,
         response: json,
     })
