@@ -15,15 +15,18 @@ const hasMore = computed(() => totalCount.value > 0)
 
 onMounted(() => {
   keyword.value = params.keyword as string
+  displayMode.value = params.display as string ?? 'all'
   if (keyword.value !== undefined && keyword.value !== '') searched.value = true
 })
 
 let loading = false
-
+const router = useRouter()
 const newSearch = () => {
   currentPage.value = 1
   cards.value = []
-  params.keyword = keyword.value
+
+  router.push({ query: { keyword: keyword.value, display: displayMode.value } })
+
   totalCount.value = 114514
   searched.value = true
   loading = false
