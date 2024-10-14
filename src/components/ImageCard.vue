@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { download } from '@tauri-apps/plugin-upload'
+import { save } from '@tauri-apps/plugin-dialog'
 
 const prop = defineProps<{
   image: string
@@ -8,23 +10,27 @@ const prop = defineProps<{
   index?: number
 }>()
 
-const downloadFile = async (url: string) => {
-  const downloader = document.createElement("a")
-  downloader.style.display = 'none';
-  document.body.appendChild(downloader)
+const downloadImage = async (url: string) => {
+  const suffix = url.split('?')[0].split('.').pop()!
+  const name = prop.downloadName ?? prop.title + '.' + suffix
 
-  const data = await fetch(url).then(r => r.blob())
-  downloader.href = URL.createObjectURL(data)
+  const path = await save({
+    defaultPath: name,
+    filters: [
+      {
+        name: suffix,
+        extensions: [suffix],
+      },
+    ],
+  })
+  if (path === null) return
 
-  const suffix = url.split('.').pop()!.split('?')[0]
-  if (prop.downloadName) {
-    downloader.download = prop.downloadName + '.' + suffix
-  } else {
-    downloader.download = prop.title + '.' + suffix
-  }
+  await download(url, path)
 
-  downloader.click()
-  downloader.remove()
+  ElMessage({
+    message: `${name}下载成功`,
+    type: 'success',
+  })
 }
 </script>
 
@@ -47,7 +53,7 @@ const downloadFile = async (url: string) => {
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">
-        <ElButton type="primary" @click="downloadFile(image)">
+        <ElButton type="primary" @click="downloadImage(image)">
           <ElIcon size="20">
             <i-ep-download/>
           </ElIcon>

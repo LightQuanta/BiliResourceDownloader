@@ -16,6 +16,8 @@
         }
       ]
     },
-    "store:default"
+    "store:default",
+    "dialog:default",
+    "upload:default"
   ]
 }

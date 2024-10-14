@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { LotteryCardInfo } from '../types.ts'
+import { save } from "@tauri-apps/plugin-dialog";
+import { download } from "@tauri-apps/plugin-upload";
 
 const prop = defineProps<{
   card: LotteryCardInfo
@@ -18,18 +20,40 @@ const videoUrl = computed(() => {
 })
 
 const downloadFile = async (url: string) => {
-  const downloader = document.createElement("a")
-  downloader.style.display = 'none';
-  document.body.appendChild(downloader)
+  const suffix = url.split('?')[0].split('.').pop()!
+  const name = prop.card.card_name + '.' + suffix
 
-  const data = await fetch(url).then(r => r.blob())
-  downloader.href = URL.createObjectURL(data)
+  const path = await save({
+    defaultPath: name,
+    filters: [
+      {
+        name: suffix,
+        extensions: [suffix],
+      },
+    ],
+  })
+  if (path === null) return
 
-  const suffix = url.split('.').pop()!.split('?')[0]
-  downloader.download = prop.card.card_name + '.' + suffix
+  // 必须设置UA才能绕过视频下载检测
+  const header = new Map<string, string>()
+  header.set('User-Agent', '111')
 
-  downloader.click()
-  downloader.remove()
+  try {
+    await download(url, path, undefined, header)
+  } catch (e) {
+    console.error(e)
+
+    ElMessage({
+      message: `下载出错： ${e}`,
+      type: 'error',
+    })
+    return
+  }
+
+  ElMessage({
+    message: `${name} 下载成功`,
+    type: 'success',
+  })
 }
 </script>
 
