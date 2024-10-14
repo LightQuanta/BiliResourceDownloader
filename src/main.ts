@@ -3,6 +3,9 @@ import App from "./App.vue";
 import "./style.css";
 import { createWebHistory, createRouter } from 'vue-router'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes'
+import mitt from "mitt";
+
+const emitter = mitt()
 
 const router = createRouter({
     history: createWebHistory(),
@@ -18,3 +21,5 @@ console.log(routes)
 createApp(App)
     .use(router)
     .mount("#app");
+
+export { emitter }

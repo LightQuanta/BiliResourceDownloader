@@ -1,13 +1,15 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
+import { open } from "@tauri-apps/plugin-dialog";
 import type {
   GarbSearchResult,
   LotteryCardInfo,
   LotteryProperties,
   LotteryDetail,
-  BatchDownloadInfo
+  BatchDownloadTask
 } from '../types.ts'
 import { FormInstance } from "element-plus";
+import { pushNewTask } from "../downloadManager.ts";
 
 const name = ref('')
 const jumpLink = ref('')
@@ -55,7 +57,7 @@ onMounted(async () => {
   saleEndTime.value = +dlc_sale_end_time * 1000
 
   cards.value = lotteryDetail.item_list.map(i => i.card_info).sort((a, b) => b.card_scarcity - a.card_scarcity)
-  downloadConfig.name = lotteryName
+  // downloadConfig.path = lotteryName
 
   loading.value = false
 })
@@ -65,31 +67,34 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
 const showDialog = ref(false)
 const formRef = ref<FormInstance>()
 const downloadConfig = reactive({
-  name: '',
+  path: '',
   downloadCover: false,
   useWatermarkVersion: false,
   downloadContents: ['image', 'video'],
 })
 
 const rules = reactive(({
-  name: [
-    { required: true, message: '请输入文件名称', trigger: 'blur' },
-    { min: 1, max: 200, message: '长度在 1 到 20 个字符', trigger: 'blur' }
+  path: [
+    { required: true, message: '请选择保存位置', trigger: 'blur' },
   ],
 }))
 
+const extractExtensionName = (url: string) => {
+  return '.' + url.split('?')[0].split('.').pop()!.split('_')[0]
+}
+
 const submit = async () => {
-  await formRef.value?.validate((valid) => {
+  await formRef.value?.validate(async (valid) => {
     if (!valid) return
 
-    const downloadFileInfo: BatchDownloadInfo = {
-      name: downloadConfig.name + '.zip',
+    const downloadFileInfo: BatchDownloadTask = {
+      path: downloadConfig.path,
       files: [],
     }
 
     if (downloadConfig.downloadCover) {
       downloadFileInfo.files.push({
-        name: '封面',
+        name: '封面' + extractExtensionName(coverURL.value),
         url: coverURL.value,
       })
     }
@@ -98,12 +103,12 @@ const submit = async () => {
       cards.value.forEach(c => {
         if (downloadConfig.useWatermarkVersion) {
           downloadFileInfo.files.push({
-            name: c.card_name + '（水印）',
+            name: c.card_name + '（水印）' + extractExtensionName(c.card_img_download),
             url: c.card_img_download,
           })
         } else {
           downloadFileInfo.files.push({
-            name: c.card_name,
+            name: c.card_name + extractExtensionName(c.card_img),
             url: c.card_img,
           })
         }
@@ -114,21 +119,38 @@ const submit = async () => {
       cards.value.filter(c => c.video_list?.length ?? 0 > 0).forEach(c => {
         if (downloadConfig.useWatermarkVersion) {
           downloadFileInfo.files.push({
-            name: c.card_name + '（水印）',
+            name: c.card_name + '（水印）' + extractExtensionName(c.video_list_download![0]),
             url: c.video_list_download![0],
           })
         } else {
           downloadFileInfo.files.push({
-            name: c.card_name,
+            name: c.card_name + extractExtensionName(c.video_list![0]),
             url: c.video_list![0],
           })
         }
       })
     }
 
-    // TODO 实现文件下载
-    console.log(downloadFileInfo)
+    console.debug(downloadFileInfo)
+
+    await pushNewTask(downloadFileInfo)
+    ElMessage({
+      message: '已提交下载任务，请到下载界面进行查看',
+      type: 'success',
+    })
+
+    showDialog.value = false
   })
+}
+
+const selectSaveFolder = async () => {
+  const path = await open({
+    defaultPath: downloadConfig.path,
+    directory: true,
+  })
+
+  if (path === null) return
+  downloadConfig.path = path
 }
 </script>
 <template>
@@ -174,8 +196,10 @@ const submit = async () => {
               class="max-w-lg"
       >
         <ElFormItem label="文件名称" prop="name">
-          <ElInput v-model="downloadConfig.name">
-            <template #append>.zip</template>
+          <ElInput v-model="downloadConfig.path" readonly>
+            <template #append>
+              <ElButton @click="selectSaveFolder">浏览</ElButton>
+            </template>
           </ElInput>
         </ElFormItem>
         <ElFormItem label="下载封面" prop="downloadCover">

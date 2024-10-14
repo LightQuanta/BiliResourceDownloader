@@ -183,11 +183,13 @@ interface LotteryCardInfo {
     video_list_download?: string[]
 }
 
-interface BatchDownloadInfo {
-    name: string
+interface BatchDownloadTask {
+    path: string
     files: {
-        name: string,
-        url: string,
+        name: string
+        url: string
+        percentage?: number
+        total?: number
     }[]
 }
 
@@ -198,5 +200,5 @@ export type {
     LotteryCardInfo,
     SuitProperties,
     SuitDetail,
-    BatchDownloadInfo
+    BatchDownloadTask,
 }

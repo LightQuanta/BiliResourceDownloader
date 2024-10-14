@@ -190,7 +190,7 @@ const jump = async () => {
 
     const fakeSearchResult: GarbSearchResult = {
       item_id: 0,
-      name: resp.data.act_title,
+      path: resp.data.act_title,
       jump_link: `https://www.bilibili.com/h5/mall/digital-card/home?act_id=${actId}&lottery_id=${lotteryId}`,
       sale_count_desc: '',
       properties: {

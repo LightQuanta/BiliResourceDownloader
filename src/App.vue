@@ -11,6 +11,7 @@
     >
       <ElMenuItem index="/">主页</ElMenuItem>
       <ElMenuItem index="/search/garb">装扮/收藏集搜索</ElMenuItem>
+      <ElMenuItem index="/download">下载管理</ElMenuItem>
       <ElMenuItem index="/settings">设置</ElMenuItem>
       <ElMenuItem index="/about">关于</ElMenuItem>
     </ElMenu>
