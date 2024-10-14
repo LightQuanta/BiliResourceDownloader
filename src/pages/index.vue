@@ -127,7 +127,7 @@ const jump = async () => {
       })
       return
     }
-    router.push({ path: `/liveroom/${roomId}` })
+    await router.push({ path: `/liveroom/${roomId}` })
   } else if (type === 'dynamic') {
     if (getInferredType(processedInputText.value) !== 'dynamic') {
       ElMessage({
@@ -217,7 +217,7 @@ const jump = async () => {
     const url = URL.parse(processedInputText.value)!
     const id = url.searchParams.get('id')
 
-    // TODO 实现装扮页面
+    await router.push({ path: `/suit/${id}` })
   }
 }
 </script>

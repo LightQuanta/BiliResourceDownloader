@@ -12,7 +12,7 @@ const jump = () => {
   if (isLottery.value) {
     router.push({ path: '/lottery', query: { lottery: JSON.stringify(prop.garb) } })
   } else {
-    // TODO 实现装扮页面
+    router.push({ path: `/suit/${prop.garb.item_id}` })
   }
 }
 </script>
