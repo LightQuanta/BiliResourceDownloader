@@ -2,6 +2,7 @@
 import { BatchDownloadTask } from "../types.ts";
 import { getAllDownloadTasks, pauseDownload, startDownload, clearDownload } from "../downloadManager.ts";
 import { emitter } from "../main.ts";
+import { ElMessage } from "element-plus";
 
 const tasks = reactive<BatchDownloadTask[]>([])
 
@@ -15,7 +16,7 @@ interface Progress {
 }
 
 interface DownloadProgress {
-  path: string
+  name: string
   file: {
     name: string
     url: string
@@ -27,7 +28,7 @@ interface DownloadProgress {
 }
 
 interface FileDownloadFinish {
-  path: string
+  name: string
   file: {
     name: string
     url: string
@@ -35,8 +36,11 @@ interface FileDownloadFinish {
 }
 
 emitter.on('downloadProgress', (info: DownloadProgress) => {
-  const task = tasks.find(t => t.path === info.path)!
-  const file = task.files?.find(f => f.name === info.file.name)!
+  const task = tasks.find(t => t.name === info.name)
+  if (!task) return
+
+  const file = task.files?.find(f => f.name === info.file.name)
+  if (!file) return
 
   if (!file.percentage) file.percentage = 0
 
@@ -45,11 +49,18 @@ emitter.on('downloadProgress', (info: DownloadProgress) => {
 })
 
 emitter.on('fileDownloadFinish', (info: FileDownloadFinish) => {
-  tasks.find(t => t.path === info.path)?.files.splice(tasks.find(t => t.path === info.path)?.files.findIndex(f => f.name === info.file.name)!, 1)
+  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.name === info.file.name)!, 1)
 })
 
-emitter.on('downloadFinish', (path: string) => {
-  tasks.splice(tasks.findIndex(t => t.path === path), 1)
+emitter.on('downloadFinish', (info: { name: string }) => {
+  const index = tasks.findIndex(t => t.name === info.name)
+  if (index === -1) return
+
+  tasks.splice(index, 1)
+  ElMessage({
+    message: `${info.name} 下载完成`,
+    type: 'success',
+  })
 })
 
 const start = () => {
@@ -58,7 +69,7 @@ const start = () => {
 
 const pause = () => {
   pauseDownload()
-  console.log(tasks)
+  console.debug(tasks)
 }
 
 const clear = () => {
@@ -77,11 +88,11 @@ const getProgress = (file: Progress) => {
     <ElButton type="primary" @click="start">开始下载</ElButton>
     <ElButton type="primary" @click="pause">暂停下载</ElButton>
     <ElButton type="primary" @click="clear">清空任务</ElButton>
-    <div class="flex flex-col">
+    <div class="flex flex-col overflow-hidden">
 
       <TransitionGroup name="list">
-        <div v-for="task in tasks" key="path">
-          <ElText type="primary" size="large">{{ task.path }}</ElText>
+        <div v-for="task in tasks" :key="task.name + '-' + task.path">
+          <ElText type="primary" class="block" size="large">{{ task.name }}</ElText>
           <TransitionGroup name="list">
             <div v-for="file in task.files" :key="file.name">
               <ElText>{{ file.name }}</ElText>
@@ -109,8 +120,8 @@ const getProgress = (file: Progress) => {
   transform: translateX(300px);
 }
 
-.list-leave-active {
-  position: absolute;
+:deep(.el-progress-bar__inner) {
+  transition: none;
 }
 
 </style>

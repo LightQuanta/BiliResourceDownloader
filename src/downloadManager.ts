@@ -27,10 +27,10 @@ async function clearDownload() {
 }
 
 async function startDownload() {
+    if (downloading) return
     downloading = true
     try {
         while (downloading && await store.get('tasks') !== null) {
-            console.log('dli')
             const tasks = (await store.get('tasks')) as BatchDownloadTask[]
             if (tasks.length === 0) {
                 downloading = false
@@ -39,13 +39,12 @@ async function startDownload() {
 
             const task = tasks[0]
 
-            const path = task.path
-            const files = task.files
+            const { name, path, files } = task
 
             if (files.length === 0) {
                 tasks.shift()
 
-                emitter.emit('downloadFinish', { path })
+                emitter.emit('downloadFinish', { name })
                 await store.set('tasks', tasks)
                 continue
             }
@@ -57,10 +56,10 @@ async function startDownload() {
             await download(file.url,
                 `${path}/${file.name}`,
                 (downloadInfo) => {
-                    emitter.emit('downloadProgress', { path, file, downloadInfo })
+                    emitter.emit('downloadProgress', { name, file, downloadInfo })
                 }, header)
 
-            emitter.emit('fileDownloadFinish', { path, file })
+            emitter.emit('fileDownloadFinish', { name, file })
 
             await store.set('tasks', tasks)
         }

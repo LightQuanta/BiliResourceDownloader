@@ -88,6 +88,7 @@ const submit = async () => {
     if (!valid) return
 
     const downloadFileInfo: BatchDownloadTask = {
+      name: name.value,
       path: downloadConfig.path,
       files: [],
     }
@@ -135,7 +136,7 @@ const submit = async () => {
 
     await pushNewTask(downloadFileInfo)
     ElMessage({
-      message: '已提交下载任务，请到下载界面进行查看',
+      message: '已提交下载任务，请到下载管理界面进行查看',
       type: 'success',
     })
 
@@ -195,7 +196,7 @@ const selectSaveFolder = async () => {
               :rules="rules"
               class="max-w-lg"
       >
-        <ElFormItem label="文件名称" prop="name">
+        <ElFormItem label="保存路径" prop="name">
           <ElInput v-model="downloadConfig.path" readonly>
             <template #append>
               <ElButton @click="selectSaveFolder">浏览</ElButton>
