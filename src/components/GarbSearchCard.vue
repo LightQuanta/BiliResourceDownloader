@@ -21,7 +21,9 @@ const jump = () => {
   <ElCard class="w-80">
     <template #header>
       <ElTooltip placement="top" :content="garb.name">
-        <ElText size="large" type="primary" truncated>{{ garb.name }}</ElText>
+        <ElLink type="primary" :href="garb.jump_link" class="w-full text-center text-nowrap" target="_blank">
+          {{ garb.name }}
+        </ElLink>
       </ElTooltip>
       <br/>
       <div class="flex flex-row w-full">
