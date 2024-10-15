@@ -175,7 +175,7 @@ const jump = async () => {
 
     const url = URL.parse(processedInputText.value)!
 
-    const actId = url.searchParams.get('id') ?? url.searchParams.get('act_id')
+    const actId = url.searchParams.get('id') ?? url.searchParams.get('act_id')!
     const resp = await cachedAPIFetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actId}`)
 
     if (resp.code !== 0) {
@@ -194,14 +194,14 @@ const jump = async () => {
       jump_link: `https://www.bilibili.com/h5/mall/digital-card/home?act_id=${actId}&lottery_id=${lotteryId}`,
       sale_count_desc: '',
       properties: {
-        dlc_act_id: actId as number,
-        dlc_lottery_id: lotteryId as number,
+        dlc_act_id: +actId,
+        dlc_lottery_id: +lotteryId,
 
-        dlc_lottery_sale_quantity: lotteryInfo.total_sale_amount as number,
+        dlc_lottery_sale_quantity: +lotteryInfo.total_sale_amount,
         image_cover: lotteryInfo.lottery_image as string,
 
-        dlc_sale_start_time: lotteryInfo.start_time as string,
-        dlc_sale_end_time: lotteryInfo.end_time as string,
+        dlc_sale_start_time: lotteryInfo.start_time.toString(),
+        dlc_sale_end_time: lotteryInfo.end_time.toString(),
       }
     }
 

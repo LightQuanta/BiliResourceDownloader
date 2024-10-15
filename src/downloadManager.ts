@@ -53,9 +53,8 @@ async function startDownload() {
 
             if (files.length === 0) {
                 tasks.shift()
-
-                emitter.emit('downloadFinish', { name })
                 await store.set('tasks', tasks)
+                emitter.emit('downloadFinish', { name })
                 continue
             }
 
