@@ -4,10 +4,15 @@ import type {
   GarbSearchResult,
   LotteryProperties,
   ActInfo,
+  BatchDownloadTask,
+  LotteryDetail,
 } from '../types.ts'
-import { MenuInstance } from "element-plus";
+import { FormInstance } from "element-plus";
+import { pushNewTask } from "../downloadManager.ts";
+import { open } from "@tauri-apps/plugin-dialog";
+import { sep } from "@tauri-apps/api/path";
 
-const loading = ref(false)
+const loading = ref(true)
 const params = useUrlSearchParams('history')
 
 const selectedKey = ref('')
@@ -36,12 +41,7 @@ const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => 
   })
 })
 
-const menu = ref<MenuInstance>()
-
 onMounted(async () => {
-  loading.value = true
-
-  console.log(params)
   actID.value = params.act_id
   const lotteryID = params.lottery_id as string | undefined
 
@@ -64,11 +64,154 @@ onMounted(async () => {
   } else {
     selectedKey.value = resp.lottery_list[0].lottery_id.toString()
   }
+
+  loading.value = false
 })
+
+const saleTime = computed(() => `${new Date(actInfo.value.start_time * 1000).toLocaleString()} ~ ${new Date(actInfo.value.end_time * 1000).toLocaleString()}`)
+
+const showDialog = ref(false)
+const formRef = ref<FormInstance>()
+const downloadConfig = reactive({
+  path: '',
+  downloadCover: false,
+  useWatermarkVersion: false,
+  downloadContents: ['image', 'video'],
+})
+
+const rules = reactive(({
+  path: [
+    { required: true, message: '请选择保存位置', trigger: 'blur' },
+  ],
+}))
+
+const extractExtensionName = (url: string) => {
+  return '.' + url.split('?')[0].split('.').pop()!.split('_')[0]
+}
+
+const submit = async () => {
+  await formRef.value?.validate(async (valid) => {
+    if (!valid) return
+
+    const downloadFileInfo: BatchDownloadTask = {
+      name: actInfo.value.act_title,
+      path: `${downloadConfig.path}${sep()}${actInfo.value.act_title}`,
+      files: [],
+    }
+    console.log(downloadFileInfo.path)
+    let lotteryDetails: LotteryDetail[]
+    try {
+      lotteryDetails = await Promise.all(lotteryInfo.value!.map(l => {
+        const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
+        url.searchParams.set('act_id', actID.value.toString())
+        url.searchParams.set('lottery_id', l.lottery_id.toString())
+
+        return cachedAPIFetch(url).then(r => r.data) as Promise<LotteryDetail>
+      }))
+    } catch (e) {
+      console.error(e)
+      ElMessage({
+        message: `获取收藏集信息出错：${e}`,
+        type: 'error',
+      })
+      return
+    }
+
+    if (downloadConfig.downloadCover) {
+      lotteryInfo.value!.forEach(l => {
+        downloadFileInfo.files.push({
+          name: '封面' + extractExtensionName(l.lottery_image),
+          url: coverURL.value,
+        })
+      })
+
+    }
+
+    if (downloadConfig.downloadContents.includes('image')) {
+      lotteryDetails.forEach(detail => {
+        detail.item_list.forEach(({ card_info: cardInfo }) => {
+          if (downloadConfig.useWatermarkVersion) {
+            downloadFileInfo.files.push({
+              name: detail.name + sep() + cardInfo.card_name + '（水印）' + extractExtensionName(cardInfo.card_img_download),
+              url: cardInfo.card_img_download,
+            })
+          } else {
+            downloadFileInfo.files.push({
+              name: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img),
+              url: cardInfo.card_img,
+            })
+          }
+        })
+      })
+    }
+
+    if (downloadConfig.downloadContents.includes('video')) {
+      lotteryDetails.forEach(detail => {
+        detail.item_list
+            .filter(i => i.card_info.video_list?.length ?? 0 > 0)
+            .forEach(({ card_info: cardInfo }) => {
+              if (downloadConfig.useWatermarkVersion) {
+                downloadFileInfo.files.push({
+                  name: detail.name + sep() + cardInfo.card_name + '（水印）' + extractExtensionName(cardInfo.video_list_download![0]),
+                  url: cardInfo.video_list_download![0],
+                })
+              } else {
+                downloadFileInfo.files.push({
+                  name: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list![0]),
+                  url: cardInfo.video_list![0],
+                })
+              }
+            })
+      })
+    }
+
+    console.debug(downloadFileInfo)
+
+    await pushNewTask(downloadFileInfo)
+    ElMessage({
+      message: '已提交下载任务，请到下载管理界面进行查看',
+      type: 'success',
+    })
+
+    showDialog.value = false
+  })
+}
+
+const selectSaveFolder = async () => {
+  const path = await open({
+    defaultPath: downloadConfig.path,
+    directory: true,
+  })
+
+  if (path === null) return
+  downloadConfig.path = path
+}
 
 </script>
 <template>
-  <div class="flex flex-col content-center gap-4">
+  <div class="flex flex-col content-center" v-loading="loading">
+    <!-- 收藏集组合详细信息 -->
+    <ElDescriptions border :column="2" v-if="!loading">
+      <template #title>
+        <ElText size="large">{{ actInfo.act_title }}</ElText>
+      </template>
+
+      <template #extra>
+        <ElButton type="primary" @click="showDialog = true">全部下载</ElButton>
+      </template>
+
+      <ElDescriptionsItem label="名称" name="name">
+        <ElLink type="primary"
+                :href="`https://www.bilibili.com/h5/mall/digital-card/home?-Abrowser=live&act_id=${params.lottery_id}&hybrid_set_header=2`"
+                target="_blank"
+        >{{ actInfo.act_title }}
+        </ElLink>
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="销售时间" :span="2">{{ saleTime }}</ElDescriptionsItem>
+    </ElDescriptions>
+
+    <ElDivider/>
+
     <ElRadioGroup v-model="selectedKey">
       <ElRadioButton v-for="lottery in parsedLotteryInfo"
                      :key="lottery.properties.dlc_lottery_id"
@@ -78,7 +221,7 @@ onMounted(async () => {
     </ElRadioGroup>
     <template v-for="lottery in parsedLotteryInfo" :key="lottery.properties.dlc_lottery_id.toString()">
       <KeepAlive>
-        <TransitionGroup name="list" class="overflow-hidden">
+        <TransitionGroup name="list">
           <SingleLotteryPage
               :lottery="lottery"
               v-if="selectedKey === lottery.properties.dlc_lottery_id.toString()"
@@ -86,6 +229,41 @@ onMounted(async () => {
         </TransitionGroup>
       </KeepAlive>
     </template>
+
+    <!-- 批量保存对话框 -->
+    <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
+      <ElForm label-width="auto"
+              ref="formRef"
+              :model="downloadConfig"
+              :rules="rules"
+              class="max-w-lg"
+      >
+        <ElFormItem label="保存路径" prop="name">
+          <ElInput v-model="downloadConfig.path" readonly>
+            <template #append>
+              <ElButton @click="selectSaveFolder">浏览</ElButton>
+            </template>
+          </ElInput>
+        </ElFormItem>
+        <ElFormItem label="下载封面" prop="downloadCover">
+          <ElSwitch v-model="downloadConfig.downloadCover"/>
+        </ElFormItem>
+        <ElFormItem label="下载水印版本" prop="useWatermarkVersion">
+          <ElSwitch v-model="downloadConfig.useWatermarkVersion"/>
+        </ElFormItem>
+        <ElFormItem label="下载内容选择">
+          <ElCheckboxGroup v-model="downloadConfig.downloadContents">
+            <ElCheckbox label="图片" value="image"/>
+            <ElCheckbox label="视频" value="video"/>
+          </ElCheckboxGroup>
+        </ElFormItem>
+      </ElForm>
+
+      <template #footer>
+        <ElButton type="primary" @click="submit">确定</ElButton>
+        <ElButton @click="showDialog = false">取消</ElButton>
+      </template>
+    </ElDialog>
   </div>
 </template>
 

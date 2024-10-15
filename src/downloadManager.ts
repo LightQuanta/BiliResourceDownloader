@@ -2,6 +2,8 @@ import { BatchDownloadTask } from "./types.ts";
 import { createStore, Store } from '@tauri-apps/plugin-store';
 import { download } from "@tauri-apps/plugin-upload";
 import { emitter } from "./main.ts";
+import { sep } from "@tauri-apps/api/path";
+import { invoke } from "@tauri-apps/api/core";
 
 let internalStore: Store | null = null
 
@@ -62,8 +64,17 @@ async function startDownload() {
             const header = new Map<string, string>()
             header.set('User-Agent', '111')
 
+            const finalDirectory = `${path}${sep()}${file.name}`
+                .split(sep())
+                .slice(0, -1)
+                .join(sep())
+
+            await invoke('create_dir', { path: finalDirectory })
+
+            console.log(`${path}${sep()}${file.name}`)
+
             await download(file.url,
-                `${path}/${file.name}`,
+                `${path}${sep()}${file.name}`,
                 (downloadInfo) => {
                     emitter.emit('downloadProgress', { name, file, downloadInfo })
                 }, header)
@@ -78,6 +89,7 @@ async function startDownload() {
             message: `下载出错： ${e}`,
             type: 'error',
         })
+        downloading = false
     }
 }
 

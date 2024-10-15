@@ -69,7 +69,7 @@ emitter.on('downloadFinish', (info: { name: string }) => {
 })
 
 const start = async () => {
-  await refreshTasks()
+  // await refreshTasks()
   await startDownload()
 }
 

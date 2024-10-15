@@ -10,6 +10,7 @@ import type {
 } from '../types.ts'
 import { FormInstance } from "element-plus";
 import { pushNewTask } from "../downloadManager.ts";
+import { sep } from "@tauri-apps/api/path";
 
 const name = ref('')
 const jumpLink = ref('')
@@ -100,7 +101,7 @@ const submit = async () => {
 
     const downloadFileInfo: BatchDownloadTask = {
       name: name.value,
-      path: downloadConfig.path,
+      path: `${downloadConfig.path}${sep()}${name.value}`,
       files: [],
     }
 
