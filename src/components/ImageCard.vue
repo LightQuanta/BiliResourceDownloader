@@ -8,6 +8,7 @@ const prop = defineProps<{
   downloadName?: string
   previewImages?: string[]
   index?: number
+  lazy?: boolean
 }>()
 
 const downloadImage = async (url: string) => {
@@ -49,7 +50,7 @@ const downloadImage = async (url: string) => {
              :hide-on-click-modal="true"
              referrerpolicy="no-referrer"
              class="w-full"
-             lazy
+             :lazy="lazy ?? true"
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">

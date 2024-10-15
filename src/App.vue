@@ -16,7 +16,7 @@
       <ElMenuItem index="/about">关于</ElMenuItem>
     </ElMenu>
 
-    <RouterView class="p-4 flex-grow overflow-auto" v-slot="{ Component }">
+    <RouterView class="p-4 flex-grow overflow-y-auto overflow-x-hidden" v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
         <Component :is="Component"/>
       </Transition>

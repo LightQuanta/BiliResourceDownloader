@@ -78,11 +78,35 @@ onMounted(async () => {
     </ElRadioGroup>
     <template v-for="lottery in parsedLotteryInfo" :key="lottery.properties.dlc_lottery_id.toString()">
       <KeepAlive>
-        <SingleLotteryPage
-            :lottery="lottery"
-            v-if="selectedKey === lottery.properties.dlc_lottery_id.toString()"
-        />
+        <TransitionGroup name="list" class="overflow-hidden">
+          <SingleLotteryPage
+              :lottery="lottery"
+              v-if="selectedKey === lottery.properties.dlc_lottery_id.toString()"
+          />
+        </TransitionGroup>
       </KeepAlive>
     </template>
   </div>
 </template>
+
+<style scoped>
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(1280px);
+}
+
+.list-leave-active {
+  position: absolute;
+}
+
+.list-leave-active {
+  position: absolute;
+}
+</style>
