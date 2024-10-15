@@ -10,7 +10,7 @@ const prop = defineProps<{
 const isLottery = computed(() => prop.garb.properties.type === 'dlc_act')
 const jump = () => {
   if (isLottery.value) {
-    const { dlc_act_id, dlc_lottery_id } = (prop.garb.properties as LotteryProperties)
+    const { dlc_act_id, dlc_lottery_id } = prop.garb.properties as LotteryProperties
     router.push({ path: '/lottery', query: { act_id: dlc_act_id, lottery_id: dlc_lottery_id } })
   } else {
     router.push({ path: `/suit/${prop.garb.item_id}` })
