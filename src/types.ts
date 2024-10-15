@@ -1,4 +1,4 @@
-interface GarbSearchResult {
+interface GarbSearchResult<T extends LotteryProperties | SuitProperties> {
     // 神秘ID，貌似是装扮专用
     item_id: number
     // 名称
@@ -7,7 +7,7 @@ interface GarbSearchResult {
     jump_link: string
     // 销量文本描述
     sale_count_desc: string
-    properties: LotteryProperties | SuitProperties
+    properties: T
 }
 
 interface LotteryProperties {
@@ -22,6 +22,25 @@ interface LotteryProperties {
     dlc_sale_end_time: string
 
     type: "dlc_act"
+}
+
+interface ActInfo {
+    act_title: string
+
+    start_time: number
+    end_time: number
+
+    lottery_list: LotteryInfo[]
+}
+
+interface LotteryInfo {
+    lottery_id: number
+    lottery_name: string
+    lottery_image: string
+    total_sale_amount: number
+
+    start_time: number
+    end_time: number
 }
 
 interface SuitProperties {
@@ -199,6 +218,8 @@ export type {
     LotteryProperties,
     LotteryDetail,
     LotteryCardInfo,
+    ActInfo,
+    LotteryInfo,
     SuitProperties,
     SuitDetail,
     BatchDownloadTask,

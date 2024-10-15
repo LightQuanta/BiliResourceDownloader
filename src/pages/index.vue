@@ -4,7 +4,8 @@ import {
   resolveAVBVID,
   resolveDynamicID,
   resolveLiveroomID,
-  resolveLotteryInfo, resolveSuitID,
+  resolveActID,
+  resolveSuitID,
   resolveText,
   resolveUID
 } from "../linkResolver.ts";
@@ -111,8 +112,8 @@ const jump = async () => {
     // TODO 实现视频查看界面
   } else if (type === 'lottery') {
     try {
-      const info = resolveLotteryInfo(input)
-      if (info === null) {
+      const id = resolveActID(input)
+      if (id === null) {
         ElMessage({
           message: '请输入正确的收藏集链接！',
           type: 'error',
@@ -120,7 +121,7 @@ const jump = async () => {
         return
       }
 
-      await router.push({ path: '/lottery', query: { lottery: JSON.stringify(fakeSearchResult) } })
+      await router.push({ path: '/lottery', query: { act_id: id } })
 
     } catch (e) {
       ElMessage({

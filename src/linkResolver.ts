@@ -1,8 +1,4 @@
-import { cachedAPIFetch } from "./cachedAPIFetch.ts";
-import { GarbSearchResult } from "./types.ts";
-
 type Types = 'liveroom' | 'user' | 'dynamic' | 'video' | 'suit' | 'lottery'
-
 
 function resolveText(text: string): Types | null {
     if (URL.canParse(text)) {
@@ -108,35 +104,13 @@ function resolveAVBVID(text: string): string | null {
     return id
 }
 
-async function resolveLotteryInfo(text: string): GarbSearchResult | null {
+async function resolveActID(text: string): string | null {
     if (resolveText(text) !== 'lottery') {
         return null
     }
 
     const url = URL.parse(text)!
-
-    const actId = url.searchParams.get('id') ?? url.searchParams.get('act_id')!
-    const resp = await cachedAPIFetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actId}`)
-
-    const lotteryId = resp.data.tab_lottery_id
-    const lotteryInfo = resp.data.lottery_list.filter(l => l.lottery_id === lotteryId)[0]
-
-    return {
-        item_id: 0,
-        name: resp.data.act_title,
-        jump_link: `https://www.bilibili.com/h5/mall/digital-card/home?act_id=${actId}&lottery_id=${lotteryId}`,
-        sale_count_desc: '',
-        properties: {
-            dlc_act_id: +actId,
-            dlc_lottery_id: +lotteryId,
-
-            dlc_lottery_sale_quantity: +lotteryInfo.total_sale_amount,
-            image_cover: lotteryInfo.lottery_image as string,
-
-            dlc_sale_start_time: lotteryInfo.start_time.toString(),
-            dlc_sale_end_time: lotteryInfo.end_time.toString(),
-        }
-    }
+    return url.searchParams.get('id') ?? url.searchParams.get('act_id')!
 }
 
 function resolveSuitID(text: string): string | null {
@@ -154,6 +128,6 @@ export {
     resolveLiveroomID,
     resolveDynamicID,
     resolveAVBVID,
-    resolveLotteryInfo,
+    resolveActID,
     resolveSuitID
 }

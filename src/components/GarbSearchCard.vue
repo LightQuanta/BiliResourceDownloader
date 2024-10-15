@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GarbSearchResult } from '../types.ts'
+import type { GarbSearchResult, LotteryProperties } from '../types.ts'
 
 const router = useRouter()
 
@@ -10,7 +10,7 @@ const prop = defineProps<{
 const isLottery = computed(() => prop.garb.properties.type === 'dlc_act')
 const jump = () => {
   if (isLottery.value) {
-    router.push({ path: '/lottery', query: { lottery: JSON.stringify(prop.garb) } })
+    router.push({ path: '/lottery', query: { act_id: (prop.garb.properties as LotteryProperties).dlc_act_id } })
   } else {
     router.push({ path: `/suit/${prop.garb.item_id}` })
   }
