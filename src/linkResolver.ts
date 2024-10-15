@@ -23,14 +23,18 @@ function resolveText(text: string): Types | null {
                     return 'lottery'
                 }
             }
-            return null
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/digital-card/home') {
             const actId = url.searchParams.get('act_id')
-            const lotteryId = url.searchParams.get('lottery_id')
-            if (actId != null && lotteryId != null) {
+            if (/^\d+$/.test(actId)) {
                 return 'lottery'
             }
-            return null
+        } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/equity-link/collect-home') {
+            const itemId = url.searchParams.get('item_id')
+            const part = url.searchParams.get('part')
+
+            if (/^\d+$/.test(itemId) && part === 'card') {
+                return 'suit'
+            }
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/suit/detail') {
             const id = url.searchParams.get('id')
             if (id != null) {
@@ -119,7 +123,7 @@ function resolveSuitID(text: string): string | null {
     }
 
     const url = URL.parse(text)!
-    return url.searchParams.get('id')
+    return url.searchParams.get('id') ?? url.searchParams.get('item_id')
 }
 
 export {
