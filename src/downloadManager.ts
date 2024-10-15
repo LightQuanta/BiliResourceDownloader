@@ -7,7 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 let internalStore: Store | null = null
 
-async function getStore() {
+async function getDownloadStore() {
     if (internalStore === null) {
         internalStore = await createStore('downloadManager')
     }
@@ -15,7 +15,7 @@ async function getStore() {
 }
 
 async function pushNewTask(task: BatchDownloadTask) {
-    const store = await getStore()
+    const store = await getDownloadStore()
     const tasks = (await store.get('tasks')) as BatchDownloadTask[]
     if (tasks === null) {
         await store.set('tasks', [task])
@@ -27,25 +27,28 @@ async function pushNewTask(task: BatchDownloadTask) {
 
 let downloading = false
 
-function pauseDownload() {
+async function pauseDownload() {
     downloading = false
+    await store.set('downloading', false)
 }
 
 async function clearDownload() {
     downloading = false
-    const store = await getStore()
+    const store = await getDownloadStore()
     await store.clear()
 }
 
 async function startDownload() {
     if (downloading) return
     downloading = true
-    const store = await getStore()
+    const store = await getDownloadStore()
+    await store.set('downloading', true)
     try {
         while (downloading && await store.get('tasks') !== null) {
             const tasks = (await store.get('tasks')) as BatchDownloadTask[]
             if (tasks.length === 0) {
                 downloading = false
+                await store.set('downloading', false)
                 break
             }
 
@@ -90,12 +93,13 @@ async function startDownload() {
             type: 'error',
         })
         downloading = false
+        await store.set('downloading', false)
     }
 }
 
 async function getAllDownloadTasks() {
-    const store = await getStore()
+    const store = await getDownloadStore()
     return (await store.get('tasks') ?? []) as BatchDownloadTask[]
 }
 
-export { pushNewTask, pauseDownload, clearDownload, startDownload, getAllDownloadTasks }
+export { getDownloadStore, pushNewTask, pauseDownload, clearDownload, startDownload, getAllDownloadTasks }

@@ -4,6 +4,7 @@ import "./style.css";
 import { createWebHistory, createRouter } from 'vue-router'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes'
 import mitt from "mitt";
+import { getDownloadStore, startDownload } from "./downloadManager.ts";
 
 const emitter = mitt()
 
@@ -16,10 +17,20 @@ if (import.meta.hot) {
     handleHotUpdate(router)
 }
 
-console.log(routes)
+// 自动生成的路由
+console.debug(routes)
 
 createApp(App)
     .use(router)
     .mount("#app");
+
+// 若批量下载未完成，自动重新发起下载
+getDownloadStore().then(async store => {
+    if (await store.get('downloading') === true) {
+        console.debug('发现未完成下载任务，继续下载')
+        await startDownload()
+        console.debug('未完成下载任务下载完成')
+    }
+})
 
 export { emitter }
