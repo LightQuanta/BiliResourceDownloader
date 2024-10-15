@@ -12,9 +12,9 @@
   "app": {
     "windows": [
       {
-        "title": "biliresourcedownloader",
-        "width": 800,
-        "height": 600
+        "title": "BiliResourceDownloader",
+        "width": 1200,
+        "height": 800
         
       }
     ],
