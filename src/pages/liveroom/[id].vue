@@ -56,6 +56,8 @@ const previewImages = computed(() => {
   return images
 })
 
+const hasImages = computed(() => backgroundImage.value || coverImage.value || keyframeImage.value)
+
 </script>
 
 <template>
@@ -83,15 +85,17 @@ const previewImages = computed(() => {
       </ElDescriptionsItem>
     </ElDescriptions>
     <ElDivider/>
-    <ElSpace direction="vertical" class="w-full justify-center" v-if="backgroundImage">
+    <ElSpace direction="vertical" class="w-full justify-center" v-if="hasImages">
       <ElText size="large">直播间相关图片</ElText>
       <ElSpace wrap class="justify-center">
-        <ImageCard :image="backgroundImage"
+        <ImageCard v-if="backgroundImage"
+                   :image="backgroundImage"
                    title="网页端直播间背景图"
                    :preview-images="previewImages"
                    :index="0"
         />
-        <ImageCard :image="coverImage"
+        <ImageCard v-if="coverImage"
+                   :image="coverImage"
                    title="直播间封面"
                    :preview-images="previewImages"
                    :index="1"
