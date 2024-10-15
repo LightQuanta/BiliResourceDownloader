@@ -91,7 +91,7 @@ const extractExtensionName = (url: string) => {
 
 const submit = async () => {
   await formRef.value?.validate(async (valid) => {
-    if (!valid) return
+    if (!valid || !downloadConfig.path) return
 
     const downloadFileInfo: BatchDownloadTask = {
       name: actInfo.value.act_title,
