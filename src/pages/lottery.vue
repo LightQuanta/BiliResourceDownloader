@@ -283,8 +283,4 @@ const selectSaveFolder = async () => {
 .list-leave-active {
   position: absolute;
 }
-
-.list-leave-active {
-  position: absolute;
-}
 </style>

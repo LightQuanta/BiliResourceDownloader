@@ -104,7 +104,7 @@ function resolveAVBVID(text: string): string | null {
     return id
 }
 
-async function resolveActID(text: string): string | null {
+function resolveActID(text: string): string | null {
     if (resolveText(text) !== 'lottery') {
         return null
     }
