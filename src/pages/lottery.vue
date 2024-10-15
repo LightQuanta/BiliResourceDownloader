@@ -193,7 +193,7 @@ const selectSaveFolder = async () => {
     <!-- 收藏集组合详细信息 -->
     <ElDescriptions border :column="2" v-if="!loading">
       <template #title>
-        <ElText size="large">{{ actInfo.act_title }}</ElText>
+        <ElText size="large">收藏集组合信息</ElText>
       </template>
 
       <template #extra>
@@ -201,8 +201,9 @@ const selectSaveFolder = async () => {
       </template>
 
       <ElDescriptionsItem label="名称" name="name">
-        <ElLink type="primary"
-                :href="`https://www.bilibili.com/h5/mall/digital-card/home?-Abrowser=live&act_id=${params.lottery_id}&hybrid_set_header=2`"
+        <ElLink v-if="!loading"
+                type="primary"
+                :href="`https://www.bilibili.com/h5/mall/digital-card/home?-Abrowser=live&act_id=${parsedLotteryInfo[0].properties.dlc_act_id}&hybrid_set_header=2`"
                 target="_blank"
         >{{ actInfo.act_title }}
         </ElLink>
@@ -210,9 +211,9 @@ const selectSaveFolder = async () => {
       <ElDescriptionsItem label="销售时间" :span="2">{{ saleTime }}</ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider/>
+    <ElDivider>收藏集内容</ElDivider>
 
-    <ElRadioGroup v-model="selectedKey">
+    <ElRadioGroup v-model="selectedKey" v-if="(parsedLotteryInfo?.length ?? 0) > 1" class="mx-auto">
       <ElRadioButton v-for="lottery in parsedLotteryInfo"
                      :key="lottery.properties.dlc_lottery_id"
                      :value="lottery.properties.dlc_lottery_id.toString()"
@@ -268,6 +269,7 @@ const selectSaveFolder = async () => {
 </template>
 
 <style scoped>
+/* TODO 优化动画效果 */
 .list-move,
 .list-enter-active,
 .list-leave-active {
