@@ -76,6 +76,7 @@ const downloadFile = async (url: string) => {
              :hide-on-click-modal="true"
              referrerpolicy="no-referrer"
              class="h-96 w-full"
+             preview-teleported
     />
     <template #footer>
       <div class="flex h-4 items-center">

@@ -28,7 +28,11 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
         }
     }
 
-    const json = await fetch(strURL).then(r => r.json())
+    const json = await fetch(strURL, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0'
+        }
+    }).then(r => r.json())
     if ((json as { code: number }).code !== 0) {
         throw (json as { msg: string }).msg as string
     }

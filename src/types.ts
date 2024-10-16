@@ -213,6 +213,113 @@ interface BatchDownloadTask {
     }[]
 }
 
+interface DynamicInfo {
+    basic: {
+        comment_id_str: string
+        comment_type: number
+        jump_url: string
+        rid_str: string
+    }
+    id_str: string
+    modules: {
+        module_author: {
+            name: string
+            // 头像
+            face: string
+            mid: number
+
+            decorate?: {
+                card_url: string
+                name: string
+                fan: {
+                    is_fan: boolean
+                    num_prefix: string
+                    num_str: string
+                    number: number
+                }
+                jump_url: string
+            }
+
+            // 头像框？
+            pendant: {
+                image: string
+                name: string
+                pid: number
+            }
+
+            // 发布时间（文本）
+            pub_time: string
+            // 发布时间戳
+            pub_ts: number
+
+        }
+        module_dynamic: {
+            desc?: {
+                rich_text_nodes: RichTextNode[]
+                text: string
+            }
+            major?: {
+                opus: {
+                    pics?: {
+                        url: string
+                    }[]
+                    summary: {
+                        rich_text_nodes: RichTextNode[]
+                        text: string
+                    }
+                    title?: string
+                }
+                topic?: TopicInfo
+            }
+        }
+        module_stat: {
+            comment: DynamicStat
+            forward: DynamicStat
+            like: DynamicStat
+        }
+        type: DynamicTypes
+    }
+}
+
+// 参考https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/dynamic_enum.md
+type DynamicTypes =
+    'DYNAMIC_TYPE_WORD'
+    | 'DYNAMIC_TYPE_DRAW'
+    | 'DYNAMIC_TYPE_AV'
+    | 'DYNAMIC_TYPE_FORWARD'
+    | 'DYNAMIC_TYPE_ARTICLE'
+    | 'DYNAMIC_TYPE_LIVE'
+    | 'DYNAMIC_TYPE_LIVE_RCMD'
+
+interface TopicInfo {
+    id: number
+    jump_url: string
+    name: string
+}
+
+interface DynamicStat {
+    count: number
+    forbidden: boolean
+}
+
+interface RichTextNode {
+    orig_text: string
+    text: string
+    type: string
+}
+
+interface EmojiTextNode extends RichTextNode {
+    emoji: {
+        icon_url: strings
+    }
+    type: 'RICH_TEXT_NODE_TYPE_EMOJI'
+}
+
+interface VideoTextNode extends RichTextNode {
+    jump_url: string
+    type: 'RICH_TEXT_NODE_TYPE_WEB'
+}
+
 export type {
     GarbSearchResult,
     LotteryProperties,
@@ -223,4 +330,11 @@ export type {
     SuitProperties,
     SuitDetail,
     BatchDownloadTask,
+    DynamicInfo,
+    DynamicTypes,
+    TopicInfo,
+    DynamicStat,
+    RichTextNode,
+    EmojiTextNode,
+    VideoTextNode,
 }

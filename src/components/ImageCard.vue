@@ -4,7 +4,7 @@ import { save } from '@tauri-apps/plugin-dialog'
 
 const prop = defineProps<{
   image: string
-  title: string
+  title?: string
   downloadName?: string
   previewImages?: string[]
   index?: number
@@ -37,7 +37,7 @@ const downloadImage = async (url: string) => {
 
 <template>
   <ElCard class="w-80">
-    <template #header>
+    <template #header v-if="title">
       <ElLink :href="image" class="w-full block text-center" target="_blank">
         <ElText size="large" type="primary">{{ title }}</ElText>
       </ElLink>
@@ -51,6 +51,7 @@ const downloadImage = async (url: string) => {
              referrerpolicy="no-referrer"
              class="w-full"
              :lazy="lazy ?? true"
+             preview-teleported
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">

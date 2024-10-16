@@ -96,9 +96,7 @@ const jump = async () => {
       })
       return
     }
-
-    // TODO 实现动态查看界面
-
+    await router.push({ path: `/dynamic/${id}` })
   } else if (type === 'video') {
     const id = resolveAVBVID(input)
     if (id === null) {

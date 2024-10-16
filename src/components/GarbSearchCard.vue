@@ -40,6 +40,7 @@ const jump = () => {
              referrerpolicy="no-referrer"
              class="w-full h-96"
              lazy
+             preview-teleported
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">

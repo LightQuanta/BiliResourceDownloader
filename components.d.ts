@@ -7,7 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    '[id]': typeof import('./src/pages/liveroom/[id].vue')['default']
+    '[id]': typeof import('./src/pages/dynamic/[id].vue')['default']
     About: typeof import('./src/pages/about.vue')['default']
     Download: typeof import('./src/pages/download.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
