@@ -6,7 +6,7 @@ const route = useRoute<'/suit/[id]'>()
 const id = ref('')
 const resp = ref('')
 
-const fetchData = async (paramID) => {
+const fetchData = async (paramID: string) => {
   id.value = paramID
 
   const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')

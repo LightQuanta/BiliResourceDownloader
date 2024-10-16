@@ -4,7 +4,7 @@ import { autoJump, resolveText } from "./linkResolver.ts";
 let clipboardCache = ""
 
 // TODO 实现自动跳转对应的配置项
-const enabled = true
+// const enabled = true
 
 let taskID = 0
 
@@ -15,6 +15,7 @@ function startClipboardListening() {
         try {
             text = await readText()
         } catch (_) {
+            return
         }
         if (text !== clipboardCache) {
             const type = resolveText(text)

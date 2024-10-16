@@ -49,7 +49,7 @@ function enableDownloadScheduler() {
             res(subConcurrentCount)
         }
         else {
-            const unwatch = watch(() => concurrentCount.value, (n, o) => {
+            const unwatch = watch(() => concurrentCount.value, (n, _) => {
                 if (n < MAX_TASKS) {
                     unwatch()
                     concurrentCount.value++

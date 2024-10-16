@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { GarbSearchResult, LotteryProperties } from '../types.ts'
+import type { GarbSearchResult, LotteryProperties, SuitProperties } from '../types.ts'
 
 const router = useRouter()
 
 const prop = defineProps<{
-  garb: GarbSearchResult
+  garb: GarbSearchResult<LotteryProperties | SuitProperties>
 }>()
 
-const isLottery = computed(() => prop.garb.properties.type === 'dlc_act')
+const isLottery = computed(() => prop.garb.properties?.type === 'dlc_act')
 const jump = () => {
   if (isLottery.value) {
     const { dlc_act_id, dlc_lottery_id } = prop.garb.properties as LotteryProperties
@@ -33,9 +33,9 @@ const jump = () => {
       </div>
     </template>
     <ElImage fit="contain"
-             :src="garb.properties.image_cover"
+             :src="garb.properties?.image_cover"
              :alt="garb.name"
-             :preview-src-list="[garb.properties.image_cover]"
+             :preview-src-list="[garb.properties?.image_cover]"
              :hide-on-click-modal="true"
              referrerpolicy="no-referrer"
              class="w-full h-96"

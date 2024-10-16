@@ -2,8 +2,6 @@
 import { Search } from '@element-plus/icons-vue'
 import { resolveText, autoJump } from "../linkResolver.ts";
 
-const router = useRouter()
-
 const inputText = ref('')
 const processedInputText = computed<string>(() => {
   if (URL.canParse(inputText.value)) {

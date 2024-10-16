@@ -78,7 +78,7 @@ const desc: Record<DynamicTypes, string> = {
   DYNAMIC_TYPE_LIVE_RCMD: '开播通知',
 }
 const dynamicType = computed(() => dynamicData.value?.type)
-const dynamicTypeDesc = computed(() => desc[dynamicType.value] ?? '未知')
+const dynamicTypeDesc = computed(() => (dynamicType.value && desc[dynamicType.value]) ?? 'UNKNOWN')
 
 // 用户是否有装扮
 const hasDecoration = computed(() => authorInfo.value?.decorate !== undefined)
@@ -96,7 +96,6 @@ const decorateDescription = computed(() => {
 
 const pictureLinks = computed(() => dynamicInfo.value?.major?.opus?.pics?.map(p => p.url))
 
-const router = useRouter()
 const jump = async () => {
   await autoJump(authorInfo.value?.decorate?.jump_url, true)
 }
@@ -146,7 +145,7 @@ const jump = async () => {
 
       <!-- 话题 -->
       <ElDescriptionsItem v-if="hasTopic" label="话题" :span="2">
-        <ElLink type="primary" :href="dynamicTopic?.jump_url" target="_blank">#{{ dynamicTopic.name }}#</ElLink>
+        <ElLink type="primary" :href="dynamicTopic?.jump_url" target="_blank">#{{ dynamicTopic?.name }}#</ElLink>
       </ElDescriptionsItem>
 
       <!-- 转发动态的原动态信息 -->

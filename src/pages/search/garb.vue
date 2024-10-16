@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
-import type { GarbSearchResult } from "../../types.ts";
+import type { GarbSearchResult, LotteryProperties, SuitProperties } from "../../types.ts";
 
 const params = useUrlSearchParams()
 
@@ -11,7 +11,7 @@ const currentPage = ref(1)
 const totalCount = ref(114514)
 const searched = ref(false)
 
-const cards = ref<GarbSearchResult[]>([])
+const cards = ref<GarbSearchResult<LotteryProperties | SuitProperties>[]>([])
 const hasMore = computed(() => totalCount.value > 0)
 
 onMounted(() => {
@@ -46,11 +46,11 @@ const load = async () => {
   url.searchParams.set('key_word', keyword.value)
   url.searchParams.set('pn', currentPage.value.toString())
 
-  let data: GarbSearchResult[] = []
+  let data: GarbSearchResult<LotteryProperties | SuitProperties>[] = []
   try {
     const resp = await cachedAPIFetch(url)
 
-    data = resp.data.list as GarbSearchResult[]
+    data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return
     currentPage.value++
@@ -63,7 +63,7 @@ const load = async () => {
     return
   }
 
-  cards.value = cards.value.concat(data) as GarbSearchResult[]
+  cards.value = cards.value.concat(data) as GarbSearchResult<LotteryProperties | SuitProperties>[]
   loading = false
 }
 

@@ -19,7 +19,7 @@ const selectedKey = ref('')
 
 const actID = ref(-1)
 const lotteryID = ref(-1)
-const actInfo = ref<ActInfo>(null)
+const actInfo = ref<ActInfo>()
 
 const lotteryInfo = computed(() => actInfo.value?.lottery_list)
 const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => {
@@ -34,12 +34,12 @@ const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => 
         dlc_lottery_id: l.lottery_id,
         dlc_lottery_sale_quantity: l.total_sale_amount,
         image_cover: l.lottery_image,
-        dlc_sale_start_time: l.start_time,
-        dlc_sale_end_time: l.end_time,
+        dlc_sale_start_time: l.start_time.toString(),
+        dlc_sale_end_time: l.end_time.toString(),
         type: "dlc_act",
       }
-    }
-  })
+    } as GarbSearchResult<LotteryProperties>
+  }) ?? []
 })
 
 const route = useRoute()
@@ -47,11 +47,11 @@ const route = useRoute()
 const fetchData = async () => {
   loading.value = true
 
-  if (actID.value !== +route.query.act_id) {
+  if (actID.value !== +route.query.act_id!) {
     lotteryID.value = -1
   }
 
-  actID.value = +route.query.act_id
+  actID.value = +route.query.act_id!
   const lotteryIDStr = route.query.lottery_id as string | undefined
   if (lotteryIDStr) {
     lotteryID.value = +lotteryIDStr
@@ -72,7 +72,7 @@ const fetchData = async () => {
   actInfo.value = resp
 
   if (lotteryID.value !== -1) {
-    selectedKey.value = lotteryID.value
+    selectedKey.value = lotteryID.value.toString()
   } else {
     const newLotteryID = resp.lottery_list[0].lottery_id
     selectedKey.value = newLotteryID.toString()
@@ -103,7 +103,7 @@ watch(selectedKey, () => {
   router.push({ query: { act_id: actID.value, lottery_id: lotteryID.value } })
 })
 
-const saleTime = computed(() => `${new Date(actInfo.value.start_time * 1000).toLocaleString()} ~ ${new Date(actInfo.value.end_time * 1000).toLocaleString()}`)
+const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
 
 const showDialog = ref(false)
 const formRef = ref<FormInstance>()
@@ -129,8 +129,8 @@ const submit = async () => {
     if (!valid || !downloadConfig.path) return
 
     const downloadFileInfo: BatchDownloadTask = {
-      name: actInfo.value.act_title,
-      path: `${downloadConfig.path}${sep()}${actInfo.value.act_title}`,
+      name: actInfo.value!.act_title,
+      path: `${downloadConfig.path}${sep()}${actInfo.value?.act_title}`,
       files: [],
     }
     console.log(downloadFileInfo.path)
@@ -156,7 +156,7 @@ const submit = async () => {
       lotteryInfo.value!.forEach(l => {
         downloadFileInfo.files.push({
           name: '封面' + extractExtensionName(l.lottery_image),
-          url: coverURL.value,
+          url: l.lottery_image,
         })
       })
 
@@ -240,7 +240,7 @@ const selectSaveFolder = async () => {
                 type="primary"
                 :href="`https://www.bilibili.com/h5/mall/digital-card/home?-Abrowser=live&act_id=${parsedLotteryInfo[0].properties.dlc_act_id}&hybrid_set_header=2`"
                 target="_blank"
-        >{{ actInfo.act_title }}
+        >{{ actInfo?.act_title }}
         </ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="销售时间" :span="2">{{ saleTime }}</ElDescriptionsItem>
@@ -263,7 +263,7 @@ const selectSaveFolder = async () => {
                 height="100%"
                 ref="carousel"
                 v-if="!loading"
-                :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(lotteryID.value)"
+                :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(lotteryID)"
                 :loop="false"
     >
       <ElCarouselItem v-for="lottery in parsedLotteryInfo"

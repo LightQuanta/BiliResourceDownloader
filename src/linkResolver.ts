@@ -2,7 +2,8 @@ import { router } from "./main.ts";
 
 type Types = 'liveroom' | 'user' | 'dynamic' | 'video' | 'suit' | 'lottery'
 
-function resolveText(text: string): Types | null {
+function resolveText(text?: string): Types | null {
+    if (text === null || text === undefined) return null
     if (URL.canParse(text)) {
         const url = new URL(text)!
         if (/^https:\/\/live\.bilibili\.com\/\d+(\?.+)?$/.test(text)) {
@@ -27,14 +28,14 @@ function resolveText(text: string): Types | null {
             }
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/digital-card/home') {
             const actId = url.searchParams.get('act_id')
-            if (/^\d+$/.test(actId)) {
+            if (/^\d+$/.test(actId ?? '')) {
                 return 'lottery'
             }
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/equity-link/collect-home') {
             const itemId = url.searchParams.get('item_id')
             const part = url.searchParams.get('part')
 
-            if (/^\d+$/.test(itemId) && part === 'card') {
+            if (/^\d+$/.test(itemId ?? '') && part === 'card') {
                 return 'suit'
             }
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/suit/detail') {
@@ -102,7 +103,7 @@ function resolveAVBVID(text: string): string | null {
     if (/^https:\/\/(www\.)?bilibili\.com\/(video\/)?((av|AV)\d+|BV\w+)(\?.+)?$/.test(text)) {
         id = URL.parse(text)!.pathname.substring(1).split('?')[0]
         if (id.startsWith('video/')) {
-            id = id.substring(6).replaceAll('/', '')
+            id = id.substring(6).replace('/', '')
         }
     } else {
         id = text
@@ -129,11 +130,11 @@ function resolveSuitID(text: string): string | null {
 }
 
 // 根据输入内容自动跳转至指定处理界面，若输入无效则不进行操作
-async function autoJump(input: text, showMessage = false) {
+async function autoJump(input?: string, showMessage = false) {
+    if (input === undefined) return
     const type = resolveText(input)
-    if (type === 'garbSearch') {
-        await router.push({ path: '/search/garb', query: { keyword: input } })
-    } else if (type === 'user') {
+    if (type === null) return
+    if (type === 'user') {
         const uid = resolveUID(input)
         if (uid === null) {
             showMessage && ElMessage({
