@@ -5,8 +5,9 @@ import { createWebHistory, createRouter } from 'vue-router'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes'
 import mitt from "mitt";
 import { getDownloadStore, startDownload } from "./downloadManager.ts";
+import { BiliResourceDownloadEventEmitter } from "./types.ts";
 
-const emitter = mitt()
+const emitter = mitt<BiliResourceDownloadEventEmitter>()
 
 const router = createRouter({
     history: createWebHistory(),

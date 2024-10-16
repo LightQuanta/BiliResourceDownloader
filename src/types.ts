@@ -321,7 +321,12 @@ interface VideoTextNode extends RichTextNode {
     type: 'RICH_TEXT_NODE_TYPE_WEB'
 }
 
+type BiliResourceDownloadEventEmitter = {
+    // preset events
+} & Record<string, any>;
+
 export type {
+    BiliResourceDownloadEventEmitter,
     GarbSearchResult,
     LotteryProperties,
     LotteryDetail,

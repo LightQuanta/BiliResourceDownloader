@@ -103,7 +103,7 @@ const getProgress = (file: Progress) => {
           <TransitionGroup name="list">
             <div v-for="file in task.files" :key="file.name">
               <ElText>{{ file.name }}</ElText>
-              <ElProgress :percentage="getProgress(file)"/>
+              <ElProgress :percentage="getProgress(file)" />
             </div>
           </TransitionGroup>
         </div>
@@ -129,5 +129,4 @@ const getProgress = (file: Progress) => {
 :deep(.el-progress-bar__inner) {
   transition: none;
 }
-
 </style>
