@@ -232,6 +232,7 @@ interface DynamicInfo {
                 card_url: string
                 name: string
                 fan: {
+                    color: string
                     is_fan: boolean
                     num_prefix: string
                     num_str: string

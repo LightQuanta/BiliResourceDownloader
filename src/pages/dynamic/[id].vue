@@ -42,7 +42,7 @@ const dynamicContent = computed(() => {
   if (dynamicInfo.value?.desc) {
     return dynamicInfo.value.desc
   }
-  return dynamicInfo.value?.major?.opus.summary
+  return dynamicInfo.value?.major?.opus?.summary
 })
 
 const hasDecoration = computed(() => authorInfo.value?.decorate)
@@ -57,7 +57,7 @@ const decorateDescription = computed(() => {
   return '装扮'
 })
 
-const pictureLinks = computed(() => dynamicInfo.value?.major?.opus.pics?.map(p => p.url))
+const pictureLinks = computed(() => dynamicInfo.value?.major?.opus?.pics?.map(p => p.url))
 
 const router = useRouter()
 const jump = async () => {
@@ -74,6 +74,8 @@ const jump = async () => {
 <template>
   <div>
     <ElDescriptions :column="2" border v-if="!loading">
+
+      <!-- UP主信息 -->
       <ElDescriptionsItem label="UP主" min-width="80px">
         <div class="flex items-center">
           <ElLink type="primary" :href="`https://space.bilibili.com/${authorInfo?.mid}`" target="_blank">
@@ -82,16 +84,25 @@ const jump = async () => {
           </ElLink>
         </div>
       </ElDescriptionsItem>
+
+      <!-- 收藏集/装扮信息展示 -->
       <ElDescriptionsItem :label="decorateDescription">
-        <ElLink v-if="hasDecoration" type="primary" @click="jump">
-          {{ authorInfo?.decorate?.name ?? '无' }}
-          <template v-if="authorInfo?.decorate?.fan.is_fan"> {{
-              authorInfo.decorate.fan.num_prefix + authorInfo.decorate.fan.num_str
-            }}
-          </template>
-        </ElLink>
-        <template v-else>无</template>
+        <div class="flex items-center">
+          <ElLink v-if="hasDecoration" type="primary" @click="jump">
+            {{ authorInfo?.decorate?.name ?? '无' }}
+          </ElLink>
+          <template v-else>无</template>
+          <span class="absolute right-24 z-50 font-bold"
+                v-if="authorInfo?.decorate?.fan.is_fan"
+                :style="{color: authorInfo?.decorate?.fan.color}"
+          >{{ authorInfo.decorate.fan.num_str }}</span>
+          <ElImage class="h-12 ml-auto"
+                   referrerpolicy="no-referrer"
+                   :src="authorInfo?.decorate?.card_url">
+          </ElImage>
+        </div>
       </ElDescriptionsItem>
+
       <ElDescriptionsItem label="标题" :span="2">{{ dynamicInfo?.major?.opus?.title ?? '无' }}</ElDescriptionsItem>
 
       <!-- TODO 换行？ -->
