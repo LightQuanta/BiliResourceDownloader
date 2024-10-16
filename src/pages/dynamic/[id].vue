@@ -62,7 +62,7 @@ const pictureLinks = computed(() => dynamicInfo.value?.major?.opus.pics?.map(p =
 const router = useRouter()
 const jump = async () => {
   const type = resolveText(authorInfo.value?.decorate?.jump_url)
-  if (type === 'suit' && authorInfo.value?.decorate?.fan.is_fan) {
+  if (type === 'suit') {
     const id = resolveSuitID(authorInfo.value?.decorate?.jump_url)
     await router.push({ path: `/suit/${id}` })
   } else if (type === 'lottery') {
