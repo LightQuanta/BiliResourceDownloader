@@ -311,7 +311,7 @@ interface RichTextNode {
 
 interface EmojiTextNode extends RichTextNode {
     emoji: {
-        icon_url: strings
+        icon_url: string
     }
     type: 'RICH_TEXT_NODE_TYPE_EMOJI'
 }
