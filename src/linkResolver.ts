@@ -51,6 +51,11 @@ function resolveText(text?: string): Types | null {
     return null
 }
 
+async function resolveB23Link(url: string): Promise<string | null> {
+    const resp = await fetch(url)
+    return resp.url
+}
+
 function resolveUID(text: string): string | null {
     let uid = ''
     if (resolveText(text) === 'user') {
@@ -130,79 +135,97 @@ function resolveSuitID(text: string): string | null {
 }
 
 // 根据输入内容自动跳转至指定处理界面，若输入无效则不进行操作
-async function autoJump(input?: string, showMessage = false) {
-    if (input === undefined) return
-    const type = resolveText(input)
-    if (type === null) return
+async function autoJump(input?: string, showMessage = false): Promise<boolean> {
+    if (input === undefined) return false
+
+    let processedInput = input
+    if (processedInput.startsWith('https://b23.tv/')) {
+        const link = await resolveB23Link(processedInput)
+        if (link === null) {
+            showMessage && ElMessage({
+                message: '请输入正确的b23短链接！',
+                type: 'error',
+            })
+            return false
+        }
+        processedInput = link
+    }
+
+    const type = resolveText(processedInput)
+    if (type === null) return false
     if (type === 'user') {
-        const uid = resolveUID(input)
+        const uid = resolveUID(processedInput)
         if (uid === null) {
             showMessage && ElMessage({
                 message: '请输入正确的用户空间链接或UID！',
                 type: 'error',
             })
-            return
+            return false
         }
 
         // TODO 实现用户空间查看界面
-
+        return true
     } else if (type === 'liveroom') {
-        const roomId = resolveLiveroomID(input)
+        const roomId = resolveLiveroomID(processedInput)
         if (roomId === null) {
             showMessage && ElMessage({
                 message: '请输入正确的直播间链接或直播间号！',
                 type: 'error'
             })
-            return
+            return false
         }
 
         await router.push({ path: `/liveroom/${roomId}` })
-
+        return true
     } else if (type === 'dynamic') {
-        const id = resolveDynamicID(input)
+        const id = resolveDynamicID(processedInput)
         if (id === null) {
             showMessage && ElMessage({
                 message: '请输入正确的动态链接！',
                 type: 'error',
             })
-            return
+            return false
         }
         await router.push({ path: `/dynamic/${id}` })
+        return true
     } else if (type === 'video') {
-        const id = resolveAVBVID(input)
+        const id = resolveAVBVID(processedInput)
         if (id === null) {
             showMessage && ElMessage({
                 message: '请输入正确的视频链接、BV号或AV号！',
                 type: 'error',
             })
-            return
+            return false
         }
 
         // TODO 实现视频查看界面
+        return true
     } else if (type === 'lottery') {
-        const id = resolveActID(input)
+        const id = resolveActID(processedInput)
         if (id === null) {
             showMessage && ElMessage({
                 message: '请输入正确的收藏集链接！',
                 type: 'error',
             })
-            return
+            return false
         }
 
         await router.push({ path: '/lottery', query: { act_id: id } })
-
+        return true
     } else if (type === 'suit') {
-        const id = resolveSuitID(input)
+        const id = resolveSuitID(processedInput)
         if (id === null) {
             showMessage && ElMessage({
                 message: '请输入正确的收藏集链接！',
                 type: 'error',
             })
-            return
+            return false
         }
 
         await router.push({ path: `/suit/${id}` })
+        return true
     }
+    return false
 }
 
 export {

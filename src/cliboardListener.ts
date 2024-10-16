@@ -1,5 +1,5 @@
 import { readText } from "@tauri-apps/plugin-clipboard-manager";
-import { autoJump, resolveText } from "./linkResolver.ts";
+import { autoJump } from "./linkResolver.ts";
 
 let clipboardCache = ""
 
@@ -18,12 +18,8 @@ function startClipboardListening() {
             return
         }
         if (text !== clipboardCache) {
-            const type = resolveText(text)
-            if (type !== null) {
-                clipboardCache = text
-                // TODO 修复同页面跳转问题
-                await autoJump(text)
-            }
+            clipboardCache = text
+            await autoJump(text)
         }
     }, 1000)
 }
