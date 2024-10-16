@@ -7,6 +7,8 @@ import { invoke } from "@tauri-apps/api/core";
 
 let internalStore: Store | null = null
 
+const MAX_TASKS = 3
+
 async function getDownloadStore() {
     if (internalStore === null) {
         internalStore = await createStore('downloadManager')
@@ -29,7 +31,7 @@ let downloading = false
 
 async function pauseDownload() {
     downloading = false
-    await store.set('downloading', false)
+    await internalStore?.set('downloading', false)
 }
 
 async function clearDownload() {
@@ -38,6 +40,29 @@ async function clearDownload() {
     await store.clear()
 }
 
+let concurrentCount = ref(0)
+const subConcurrentCount = () => concurrentCount.value--
+function enableDownloadScheduler() {
+    return new Promise<() => void>((res) => {
+        if (concurrentCount.value < MAX_TASKS) {
+            concurrentCount.value++
+            res(subConcurrentCount)
+        }
+        else {
+            const unwatch = watch(() => concurrentCount.value, (n, o) => {
+                if (n < MAX_TASKS) {
+                    unwatch()
+                    concurrentCount.value++
+                    res(subConcurrentCount)
+                }
+            })
+        }
+    })
+}
+
+/**
+ * 开始下载所有内容
+ */
 async function startDownload() {
     if (downloading) return
     downloading = true
@@ -59,6 +84,7 @@ async function startDownload() {
             if (files.length === 0) {
                 tasks.shift()
                 await store.set('tasks', tasks)
+                // todo!: 由于并发是非阻塞任务，当下载到同个任务集中的最后一个文件时，下一个异步循环会直接触发下载完成事件，从而移除该收藏集下所有可见文件，但事实上最后的几个文件仍处于下载中
                 emitter.emit('downloadFinish', { name })
                 continue
             }
@@ -66,7 +92,7 @@ async function startDownload() {
             const file = files.shift()!
             const header = new Map<string, string>()
             header.set('User-Agent', '111')
-
+            // start
             const finalDirectory = `${path}${sep()}${file.name}`
                 .split(sep())
                 .slice(0, -1)
@@ -74,16 +100,20 @@ async function startDownload() {
 
             await invoke('create_dir', { path: finalDirectory })
 
-            console.log(`${path}${sep()}${file.name}`)
+            // 调度器，检测当前放行下载数量，只有小于 3 时 object 对象才转为 fulfilled
+            const endOperate = await enableDownloadScheduler()
+            console.log(`${path}${sep()}${file.name}`);
 
-            await download(file.url,
+            download(file.url,
                 `${path}${sep()}${file.name}`,
                 (downloadInfo) => {
                     emitter.emit('downloadProgress', { name, file, downloadInfo })
-                }, header)
-
-            emitter.emit('fileDownloadFinish', { name, file })
-
+                }, header).then(async () => {
+                    endOperate()
+                    emitter.emit('fileDownloadFinish', { name, file })
+                })
+            // end
+            // 主动触发视图更新，不能放到 download then 里头，会触发错误的下载状态
             await store.set('tasks', tasks)
         }
     } catch (e) {
