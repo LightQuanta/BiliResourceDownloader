@@ -4,11 +4,7 @@
 
 <template>
   <div class="flex w-full h-full items-stretch">
-    <ElMenu
-        default-active="test"
-        class="h-full w-32 m-0 shrink-0"
-        :router="true"
-    >
+    <ElMenu default-active="test" class="h-full w-32 m-0 shrink-0 router-mark" :router="true">
       <ElMenuItem index="/">主页</ElMenuItem>
       <ElMenuItem index="/search/garb">装扮/收藏集搜索</ElMenuItem>
       <ElMenuItem index="/download">下载管理</ElMenuItem>
@@ -18,7 +14,7 @@
 
     <RouterView class="p-4 flex-grow overflow-y-auto overflow-x-hidden" v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
-        <Component :is="Component"/>
+        <Component :is="Component" />
       </Transition>
     </RouterView>
   </div>
@@ -37,5 +33,9 @@
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.router-mark :deep(.el-menu-item.is-active) {
+  background-color: var(--el-menu-hover-bg-color);
 }
 </style>
