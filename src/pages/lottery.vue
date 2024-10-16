@@ -11,6 +11,7 @@ import { FormInstance } from "element-plus";
 import { pushNewTask } from "../downloadManager.ts";
 import { open } from "@tauri-apps/plugin-dialog";
 import { sep } from "@tauri-apps/api/path";
+import { CarouselInstance } from "element-plus/lib/components";
 
 const loading = ref(true)
 const params = useUrlSearchParams('history')
@@ -66,6 +67,14 @@ onMounted(async () => {
   }
 
   loading.value = false
+})
+
+const router = useRouter()
+const carousel = ref<CarouselInstance>()
+watch(selectedKey, () => {
+  carousel.value?.setActiveItem(selectedKey.value)
+  console.log(selectedKey.value)
+  router.push({ query: { act_id: params.act_id, lottery_id: selectedKey.value } })
 })
 
 const saleTime = computed(() => `${new Date(actInfo.value.start_time * 1000).toLocaleString()} ~ ${new Date(actInfo.value.end_time * 1000).toLocaleString()}`)
@@ -220,16 +229,30 @@ const selectSaveFolder = async () => {
                      :label="lottery.name"
       />
     </ElRadioGroup>
-    <template v-for="lottery in parsedLotteryInfo" :key="lottery.properties.dlc_lottery_id.toString()">
-      <KeepAlive>
-        <TransitionGroup name="list">
+    <br/>
+    <ElCarousel class="!h-full !overflow-y-auto"
+                :autoplay="false"
+                arrow="never"
+                indicator-position="none"
+                height="100%"
+                ref="carousel"
+                v-if="!loading"
+                :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(+params.lottery_id)"
+                :loop="false"
+    >
+      <ElCarouselItem v-for="lottery in parsedLotteryInfo"
+                      :key="lottery.properties.dlc_lottery_id"
+                      class="h-full !overflow-y-auto"
+                      :name="lottery.properties.dlc_lottery_id.toString()"
+      >
+        <KeepAlive>
           <SingleLotteryPage
               :lottery="lottery"
-              v-if="selectedKey === lottery.properties.dlc_lottery_id.toString()"
+              class="h-full"
           />
-        </TransitionGroup>
-      </KeepAlive>
-    </template>
+        </KeepAlive>
+      </ElCarouselItem>
+    </ElCarousel>
 
     <!-- 批量保存对话框 -->
     <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
@@ -267,22 +290,3 @@ const selectSaveFolder = async () => {
     </ElDialog>
   </div>
 </template>
-
-<style scoped>
-/* TODO 优化动画效果 */
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(1280px);
-}
-
-.list-leave-active {
-  position: absolute;
-}
-</style>
