@@ -12,11 +12,11 @@ const dynamicData = ref<DynamicInfo>()
 const authorInfo = computed(() => dynamicData.value?.modules.module_author)
 const dynamicInfo = computed(() => dynamicData.value?.modules.module_dynamic)
 
-onMounted(async () => {
+const fetchData = async (paramID: string) => {
   loading.value = true
 
   const url = new URL('https://api.bilibili.com/x/polymer/web-dynamic/v1/detail')
-  url.searchParams.set('id', route.params.id)
+  url.searchParams.set('id', paramID)
   url.searchParams.set('features', 'itemOpusStyle')
 
   let data: DynamicInfo
@@ -36,7 +36,9 @@ onMounted(async () => {
   dynamicData.value = data
 
   loading.value = false
-})
+}
+
+watch(() => route.params.id, fetchData, { immediate: true })
 
 const dynamicContent = computed(() => {
   if (dynamicInfo.value?.desc) {

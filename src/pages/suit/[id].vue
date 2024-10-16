@@ -6,8 +6,8 @@ const route = useRoute<'/suit/[id]'>()
 const id = ref('')
 const resp = ref('')
 
-onMounted(async () => {
-  id.value = route.params.id
+const fetchData = async (paramID) => {
+  id.value = paramID
 
   const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
   url.searchParams.set('item_id', id.value)
@@ -27,7 +27,9 @@ onMounted(async () => {
   }
 
   resp.value = data
-})
+}
+
+watch(() => route.params.id, fetchData, { immediate: true })
 
 </script>
 

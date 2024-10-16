@@ -15,9 +15,9 @@ const roomId = ref('')
 const roomTags = ref<string[]>([])
 const uid = ref('')
 
-onMounted(async () => {
+const fetchData = async (paramID: string) => {
   loading.value = true
-  roomId.value = route.params.id
+  roomId.value = paramID
 
   const url = new URL('https://api.live.bilibili.com/room/v1/Room/get_info')
   url.searchParams.set('room_id', roomId.value)
@@ -48,7 +48,8 @@ onMounted(async () => {
   roomTags.value = tags.split(',')
 
   loading.value = false
-})
+}
+watch(() => route.params.id, fetchData, { immediate: true })
 
 const previewImages = computed(() => {
   let images = [backgroundImage.value, coverImage.value]

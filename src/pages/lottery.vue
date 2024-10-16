@@ -14,11 +14,11 @@ import { sep } from "@tauri-apps/api/path";
 import { CarouselInstance } from "element-plus/lib/components";
 
 const loading = ref(true)
-const params = useUrlSearchParams('history')
 
 const selectedKey = ref('')
 
-const actID = ref(0)
+const actID = ref(-1)
+const lotteryID = ref(-1)
 const actInfo = ref<ActInfo>(null)
 
 const lotteryInfo = computed(() => actInfo.value?.lottery_list)
@@ -42,9 +42,20 @@ const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => 
   })
 })
 
-onMounted(async () => {
-  actID.value = params.act_id
-  const lotteryID = params.lottery_id as string | undefined
+const route = useRoute()
+
+const fetchData = async () => {
+  loading.value = true
+
+  if (actID.value !== +route.query.act_id) {
+    lotteryID.value = -1
+  }
+
+  actID.value = +route.query.act_id
+  const lotteryIDStr = route.query.lottery_id as string | undefined
+  if (lotteryIDStr) {
+    lotteryID.value = +lotteryIDStr
+  }
 
   let resp: ActInfo
   try {
@@ -60,21 +71,36 @@ onMounted(async () => {
 
   actInfo.value = resp
 
-  if (lotteryID !== undefined) {
-    selectedKey.value = lotteryID
+  if (lotteryID.value !== -1) {
+    selectedKey.value = lotteryID.value
   } else {
-    selectedKey.value = resp.lottery_list[0].lottery_id.toString()
+    const newLotteryID = resp.lottery_list[0].lottery_id
+    selectedKey.value = newLotteryID.toString()
+
+    lotteryID.value = newLotteryID
+    await router.push({ query: { act_id: route.query.act_id, lottery_id: newLotteryID.toString() } })
   }
 
   loading.value = false
-})
+}
+
+const triggerReload = async () => {
+  if (actID.value === -1) {
+    await fetchData()
+  } else if (lotteryID.value !== -1) {
+    await fetchData()
+  }
+  selectedKey.value = lotteryID.value.toString()
+}
+
+watch(() => route.query.act_id, triggerReload, { immediate: true })
 
 const router = useRouter()
 const carousel = ref<CarouselInstance>()
+
 watch(selectedKey, () => {
   carousel.value?.setActiveItem(selectedKey.value)
-  console.log(selectedKey.value)
-  router.push({ query: { act_id: params.act_id, lottery_id: selectedKey.value } })
+  router.push({ query: { act_id: actID.value, lottery_id: lotteryID.value } })
 })
 
 const saleTime = computed(() => `${new Date(actInfo.value.start_time * 1000).toLocaleString()} ~ ${new Date(actInfo.value.end_time * 1000).toLocaleString()}`)
@@ -222,7 +248,7 @@ const selectSaveFolder = async () => {
 
     <ElDivider>收藏集内容</ElDivider>
 
-    <ElRadioGroup v-model="selectedKey" v-if="(parsedLotteryInfo?.length ?? 0) > 1" class="mx-auto">
+    <ElRadioGroup v-model="selectedKey" v-show="(parsedLotteryInfo?.length ?? 0) > 1" class="mx-auto">
       <ElRadioButton v-for="lottery in parsedLotteryInfo"
                      :key="lottery.properties.dlc_lottery_id"
                      :value="lottery.properties.dlc_lottery_id.toString()"
@@ -237,7 +263,7 @@ const selectSaveFolder = async () => {
                 height="100%"
                 ref="carousel"
                 v-if="!loading"
-                :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(+params.lottery_id)"
+                :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(lotteryID.value)"
                 :loop="false"
     >
       <ElCarouselItem v-for="lottery in parsedLotteryInfo"
