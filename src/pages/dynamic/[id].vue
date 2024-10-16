@@ -130,7 +130,7 @@ const jump = async () => {
                 :style="{color: authorInfo?.decorate?.fan.color}"
           >{{ authorInfo.decorate.fan.num_str }}</span>
           <ElImage v-if="hasDecoration"
-                   class="h-12 select-none"
+                   :class="authorInfo?.decorate?.fan.is_fan ? 'h-12 select-none' : 'ml-auto h-12 select-none'"
                    referrerpolicy="no-referrer"
                    :src="authorInfo?.decorate?.card_url">
           </ElImage>
