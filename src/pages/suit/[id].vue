@@ -9,8 +9,9 @@ const resp = ref('')
 onMounted(async () => {
   id.value = route.params.id
 
-  const url = new URL('https://api.bilibili.com/x/garb/v2/mall/suit/detail')
+  const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
   url.searchParams.set('item_id', id.value)
+  url.searchParams.set('part', 'card')
 
   let data = null
   try {

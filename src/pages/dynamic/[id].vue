@@ -64,7 +64,7 @@ const jump = async () => {
   const type = resolveText(authorInfo.value?.decorate?.jump_url)
   if (type === 'suit' && authorInfo.value?.decorate?.fan.is_fan) {
     const id = resolveSuitID(authorInfo.value?.decorate?.jump_url)
-    await router.push({ path: `/suit/${id}}` })
+    await router.push({ path: `/suit/${id}` })
   } else if (type === 'lottery') {
     const id = resolveActID(authorInfo.value?.decorate?.jump_url)
     await router.push({ path: '/lottery', query: { act_id: id } })
@@ -85,6 +85,10 @@ const jump = async () => {
       <ElDescriptionsItem :label="decorateDescription">
         <ElLink v-if="hasDecoration" type="primary" @click="jump">
           {{ authorInfo?.decorate?.name ?? '无' }}
+          <template v-if="authorInfo?.decorate?.fan.is_fan"> {{
+              authorInfo.decorate.fan.num_prefix + authorInfo.decorate.fan.num_str
+            }}
+          </template>
         </ElLink>
         <template v-else>无</template>
       </ElDescriptionsItem>
