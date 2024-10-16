@@ -18,6 +18,7 @@
     },
     "store:default",
     "dialog:default",
-    "upload:default"
+    "upload:default",
+    "clipboard-manager:allow-read-text"
   ]
 }
