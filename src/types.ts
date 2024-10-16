@@ -260,6 +260,7 @@ interface DynamicInfo {
                 text: string
             }
             major?: {
+                // 动态内容
                 opus: {
                     pics?: {
                         url: string
@@ -270,7 +271,23 @@ interface DynamicInfo {
                     }
                     title?: string
                 }
+                // 动态话题
                 topic?: TopicInfo
+                // 视频动态原视频信息？
+                archive: {
+                    aid: string
+                    bvid: string
+                    cover: string
+                    desc: string
+                    duration_text: string
+                    title: string
+                }
+                type: string
+            }
+            topic?: {
+                id: number
+                jump_url: string
+                name: string
             }
         }
         module_stat: {
@@ -278,8 +295,10 @@ interface DynamicInfo {
             forward: DynamicStat
             like: DynamicStat
         }
-        type: DynamicTypes
     }
+    // 转发动态的原动态信息
+    orig?: DynamicInfo
+    type: DynamicTypes
 }
 
 // 参考https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/dynamic_enum.md

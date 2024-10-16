@@ -128,6 +128,7 @@ function resolveSuitID(text: string): string | null {
     return url.searchParams.get('id') ?? url.searchParams.get('item_id')
 }
 
+// 根据输入内容自动跳转至指定处理界面，若输入无效则不进行操作
 async function autoJump(input: text, showMessage = false) {
     const type = resolveText(input)
     if (type === 'garbSearch') {
