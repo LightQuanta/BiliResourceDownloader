@@ -5,6 +5,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes'
 import mitt from "mitt";
 import { getDownloadStore, startDownload } from "./downloadManager.ts";
+import { startClipboardListening } from "./cliboardListener.ts";
 
 const emitter = mitt()
 
@@ -33,4 +34,6 @@ getDownloadStore().then(async store => {
     }
 })
 
-export { emitter }
+startClipboardListening()
+
+export { emitter, router }

@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import {
-  resolveAVBVID,
-  resolveDynamicID,
-  resolveLiveroomID,
-  resolveActID,
-  resolveSuitID,
-  resolveText,
-  resolveUID
-} from "../linkResolver.ts";
+import { resolveText, autoJump } from "../linkResolver.ts";
 
 const router = useRouter()
 
@@ -51,7 +43,6 @@ const jump = async () => {
     const inferredType = resolveText(processedInputText.value)
     if (inferredType !== null) {
       selectedSearchType.value = inferredType
-      type = inferredType
     } else {
       ElMessage({
         message: '无法自动推断出要搜索的类型，请手动选择！',
@@ -61,85 +52,7 @@ const jump = async () => {
     }
   }
 
-  if (type === 'garbSearch') {
-    await router.push({ path: '/search/garb', query: { keyword: input } })
-  } else if (type === 'user') {
-    const uid = resolveUID(input)
-    if (uid === null) {
-      ElMessage({
-        message: '请输入正确的用户空间链接或UID！',
-        type: 'error',
-      })
-      return
-    }
-
-    // TODO 实现用户空间查看界面
-
-  } else if (type === 'liveroom') {
-    const roomId = resolveLiveroomID(input)
-    if (roomId === null) {
-      ElMessage({
-        message: '请输入正确的直播间链接或直播间号！',
-        type: 'error'
-      })
-      return
-    }
-
-    await router.push({ path: `/liveroom/${roomId}` })
-
-  } else if (type === 'dynamic') {
-    const id = resolveDynamicID(input)
-    if (id === null) {
-      ElMessage({
-        message: '请输入正确的动态链接！',
-        type: 'error',
-      })
-      return
-    }
-    await router.push({ path: `/dynamic/${id}` })
-  } else if (type === 'video') {
-    const id = resolveAVBVID(input)
-    if (id === null) {
-      ElMessage({
-        message: '请输入正确的视频链接、BV号或AV号！',
-        type: 'error',
-      })
-      return
-    }
-
-    // TODO 实现视频查看界面
-  } else if (type === 'lottery') {
-    try {
-      const id = resolveActID(input)
-      if (id === null) {
-        ElMessage({
-          message: '请输入正确的收藏集链接！',
-          type: 'error',
-        })
-        return
-      }
-
-      await router.push({ path: '/lottery', query: { act_id: id } })
-
-    } catch (e) {
-      ElMessage({
-        message: '获取收藏集信息出错：' + e,
-        type: 'error',
-      })
-    }
-  } else if (type === 'suit') {
-    const id = resolveSuitID(input)
-    if (id === null) {
-      ElMessage({
-        message: '请输入正确的收藏集链接！',
-        type: 'error',
-      })
-      return
-    }
-
-    await router.push({ path: `/suit/${id}` })
-
-  }
+  await autoJump(input, true)
 }
 </script>
 
