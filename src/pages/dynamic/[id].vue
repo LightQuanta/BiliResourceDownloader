@@ -125,12 +125,12 @@ const jump = async () => {
             {{ authorInfo?.decorate?.name ?? '无' }}
           </ElLink>
           <template v-else>无</template>
-          <span class="ml-auto translate-x-24 z-50 font-bold"
+          <span class="ml-auto translate-x-24 z-50 font-bold select-none"
                 v-if="authorInfo?.decorate?.fan.is_fan"
                 :style="{color: authorInfo?.decorate?.fan.color}"
           >{{ authorInfo.decorate.fan.num_str }}</span>
           <ElImage v-if="hasDecoration"
-                   class="h-12"
+                   class="h-12 select-none"
                    referrerpolicy="no-referrer"
                    :src="authorInfo?.decorate?.card_url">
           </ElImage>
