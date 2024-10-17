@@ -17,6 +17,9 @@ const authorInfo = computed(() => dynamicData.value?.modules.module_author)
 // 动态信息
 const dynamicInfo = computed(() => dynamicData.value?.modules.module_dynamic)
 
+const apiUrl = ref('')
+const responseText = ref('')
+
 const fetchData = async (paramID: string) => {
   loading.value = true
   dynamicID.value = paramID
@@ -28,6 +31,10 @@ const fetchData = async (paramID: string) => {
   let data: DynamicInfo
   try {
     const resp = await cachedAPIFetch(url)
+
+    responseText.value = JSON.stringify(resp, null, 2)
+    apiUrl.value = url.toString()
+
     data = resp.data.item
   } catch (e) {
     console.error(e)
@@ -99,6 +106,11 @@ const pictureLinks = computed(() => dynamicInfo.value?.major?.opus?.pics?.map(p 
 const jump = async () => {
   await autoJump(authorInfo.value?.decorate?.jump_url, true)
 }
+
+const showDebugDrawer = ref(false)
+const showDebugInfo = () => {
+  showDebugDrawer.value = true
+}
 </script>
 <template>
   <div v-loading="loading">
@@ -106,6 +118,32 @@ const jump = async () => {
 
       <template #title>
         <ElLink type="primary" :href="`https://t.bilibili.com/${dynamicID}`" target="_blank">动态信息</ElLink>
+      </template>
+
+      <!-- 调试信息 -->
+      <template #extra>
+        <ElDrawer v-model="showDebugDrawer"
+                  title="调试信息"
+                  size="70%"
+        >
+          <ElDescriptions :column="1" border>
+            <ElDescriptionsItem label="API调用地址">
+              <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
+            </ElDescriptionsItem>
+            <ElDescriptionsItem label="动态ID">
+              {{ dynamicID }}
+            </ElDescriptionsItem>
+          </ElDescriptions>
+
+          <ElDivider>原始返回数据</ElDivider>
+          <ElInput v-model="responseText"
+                   type="textarea"
+                   readonly
+                   aria-multiline="true"
+                   autosize
+          />
+        </ElDrawer>
+        <ElButton @click="showDebugInfo">显示调试信息</ElButton>
       </template>
 
       <!-- UP主信息 -->
