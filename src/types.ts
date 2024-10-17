@@ -31,6 +31,12 @@ interface ActInfo {
     end_time: number
 
     lottery_list: LotteryInfo[]
+    related_mids: string[]
+    related_user_infos: Record<string, {
+        uid: string
+        nickname: string
+        avatar: string
+    }>
 }
 
 interface LotteryInfo {
@@ -404,4 +410,5 @@ export type {
     RichTextNode,
     EmojiTextNode,
     VideoTextNode,
+    BasicUserInfo,
 }

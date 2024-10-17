@@ -244,6 +244,14 @@ const selectSaveFolder = async () => {
         </ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="销售时间" :span="2">{{ saleTime }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="相关UP主" :span="2" v-if="(actInfo?.related_mids ?? undefined) !== undefined">
+        <UPInfo v-for="mid in actInfo?.related_mids"
+                :key="mid"
+                :mid="mid"
+                :name="actInfo!.related_user_infos[mid]!.nickname"
+                :face="actInfo!.related_user_infos[mid]!.avatar"
+        />
+      </ElDescriptionsItem>
     </ElDescriptions>
 
     <ElDivider>收藏集内容</ElDivider>

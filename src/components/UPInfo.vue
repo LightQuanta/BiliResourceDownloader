@@ -33,21 +33,23 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex items-center">
-    <!-- 浏览器中打开 -->
-    <ElLink v-if="openInBrowser" type="primary" :href="`https://space.bilibili.com/${mid}`"
-            target="_blank">
-      <ElImage :src="face" referrerpolicy="no-referrer" class="h-12 w-12 rounded-full"/>
+  <!-- 浏览器中打开 -->
+  <ElLink v-if="openInBrowser"
+          type="primary"
+          :href="`https://space.bilibili.com/${mid}`"
+          target="_blank"
+          class="mr-2"
+  >
+    <ElImage :src="face" referrerpolicy="no-referrer" class="h-8 w-8 rounded-full"/>
+    <span class="ml-2">{{ name }}</span>
+  </ElLink>
+  <!-- 解析用户信息 -->
+  <RouterLink :to="`/space/${mid}`" v-else class="mr-2">
+    <ElLink type="primary">
+      <ElImage :src="face" referrerpolicy="no-referrer" class="h-8 w-8 rounded-full"/>
       <span class="ml-2">{{ name }}</span>
     </ElLink>
-    <!-- 解析用户信息 -->
-    <RouterLink :to="`/space/${mid}`" v-else>
-      <ElLink type="primary">
-        <ElImage :src="face" referrerpolicy="no-referrer" class="h-12 w-12 rounded-full"/>
-        <span class="ml-2">{{ name }}</span>
-      </ElLink>
-    </RouterLink>
-  </div>
+  </RouterLink>
 </template>
 
 <style scoped>
