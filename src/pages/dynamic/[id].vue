@@ -183,8 +183,12 @@ const showDebugInfo = () => {
       <ElDescriptionsItem label="类型" :span="2">{{ dynamicTypeDesc }}</ElDescriptionsItem>
       <ElDescriptionsItem label="标题" :span="2">{{ dynamicInfo?.major?.opus?.title ?? '无' }}</ElDescriptionsItem>
 
-      <!-- TODO 换行？ -->
-      <ElDescriptionsItem label="内容" :span="2">{{ dynamicContent?.text }}</ElDescriptionsItem>
+      <!-- 动态内容 -->
+      <ElDescriptionsItem label="内容" :span="2">
+        <span class="whitespace-pre-wrap">{{ dynamicContent?.text }}</span>
+      </ElDescriptionsItem>
+
+      <!-- @的用户 -->
       <ElDescriptionsItem label="@的用户" v-if="atUsers.length > 0" :span="2">
         <UPInfo v-for="users in atUsers" :key="users.rid" :mid="users.rid"/>
       </ElDescriptionsItem>
