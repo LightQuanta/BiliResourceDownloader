@@ -193,6 +193,27 @@ interface LotteryDetail {
         item_type: 1
         card_info: LotteryCardInfo
     }[]
+    collect_list: {
+        collect_infos: RedeemInfo[]
+        collect_chain: RedeemInfo[]
+    }
+}
+
+// TODO 这里会有表情包、头像框等信息，等个解析
+interface RedeemInfo {
+    collect_id: number
+
+    start_time: number
+    end_time: number
+
+    // 描述
+    redeem_text: string
+    // 名称
+    redeem_item_name: string
+    // 相关图片
+    redeem_item_image: string
+
+    jump_url: string
 }
 
 interface LotteryCardInfo {

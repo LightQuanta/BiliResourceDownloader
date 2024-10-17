@@ -222,6 +222,10 @@ const selectSaveFolder = async () => {
   downloadConfig.path = path
 }
 
+// https://api.bilibili.com/x/emote/setting/panel?business=dynamic
+// 获得所有表情表（需要登录）
+// 直接嗯搜？
+
 </script>
 <template>
   <div class="flex flex-col content-center" v-loading="loading">

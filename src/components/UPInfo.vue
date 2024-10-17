@@ -30,9 +30,9 @@ const hasFullInfo = computed(() => {
 const router = useRouter()
 const jump = () => {
   if (props.openInBrowser) {
-    window.open(`https://space.bilibili.com/${mid}`)
+    window.open(`https://space.bilibili.com/${mid.value}`)
   } else {
-    router.push(`/space/${mid}`)
+    router.push(`/space/${mid.value}`)
   }
 }
 

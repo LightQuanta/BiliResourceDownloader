@@ -8,7 +8,7 @@ function resolveText(text?: string): Types | null {
         const url = new URL(text)!
         if (/^https:\/\/live\.bilibili\.com\/\d+(\?.+)?$/.test(text)) {
             return 'liveroom'
-        } else if (/^https:\/\/space\.bilibili\.com\/\d+(\?.+)?$/.test(text) || /^UID:\d+$/.test(text)) {
+        } else if (/^https:\/\/space\.bilibili\.com\/\d+(.+)?$/.test(text) || /^UID:\d+$/.test(text)) {
             return 'user'
         } else if (/^https:\/\/t\.bilibili\.com\/\d+(\?.+)?$/.test(text)
             || /^https:\/\/(www\.)?bilibili\.com\/opus\/\d+(\?.+)?$/.test(text)
@@ -60,9 +60,9 @@ function resolveUID(text: string): string | null {
     let uid = ''
     if (resolveText(text) === 'user') {
         if (URL.canParse(text)) {
-            uid = URL.parse(text)!.pathname
+            uid = URL.parse(text)!.pathname.split('?')[0].split('/')[1]
         } else {
-            uid = text.substring(4).split('?')[0]
+            uid = text.substring(4)
         }
     } else if (/^\d+$/.test(text)) {
         uid = text
@@ -163,7 +163,7 @@ async function autoJump(input?: string, showMessage = false): Promise<boolean> {
             return false
         }
 
-        // TODO 实现用户空间查看界面
+        await router.push({ path: `/space/${uid}` })
         return true
     } else if (type === 'liveroom') {
         const roomId = resolveLiveroomID(processedInput)
