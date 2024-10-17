@@ -81,33 +81,35 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
         </ElSpace>
         <ElText v-else>无</ElText>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="空间" :span="2">
-        <ElLink type="primary" :href="`/space/${uid}`">点击跳转</ElLink>
+      <ElDescriptionsItem label="主播信息" :span="2">
+        <UPInfo :mid="uid"/>
       </ElDescriptionsItem>
     </ElDescriptions>
-    <ElDivider/>
-    <ElSpace direction="vertical" class="w-full justify-center" v-if="hasImages">
-      <ElText size="large">直播间相关图片</ElText>
-      <ElSpace wrap class="justify-center">
-        <ImageCard v-if="backgroundImage"
-                   :image="backgroundImage"
-                   title="网页端直播间背景图"
-                   :preview-images="previewImages"
-                   :index="0"
-        />
-        <ImageCard v-if="coverImage"
-                   :image="coverImage"
-                   title="直播间封面"
-                   :preview-images="previewImages"
-                   :index="1"
-        />
-        <ImageCard v-if="keyframeImage != ''"
-                   :image="keyframeImage"
-                   title="直播间关键帧"
-                   :preview-images="previewImages"
-                   :index="2"
-        />
+
+    <template v-if="hasImages">
+      <ElDivider>直播间相关图片</ElDivider>
+      <ElSpace direction="vertical" class="w-full justify-center">
+        <ElSpace wrap class="justify-center">
+          <ImageCard v-if="backgroundImage"
+                     :image="backgroundImage"
+                     title="网页端直播间背景图"
+                     :preview-images="previewImages"
+                     :index="0"
+          />
+          <ImageCard v-if="coverImage"
+                     :image="coverImage"
+                     title="直播间封面"
+                     :preview-images="previewImages"
+                     :index="1"
+          />
+          <ImageCard v-if="keyframeImage != ''"
+                     :image="keyframeImage"
+                     title="直播间关键帧"
+                     :preview-images="previewImages"
+                     :index="2"
+          />
+        </ElSpace>
       </ElSpace>
-    </ElSpace>
+    </template>
   </div>
 </template>

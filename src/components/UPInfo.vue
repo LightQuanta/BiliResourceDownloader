@@ -12,24 +12,31 @@ const props = withDefaults(defineProps<{
   face: '',
   openInBrowser: false,
 })
-const mid = ref(props.mid)
-const name = ref(props.name)
-const face = ref(props.face)
+const mid = ref(-1)
+const name = ref('')
+const face = ref('')
 
-const hasFullInfo = computed(() => props.name.length > 0 && props.face.length > 0)
-onMounted(async () => {
+const hasFullInfo = computed(() => name.value.length > 0 && face.value.length > 0)
+
+const fetchData = async () => {
   if (hasFullInfo.value) return
+
+  mid.value = props.mid
+  name.value = props.name
+  face.value = props.face
 
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', String(mid.value))
-
-  console.log(url)
 
   const resp = await cachedAPIFetch(url).then(r => r.data) as BasicUserInfo
 
   name.value = resp.card.name
   face.value = resp.card.face
-})
+}
+
+onMounted(fetchData)
+watch(() => props.mid, fetchData)
+
 </script>
 
 <template>
