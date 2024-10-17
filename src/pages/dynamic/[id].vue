@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { DynamicInfo, DynamicTypes } from "../../types.ts";
+import { AtTextNode, DynamicInfo, DynamicTypes } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 
 const loading = ref(false)
@@ -75,6 +75,13 @@ const hasTopic = computed(() => dynamicInfo.value?.topic?.id ?? -1 > 0)
 // 动态话题
 const dynamicTopic = computed(() => dynamicInfo.value?.topic)
 
+// 动态@的用户
+const atUsers = computed<AtTextNode[]>(() => dynamicContent.value
+        ?.rich_text_nodes
+        .filter(n => n!.type === 'RICH_TEXT_NODE_TYPE_AT') as AtTextNode[]
+    ?? []
+)
+
 const desc: Record<DynamicTypes, string> = {
   DYNAMIC_TYPE_WORD: '文本',
   DYNAMIC_TYPE_DRAW: '图文',
@@ -148,7 +155,7 @@ const showDebugInfo = () => {
 
       <!-- UP主信息 -->
       <ElDescriptionsItem label="UP主" min-width="80px">
-        <UPInfo :mid="authorInfo?.mid"
+        <UPInfo :mid="authorInfo?.mid?.toString() ?? ''"
                 :face="authorInfo?.face"
                 :name="authorInfo?.name"
         />
@@ -178,6 +185,9 @@ const showDebugInfo = () => {
 
       <!-- TODO 换行？ -->
       <ElDescriptionsItem label="内容" :span="2">{{ dynamicContent?.text }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="@的用户" v-if="atUsers.length > 0" :span="2">
+        <UPInfo v-for="users in atUsers" :key="users.rid" :mid="users.rid"/>
+      </ElDescriptionsItem>
 
       <!-- 话题 -->
       <ElDescriptionsItem v-if="hasTopic" label="话题" :span="2">

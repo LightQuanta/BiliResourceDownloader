@@ -3,7 +3,7 @@ import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import { BasicUserInfo } from "../types.ts";
 
 const props = withDefaults(defineProps<{
-  mid: number
+  mid: string
   name?: string
   face?: string
   openInBrowser?: boolean
@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
   face: '',
   openInBrowser: false,
 })
-const mid = ref(-1)
+const mid = ref('')
 const name = ref('')
 const face = ref('')
 

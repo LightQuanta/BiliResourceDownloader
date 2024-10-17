@@ -346,6 +346,11 @@ interface VideoTextNode extends RichTextNode {
     type: 'RICH_TEXT_NODE_TYPE_WEB'
 }
 
+interface AtTextNode extends RichTextNode {
+    rid: string
+    type: 'RICH_TEXT_NODE_TYPE_AT'
+}
+
 type BiliResourceDownloadEventEmitter = {
     // preset events
 } & Record<string, any>;
@@ -410,5 +415,6 @@ export type {
     RichTextNode,
     EmojiTextNode,
     VideoTextNode,
+    AtTextNode,
     BasicUserInfo,
 }
