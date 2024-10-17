@@ -2,21 +2,39 @@
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import { BasicUserInfo } from "../types.ts";
 
+type UPInfoType = 'face' | 'at'
+
 const props = withDefaults(defineProps<{
   mid: string
   name?: string
   face?: string
   openInBrowser?: boolean
+  type?: UPInfoType
 }>(), {
   name: '',
   face: '',
   openInBrowser: false,
+  type: 'face'
 })
 const mid = ref('')
 const name = ref('')
 const face = ref('')
 
-const hasFullInfo = computed(() => name.value.length > 0 && face.value.length > 0)
+const hasFullInfo = computed(() => {
+  if (props.type === 'face') {
+    return name.value.length > 0 && face.value.length > 0
+  }
+  return name.value.length > 0
+})
+
+const router = useRouter()
+const jump = () => {
+  if (props.openInBrowser) {
+    window.open(`https://space.bilibili.com/${mid}`)
+  } else {
+    router.push(`/space/${mid}`)
+  }
+}
 
 const fetchData = async () => {
   if (hasFullInfo.value) return
@@ -40,25 +58,8 @@ watch(() => props.mid, fetchData)
 </script>
 
 <template>
-  <!-- 浏览器中打开 -->
-  <ElLink v-if="openInBrowser"
-          type="primary"
-          :href="`https://space.bilibili.com/${mid}`"
-          target="_blank"
-          class="mr-2"
-  >
-    <ElImage :src="face" referrerpolicy="no-referrer" class="h-8 w-8 rounded-full"/>
-    <span class="ml-2">{{ name }}</span>
+  <ElLink type="primary" @click="jump">
+    <ElImage v-if="type === 'face'" :src="face" referrerpolicy="no-referrer" class="h-8 w-8 rounded-full"/>
+    <span class="mx-1">{{ name }}</span>
   </ElLink>
-  <!-- 解析用户信息 -->
-  <RouterLink :to="`/space/${mid}`" v-else class="mr-2">
-    <ElLink type="primary">
-      <ElImage :src="face" referrerpolicy="no-referrer" class="h-8 w-8 rounded-full"/>
-      <span class="ml-2">{{ name }}</span>
-    </ElLink>
-  </RouterLink>
 </template>
-
-<style scoped>
-
-</style>

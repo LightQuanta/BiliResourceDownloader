@@ -181,7 +181,9 @@ const showDebugInfo = () => {
       </ElDescriptionsItem>
 
       <ElDescriptionsItem label="类型" :span="2">{{ dynamicTypeDesc }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="标题" :span="2">{{ dynamicInfo?.major?.opus?.title ?? '无' }}</ElDescriptionsItem>
+      <ElDescriptionsItem label="标题" :span="2" v-if="dynamicInfo?.major?.opus?.title">
+        <span class="font-bold">{{ dynamicInfo?.major?.opus?.title ?? '无' }}</span>
+      </ElDescriptionsItem>
 
       <!-- 动态内容 -->
       <ElDescriptionsItem label="内容" :span="2">
@@ -190,7 +192,12 @@ const showDebugInfo = () => {
 
       <!-- @的用户 -->
       <ElDescriptionsItem label="@的用户" v-if="atUsers.length > 0" :span="2">
-        <UPInfo v-for="users in atUsers" :key="users.rid" :mid="users.rid"/>
+        <UPInfo v-for="user in atUsers"
+                :key="user.rid"
+                :mid="user.rid"
+                :name="user.text"
+                type="at"
+        />
       </ElDescriptionsItem>
 
       <!-- 话题 -->
@@ -232,7 +239,7 @@ const showDebugInfo = () => {
                  :download-name="image.split('/').pop()"
                  :preview-images="pictureLinks"
                  :index="index"
-      ></ImageCard>
+      />
     </ElSpace>
   </div>
 </template>
