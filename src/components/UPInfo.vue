@@ -37,11 +37,11 @@ const jump = () => {
 }
 
 const fetchData = async () => {
-  if (hasFullInfo.value) return
-
   mid.value = props.mid
   name.value = props.name
   face.value = props.face
+
+  if (hasFullInfo.value) return
 
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', String(mid.value))

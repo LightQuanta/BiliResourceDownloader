@@ -24,7 +24,10 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
     if (await store.has(strURL)) {
         const cacheData = (await store.get(strURL)) as CachedJSONResponse
         if (cacheData.cachedTime > Date.now()) {
+            console.debug(`using cached ${strURL}`)
             return cacheData.response
+        } else {
+            console.debug(`expired cache ${strURL}`)
         }
     }
 
