@@ -8,6 +8,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -47,6 +48,7 @@ export default defineConfig(async () => ({
         Icons({
             autoInstall: true,
         }),
+        vueDevTools(),
     ],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
