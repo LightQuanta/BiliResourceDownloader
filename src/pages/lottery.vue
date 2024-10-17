@@ -78,7 +78,7 @@ const fetchData = async () => {
     selectedKey.value = newLotteryID.toString()
 
     lotteryID.value = newLotteryID
-    await router.push({ query: { act_id: route.query.act_id, lottery_id: newLotteryID.toString() } })
+    await router.replace({ query: { act_id: route.query.act_id, lottery_id: newLotteryID.toString() } })
   }
 
   loading.value = false
@@ -100,7 +100,7 @@ const carousel = ref<CarouselInstance>()
 
 watch(selectedKey, () => {
   carousel.value?.setActiveItem(selectedKey.value)
-  router.push({ query: { act_id: actID.value, lottery_id: lotteryID.value } })
+  router.replace({ query: { act_id: actID.value, lottery_id: lotteryID.value } })
 })
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
