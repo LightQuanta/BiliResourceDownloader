@@ -344,6 +344,48 @@ type BiliResourceDownloadEventEmitter = {
     // preset events
 } & Record<string, any>;
 
+interface BasicUserInfo {
+    card: {
+        mid: string
+        name: string
+        face: string
+        sex: string
+
+        // 关注数？
+        friend: number
+        // 关注数
+        attention: number
+        // 粉丝数
+        fans: number
+        // 签名
+        sign: string
+
+        birthday: string
+
+        // 头像框
+        pendant: {
+            pid: number
+            name: string
+            image: string
+        }
+
+        official: {
+            role: number
+            title: string
+            desc: string
+            type: number
+        }
+        official_verify: {
+            type: number
+            desc: string
+        }
+    }
+    // 粉丝数
+    follower: number
+    // 获赞数
+    like_num: number
+}
+
 export type {
     BiliResourceDownloadEventEmitter,
     GarbSearchResult,

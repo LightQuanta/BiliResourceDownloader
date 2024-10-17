@@ -7,9 +7,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    '[id]': typeof import('./src/pages/liveroom/[id].vue')['default']
-    About: typeof import('./src/pages/about.vue')['default']
-    Download: typeof import('./src/pages/download.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -41,17 +38,14 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
-    Garb: typeof import('./src/pages/search/garb.vue')['default']
     GarbSearchCard: typeof import('./src/components/GarbSearchCard.vue')['default']
     IEpDownload: typeof import('~icons/ep/download')['default']
     ImageCard: typeof import('./src/components/ImageCard.vue')['default']
-    Lottery: typeof import('./src/pages/lottery.vue')['default']
     LotteryCard: typeof import('./src/components/LotteryCard.vue')['default']
-    Pages: typeof import('./src/pages/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Settings: typeof import('./src/pages/settings.vue')['default']
     SingleLotteryPage: typeof import('./src/components/SingleLotteryPage.vue')['default']
+    UPInfo: typeof import('./src/components/UPInfo.vue')['default']
   }
   export interface ComponentCustomProperties {
     vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']

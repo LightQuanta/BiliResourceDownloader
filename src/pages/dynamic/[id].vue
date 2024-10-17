@@ -148,12 +148,10 @@ const showDebugInfo = () => {
 
       <!-- UP主信息 -->
       <ElDescriptionsItem label="UP主" min-width="80px">
-        <div class="flex items-center">
-          <ElLink type="primary" :href="`https://space.bilibili.com/${authorInfo?.mid}`" target="_blank">
-            <ElImage :src="authorInfo?.face" referrerpolicy="no-referrer" class="h-12 w-12 rounded-full"/>
-            <span class="ml-2">{{ authorInfo?.name }}</span>
-          </ElLink>
-        </div>
+        <UPInfo :mid="authorInfo?.mid"
+                :face="authorInfo?.face"
+                :name="authorInfo?.name"
+        />
       </ElDescriptionsItem>
 
       <!-- 收藏集/装扮信息展示 -->
