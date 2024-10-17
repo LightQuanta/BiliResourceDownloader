@@ -35,7 +35,8 @@ export default defineConfig(async () => ({
         vue(),
         Components({
             dts: true,
-            dirs: ["src/components", "src/pages"],
+            dirs: ["src/components"],
+            exclude: ["src/pages"],
             resolvers: [
                 ElementPlusResolver(),
                 IconsResolver({
