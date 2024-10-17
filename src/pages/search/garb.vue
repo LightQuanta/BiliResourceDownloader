@@ -15,32 +15,49 @@ const cards = ref<GarbSearchResult<LotteryProperties | SuitProperties>[]>([])
 const hasMore = computed(() => totalCount.value > 0)
 
 onMounted(() => {
-  keyword.value = params.keyword as string
+  keyword.value = params.keyword as string ?? ''
   displayMode.value = params.display as string ?? 'all'
-  if (keyword.value !== undefined && keyword.value !== '') searched.value = true
+  if (keyword.value !== '') searched.value = true
 })
 
 let loading = false
 const router = useRouter()
+
+// 仅应该在点击搜索按钮和搜索文本改变时调用
 const newSearch = () => {
   currentPage.value = 1
-  cards.value = []
   totalCount.value = 114514
   searched.value = true
   loading = false
+  updateQuery()
   load()
 }
 
-watch(keyword, () => updateQuery())
+// 修改显示模式时，同步更新路由参数
 watch(displayMode, () => updateQuery())
 
+// 浏览器返回或前进时，同步更新搜索参数和显示模式
+
+const route = useRoute()
+watch(() => route.query.keyword, () => {
+  keyword.value = route.query.keyword
+  newSearch()
+})
+watch(() => route.query.display, () => displayMode.value = route.query.display)
+
+// 更新路由参数
 const updateQuery = () => {
   router.push({ query: { keyword: keyword.value, display: displayMode.value } })
 }
 
 const load = async () => {
-  if (loading || !searched.value || totalCount.value === 0) return
+  if (loading || !searched.value || keyword.value === '' || totalCount.value === 0) return
   loading = true
+
+  // 初次搜索应清空已存储卡片信息
+  if (currentPage.value === 1) {
+    cards.value = []
+  }
 
   const url = new URL('https://api.bilibili.com/x/garb/v2/mall/home/search')
   url.searchParams.set('key_word', keyword.value)
