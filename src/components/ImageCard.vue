@@ -3,7 +3,7 @@ import { download } from '@tauri-apps/plugin-upload'
 import { save } from '@tauri-apps/plugin-dialog'
 
 const prop = defineProps<{
-  image: string
+  image?: string
   title?: string
   downloadName?: string
   previewImages?: string[]
