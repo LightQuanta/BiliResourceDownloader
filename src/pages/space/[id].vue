@@ -45,59 +45,77 @@ const showDebugInfo = () => {
 </script>
 
 <template>
-  <ElDescriptions border :column="6">
-    <template #title>
-      UP主信息
-    </template>
+  <div class="flex flex-col">
 
-    <template #extra>
-      <ElButton @click="showDebugInfo">显示调试信息</ElButton>
-      <!-- 调试信息 -->
-      <ElDrawer v-model="showDebugDrawer"
-                title="调试信息"
-                size="70%"
-      >
-        <ElDescriptions :column="1" border>
-          <ElDescriptionsItem label="API调用地址">
-            <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
-          </ElDescriptionsItem>
-          <ElDescriptionsItem label="用户UID">
-            {{ uid }}
-          </ElDescriptionsItem>
-        </ElDescriptions>
+    <!-- 信息展示界面 -->
+    <ElDescriptions border :column="6">
+      <template #title>
+        UP主信息
+      </template>
 
-        <ElDivider>原始返回数据</ElDivider>
-        <ElInput v-model="responseText"
-                 type="textarea"
-                 readonly
-                 aria-multiline="true"
-                 autosize
-        />
-      </ElDrawer>
-    </template>
+      <template #extra>
+        <ElButton @click="showDebugInfo">显示调试信息</ElButton>
+        <!-- 调试信息 -->
+        <ElDrawer v-model="showDebugDrawer"
+                  title="调试信息"
+                  size="60%"
+        >
+          <ElDescriptions :column="1" border>
+            <ElDescriptionsItem label="API调用地址">
+              <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
+            </ElDescriptionsItem>
+            <ElDescriptionsItem label="用户UID">
+              {{ uid }}
+            </ElDescriptionsItem>
+          </ElDescriptions>
+
+          <ElDivider>原始返回数据</ElDivider>
+          <ElInput v-model="responseText"
+                   type="textarea"
+                   readonly
+                   aria-multiline="true"
+                   autosize
+          />
+        </ElDrawer>
+      </template>
 
 
-    <ElDescriptionsItem label="名称" :span="3">
-      <ElLink type="primary" :href="`https://space.bilibili.com/${uid}`" target="_blank">
-        {{ UPInfo?.card.name }}
-      </ElLink>
-    </ElDescriptionsItem>
-    <ElDescriptionsItem label="UID" :span="3">
-      {{ UPInfo?.card.mid }}
-    </ElDescriptionsItem>
-    <ElDescriptionsItem label="关注数" :span="2">
-      {{ UPInfo?.card.attention }}
-    </ElDescriptionsItem>
-    <ElDescriptionsItem label="粉丝数" :span="2">
-      {{ UPInfo?.follower }}
-    </ElDescriptionsItem>
-    <ElDescriptionsItem label="获赞数" :span="2">
-      {{ UPInfo?.like_num }}
-    </ElDescriptionsItem>
-    <ElDescriptionsItem label="签名" :span="6">
-      <span class="whitespace-pre-wrap">{{ UPInfo?.card.sign }}</span>
-    </ElDescriptionsItem>
+      <ElDescriptionsItem label="名称" :span="3">
+        <ElLink type="primary" :href="`https://space.bilibili.com/${uid}`" target="_blank">
+          {{ UPInfo?.card.name }}
+        </ElLink>
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="UID" :span="3">
+        {{ UPInfo?.card.mid }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="关注数" :span="2">
+        {{ UPInfo?.card.attention }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="粉丝数" :span="2">
+        {{ UPInfo?.follower }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="获赞数" :span="2">
+        {{ UPInfo?.like_num }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="签名" :span="6">
+        <span class="whitespace-pre-wrap">{{ UPInfo?.card.sign }}</span>
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="头像框" :span="6" v-if="UPInfo?.card.pendant">
+        <RouterLink :to="`/search/garb?keyword=${UPInfo?.card.pendant?.name}`">
+          <!--  TODO 头像框的pid是否可以解析？ -->
+          <ElLink type="primary">{{ UPInfo.card.pendant.name }} - 点击搜索</ElLink>
+        </RouterLink>
+      </ElDescriptionsItem>
 
-    <!-- TODO 头像、头像框等其他资源解析 -->
-  </ElDescriptions>
+    </ElDescriptions>
+
+    <ElDivider>图片资源</ElDivider>
+    <div class="flex flex-wrap gap-4 justify-center">
+      <ImageCard title="头像" :image="UPInfo?.card.face"/>
+      <ImageCard :title="`头像框 - ${UPInfo?.card.pendant.name}`"
+                 v-if="UPInfo?.card.pendant"
+                 :image="UPInfo?.card.pendant?.image"
+      />
+    </div>
+  </div>
 </template>
