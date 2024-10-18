@@ -87,6 +87,14 @@ const submit = async () => {
       return
     }
 
+    if ((treeRef.value?.getCheckedNodes() ?? 0).length === 0) {
+      ElMessage({
+        message: '请选择要下载的内容！',
+        type: 'error',
+      })
+      return
+    }
+
     // 获取选择的单文件
     const selected: string[] = treeRef.value?.getCheckedNodes()
         .filter((data: FilePathData) => data.value?.startsWith('[final]'))
@@ -158,6 +166,12 @@ const selectSaveFolder = async () => {
                       :data="finalData"
                       show-checkbox
                       ref="treeRef"
+                      clearable
+                      size="large"
+                      collapse-tags
+                      collapse-tags-tooltip
+                      placeholder="选择要下载的内容"
+                      filterable
         />
 
       </ElForm>
