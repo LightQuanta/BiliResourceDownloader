@@ -27,8 +27,14 @@ const router = useRouter()
 const newSearch = () => {
   currentPage.value = 1
   totalCount.value = 114514
-  searched.value = true
   loading = false
+
+  if (keyword.value === '') {
+    searched.value = false
+    cards.value = []
+    return
+  }
+  searched.value = true
   updateQuery()
   load()
 }
@@ -40,10 +46,10 @@ watch(displayMode, () => updateQuery())
 
 const route = useRoute()
 watch(() => route.query.keyword, () => {
-  keyword.value = route.query.keyword
+  keyword.value = route.query.keyword ?? ''
   newSearch()
 })
-watch(() => route.query.display, () => displayMode.value = route.query.display)
+watch(() => route.query.display, () => displayMode.value = route.query.display ?? 'all')
 
 // 更新路由参数
 const updateQuery = () => {
