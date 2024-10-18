@@ -138,7 +138,7 @@ function resolveSuitID(text: string): string | null {
 async function autoJump(input?: string, showMessage = false, typeOverride?: string = undefined): Promise<boolean> {
     if (input === undefined) return false
 
-    let processedInput = input
+    let processedInput = input.trim()
     if (processedInput.startsWith('https://b23.tv/')) {
         const link = await resolveB23Link(processedInput)
         if (link === null) {
