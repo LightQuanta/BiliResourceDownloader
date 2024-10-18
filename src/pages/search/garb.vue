@@ -47,7 +47,7 @@ watch(() => route.query.display, () => displayMode.value = route.query.display)
 
 // 更新路由参数
 const updateQuery = () => {
-  router.push({ query: { keyword: encodeURI(keyword.value), display: displayMode.value } })
+  router.push({ query: { keyword: keyword.value, display: displayMode.value } })
 }
 
 const load = async () => {
