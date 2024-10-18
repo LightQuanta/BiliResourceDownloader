@@ -120,7 +120,6 @@ async function startDownload() {
                         emitter.emit('downloadFinish', { name })
                     }
                 })
-            // end
             // 主动触发视图更新，不能放到 download then 里头，会触发错误的下载状态
             await store.set('tasks', tasks)
         }
