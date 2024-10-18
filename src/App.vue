@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import DownloadManager from "./components/DownloadManager.vue";
+import { emitter } from "./main.ts";
 
+const showDownloadDrawer = ref(false)
 </script>
 
 <template>
@@ -7,17 +10,26 @@
     <ElMenu default-active="test" class="h-full w-32 m-0 shrink-0 router-mark" :router="true">
       <ElMenuItem index="/">主页</ElMenuItem>
       <ElMenuItem index="/search/garb">装扮/收藏集搜索</ElMenuItem>
-      <ElMenuItem index="/download">下载管理</ElMenuItem>
+      <ElMenuItem @click="showDownloadDrawer = true">下载管理</ElMenuItem>
       <ElMenuItem index="/settings">设置</ElMenuItem>
       <ElMenuItem index="/about">关于</ElMenuItem>
     </ElMenu>
 
     <RouterView class="p-4 flex-grow overflow-y-auto overflow-x-hidden" v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
-        <Component :is="Component" />
+        <Component :is="Component"/>
       </Transition>
     </RouterView>
   </div>
+
+
+  <ElDrawer v-model="showDownloadDrawer"
+            title="下载管理"
+            size="80%"
+            @open="emitter.emit('drawerOpen')"
+  >
+    <DownloadManager/>
+  </ElDrawer>
 </template>
 
 <style scoped>

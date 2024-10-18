@@ -53,6 +53,10 @@ emitter.on('downloadProgress', (info: DownloadProgress) => {
   file.total = info.downloadInfo.total
 })
 
+emitter.on('drawerOpen', async () => {
+  await refreshTasks()
+})
+
 emitter.on('fileDownloadFinish', (info: FileDownloadFinish) => {
   tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.name === info.file.name)!, 1)
 })
@@ -91,7 +95,6 @@ const getProgress = (file: Progress) => {
 
 <template>
   <div>
-    <div>下载管理</div>
     <ElButton type="primary" @click="start">开始下载</ElButton>
     <ElButton type="primary" @click="pause">暂停下载</ElButton>
     <ElButton type="primary" @click="clear">清空任务</ElButton>
