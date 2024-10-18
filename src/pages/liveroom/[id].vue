@@ -166,18 +166,21 @@ const showDebugInfo = () => {
                      title="网页端直播间背景图"
                      :preview-images="previewImages"
                      :index="0"
+                     :download-name="`直播间背景图 - ${route.params.id}`"
           />
           <ImageCard v-if="coverImage"
                      :image="coverImage"
                      title="直播间封面"
                      :preview-images="previewImages"
                      :index="1"
+                     :download-name="`直播间封面 - ${route.params.id}`"
           />
           <ImageCard v-if="keyframeImage != ''"
                      :image="keyframeImage"
                      title="直播间关键帧"
                      :preview-images="previewImages"
                      :index="2"
+                     :download-name="`直播间关键帧 - ${route.params.id}`"
           />
         </ElSpace>
       </ElSpace>

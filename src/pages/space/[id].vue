@@ -142,7 +142,8 @@ const searchPendant = () => {
 
     <ElDivider>图片资源</ElDivider>
     <div class="flex flex-wrap gap-4 justify-center">
-      <ImageCard title="头像" :image="UPInfo?.card.face"/>
+      <ImageCard title="头像" :image="UPInfo?.card.face"
+                 :download-name="`${UPInfo?.card.name} - 头像`"/>
       <ImageCard :title="`头像框 - ${UPInfo?.card.pendant.name}`"
                  v-if="hasPendant"
                  :image="UPInfo?.card.pendant?.image"

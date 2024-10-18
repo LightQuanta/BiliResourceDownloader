@@ -13,7 +13,7 @@ const prop = defineProps<{
 
 const downloadImage = async (url: string) => {
   const suffix = url.split('?')[0].split('.').pop()!
-  const name = prop.downloadName ?? prop.title + '.' + suffix
+  const name = (prop.downloadName ?? prop.title) + '.' + suffix
 
   const path = await save({
     defaultPath: name,
