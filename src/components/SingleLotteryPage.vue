@@ -65,61 +65,10 @@ onMounted(async () => {
   saleEndTime.value = +dlc_sale_end_time * 1000
 
   cards.value = lotteryDetail.item_list.map(i => i.card_info).sort((a, b) => b.card_scarcity - a.card_scarcity)
-
-  generateDownloadTask()
   loading.value = false
 })
 
 const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
-
-
-const extractExtensionName = (url: string) => {
-  return '.' + url.split('?')[0].split('.').pop()!.split('_')[0]
-}
-
-const batchDownloadInfo = ref<BatchDownloadTask>(null)
-
-const generateDownloadTask = () => {
-  const downloadFileInfo: BatchDownloadTask = {
-    name: name.value,
-    path: name.value,
-    files: [],
-  }
-
-  // 封面
-  downloadFileInfo.files.push({
-    name: '封面' + extractExtensionName(coverURL.value),
-    url: coverURL.value,
-  })
-
-  // 所有图片
-  cards.value.forEach(c => {
-    downloadFileInfo.files.push({
-      name: c.card_name + '（水印）' + extractExtensionName(c.card_img_download),
-      url: c.card_img_download,
-    })
-    downloadFileInfo.files.push({
-      name: c.card_name + extractExtensionName(c.card_img),
-      url: c.card_img,
-    })
-  })
-
-  // 所有视频
-  cards.value.filter(c => c.video_list?.length ?? 0 > 0).forEach(c => {
-    downloadFileInfo.files.push({
-      name: c.card_name + '（水印）' + extractExtensionName(c.video_list_download![0]),
-      url: c.video_list_download![0],
-    })
-    downloadFileInfo.files.push({
-      name: c.card_name + extractExtensionName(c.video_list![0]),
-      url: c.video_list![0],
-    })
-  })
-
-  console.debug(downloadFileInfo)
-  batchDownloadInfo.value = downloadFileInfo
-}
-
 </script>
 <template>
   <div class="flex flex-col gap-4" v-loading="loading">
@@ -127,10 +76,6 @@ const generateDownloadTask = () => {
     <ElDescriptions border :column="2">
       <template #title>
         <ElText size="large">{{ name }}</ElText>
-      </template>
-
-      <template #extra>
-        <BatchDownloadButton :task="batchDownloadInfo"/>
       </template>
 
       <ElDescriptionsItem label="名称" name="name">

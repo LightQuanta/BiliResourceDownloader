@@ -7,7 +7,7 @@ import { TreeInstance } from "element-plus/lib/components";
 import { sep } from "@tauri-apps/api/path";
 
 const props = defineProps<{
-  task: BatchDownloadTask
+  task?: BatchDownloadTask
 
   // TODO 实现默认选择项
   defaultSelect?: string[]
@@ -32,7 +32,7 @@ const finalData = ref<FilePathData[]>([])
 // 生成文件选择数据
 const initData = () => {
   finalData.value = []
-  const files = props.task.files
+  const files = props.task?.files ?? []
 
   const newData: FilePathData[] = []
 
@@ -64,7 +64,8 @@ const initData = () => {
 
   finalData.value = newData
 }
-watch(() => props.task?.files, initData)
+watch(() => props.task, initData)
+onMounted(initData)
 
 // 已选择文件
 const selectedFiles = ref<string[]>([])
