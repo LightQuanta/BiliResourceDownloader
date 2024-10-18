@@ -99,12 +99,15 @@ const hasPendant = computed(() => UPInfo.value?.card?.pendant.pid ?? 0 !== 0)
       </template>
 
 
-      <ElDescriptionsItem label="名称" :span="3">
+      <ElDescriptionsItem label="名称" :span="2">
         <ElLink type="primary" :href="`https://space.bilibili.com/${uid}`" target="_blank">
           {{ UPInfo?.card.name }}
         </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="UID" :span="3">
+      <ElDescriptionsItem label="性别" :span="2">
+        {{ UPInfo?.card.sex }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem label="UID" :span="2">
         {{ UPInfo?.card.mid }}
       </ElDescriptionsItem>
       <ElDescriptionsItem label="关注数" :span="2">
