@@ -1,16 +1,12 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
-import { open } from "@tauri-apps/plugin-dialog";
 import type {
+  BatchDownloadTask,
   GarbSearchResult,
   LotteryCardInfo,
-  LotteryProperties,
   LotteryDetail,
-  BatchDownloadTask,
+  LotteryProperties,
 } from '../types.ts'
-import { FormInstance } from "element-plus";
-import { pushNewTask } from "../downloadManager.ts";
-import { sep } from "@tauri-apps/api/path";
 
 const name = ref('')
 const jumpLink = ref('')
@@ -69,102 +65,61 @@ onMounted(async () => {
   saleEndTime.value = +dlc_sale_end_time * 1000
 
   cards.value = lotteryDetail.item_list.map(i => i.card_info).sort((a, b) => b.card_scarcity - a.card_scarcity)
-  // downloadConfig.path = lotteryName
 
+  generateDownloadTask()
   loading.value = false
 })
 
 const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
 
-const showDialog = ref(false)
-const formRef = ref<FormInstance>()
-const downloadConfig = reactive({
-  path: '',
-  downloadCover: false,
-  useWatermarkVersion: false,
-  downloadContents: ['image', 'video'],
-})
-
-const rules = reactive(({
-  path: [
-    { required: true, message: '请选择保存位置', trigger: 'blur' },
-  ],
-}))
 
 const extractExtensionName = (url: string) => {
   return '.' + url.split('?')[0].split('.').pop()!.split('_')[0]
 }
 
-const submit = async () => {
-  await formRef.value?.validate(async (valid) => {
-    if (!valid || !downloadConfig.path) return
+const batchDownloadInfo = ref<BatchDownloadTask>(null)
 
-    const downloadFileInfo: BatchDownloadTask = {
-      name: name.value,
-      path: `${downloadConfig.path}${sep()}${name.value}`,
-      files: [],
-    }
+const generateDownloadTask = () => {
+  const downloadFileInfo: BatchDownloadTask = {
+    name: name.value,
+    path: name.value,
+    files: [],
+  }
 
-    if (downloadConfig.downloadCover) {
-      downloadFileInfo.files.push({
-        name: '封面' + extractExtensionName(coverURL.value),
-        url: coverURL.value,
-      })
-    }
+  // 封面
+  downloadFileInfo.files.push({
+    name: '封面' + extractExtensionName(coverURL.value),
+    url: coverURL.value,
+  })
 
-    if (downloadConfig.downloadContents.includes('image')) {
-      cards.value.forEach(c => {
-        if (downloadConfig.useWatermarkVersion) {
-          downloadFileInfo.files.push({
-            name: c.card_name + '（水印）' + extractExtensionName(c.card_img_download),
-            url: c.card_img_download,
-          })
-        } else {
-          downloadFileInfo.files.push({
-            name: c.card_name + extractExtensionName(c.card_img),
-            url: c.card_img,
-          })
-        }
-      })
-    }
-
-    if (downloadConfig.downloadContents.includes('video')) {
-      cards.value.filter(c => c.video_list?.length ?? 0 > 0).forEach(c => {
-        if (downloadConfig.useWatermarkVersion) {
-          downloadFileInfo.files.push({
-            name: c.card_name + '（水印）' + extractExtensionName(c.video_list_download![0]),
-            url: c.video_list_download![0],
-          })
-        } else {
-          downloadFileInfo.files.push({
-            name: c.card_name + extractExtensionName(c.video_list![0]),
-            url: c.video_list![0],
-          })
-        }
-      })
-    }
-
-    console.debug(downloadFileInfo)
-
-    await pushNewTask(downloadFileInfo)
-    ElMessage({
-      message: '已提交下载任务，请到下载管理界面进行查看',
-      type: 'success',
+  // 所有图片
+  cards.value.forEach(c => {
+    downloadFileInfo.files.push({
+      name: c.card_name + '（水印）' + extractExtensionName(c.card_img_download),
+      url: c.card_img_download,
     })
-
-    showDialog.value = false
-  })
-}
-
-const selectSaveFolder = async () => {
-  const path = await open({
-    defaultPath: downloadConfig.path,
-    directory: true,
+    downloadFileInfo.files.push({
+      name: c.card_name + extractExtensionName(c.card_img),
+      url: c.card_img,
+    })
   })
 
-  if (path === null) return
-  downloadConfig.path = path
+  // 所有视频
+  cards.value.filter(c => c.video_list?.length ?? 0 > 0).forEach(c => {
+    downloadFileInfo.files.push({
+      name: c.card_name + '（水印）' + extractExtensionName(c.video_list_download![0]),
+      url: c.video_list_download![0],
+    })
+    downloadFileInfo.files.push({
+      name: c.card_name + extractExtensionName(c.video_list![0]),
+      url: c.video_list![0],
+    })
+  })
+
+  console.debug(downloadFileInfo)
+  batchDownloadInfo.value = downloadFileInfo
 }
+
 </script>
 <template>
   <div class="flex flex-col gap-4" v-loading="loading">
@@ -175,7 +130,7 @@ const selectSaveFolder = async () => {
       </template>
 
       <template #extra>
-        <ElButton type="primary" @click="showDialog = true">批量下载</ElButton>
+        <BatchDownloadButton :task="batchDownloadInfo"/>
       </template>
 
       <ElDescriptionsItem label="名称" name="name">
@@ -199,40 +154,5 @@ const selectSaveFolder = async () => {
           :index="index + 1"
       />
     </ElSpace>
-
-    <!-- 批量保存对话框 -->
-    <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
-      <ElForm label-width="auto"
-              ref="formRef"
-              :model="downloadConfig"
-              :rules="rules"
-              class="max-w-lg"
-      >
-        <ElFormItem label="保存路径" prop="name">
-          <ElInput v-model="downloadConfig.path" readonly>
-            <template #append>
-              <ElButton @click="selectSaveFolder">浏览</ElButton>
-            </template>
-          </ElInput>
-        </ElFormItem>
-        <ElFormItem label="下载封面" prop="downloadCover">
-          <ElSwitch v-model="downloadConfig.downloadCover"/>
-        </ElFormItem>
-        <ElFormItem label="下载水印版本" prop="useWatermarkVersion">
-          <ElSwitch v-model="downloadConfig.useWatermarkVersion"/>
-        </ElFormItem>
-        <ElFormItem label="下载内容选择">
-          <ElCheckboxGroup v-model="downloadConfig.downloadContents">
-            <ElCheckbox label="图片" value="image"/>
-            <ElCheckbox label="视频" value="video"/>
-          </ElCheckboxGroup>
-        </ElFormItem>
-      </ElForm>
-
-      <template #footer>
-        <ElButton type="primary" @click="submit">确定</ElButton>
-        <ElButton @click="showDialog = false">取消</ElButton>
-      </template>
-    </ElDialog>
   </div>
 </template>

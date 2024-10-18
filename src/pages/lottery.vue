@@ -7,9 +7,6 @@ import type {
   BatchDownloadTask,
   LotteryDetail,
 } from '../types.ts'
-import { FormInstance } from "element-plus";
-import { pushNewTask } from "../downloadManager.ts";
-import { open } from "@tauri-apps/plugin-dialog";
 import { sep } from "@tauri-apps/api/path";
 import { CarouselInstance } from "element-plus/lib/components";
 
@@ -80,7 +77,7 @@ const fetchData = async () => {
     lotteryID.value = newLotteryID
     await router.replace({ query: { act_id: route.query.act_id, lottery_id: newLotteryID.toString() } })
   }
-
+  await generateDownloadTask()
   loading.value = false
 }
 
@@ -105,122 +102,82 @@ watch(selectedKey, () => {
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
 
-const showDialog = ref(false)
-const formRef = ref<FormInstance>()
-const downloadConfig = reactive({
-  path: '',
-  downloadCover: false,
-  useWatermarkVersion: false,
-  downloadContents: ['image', 'video'],
-})
-
-const rules = reactive(({
-  path: [
-    { required: true, message: '请选择保存位置', trigger: 'blur' },
-  ],
-}))
 
 const extractExtensionName = (url: string) => {
   return '.' + url.split('?')[0].split('.').pop()!.split('_')[0]
 }
 
-const submit = async () => {
-  await formRef.value?.validate(async (valid) => {
-    if (!valid || !downloadConfig.path) return
+// 批量下载相关信息生成
+const batchDownloadInfo = ref<BatchDownloadTask>()
+const generateDownloadTask = async () => {
+  const downloadFileInfo: BatchDownloadTask = {
+    name: actInfo.value!.act_title,
+    path: actInfo.value!.act_title,
+    files: [],
+  }
 
-    const downloadFileInfo: BatchDownloadTask = {
-      name: actInfo.value!.act_title,
-      path: `${downloadConfig.path}${sep()}${actInfo.value?.act_title}`,
-      files: [],
-    }
-    console.log(downloadFileInfo.path)
-    let lotteryDetails: LotteryDetail[]
-    try {
-      lotteryDetails = await Promise.all(lotteryInfo.value!.map(l => {
-        const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
-        url.searchParams.set('act_id', actID.value.toString())
-        url.searchParams.set('lottery_id', l.lottery_id.toString())
+  console.debug(downloadFileInfo.path)
 
-        return cachedAPIFetch(url).then(r => r.data) as Promise<LotteryDetail>
-      }))
-    } catch (e) {
-      console.error(e)
-      ElMessage({
-        message: `获取收藏集信息出错：${e}`,
-        type: 'error',
-      })
-      return
-    }
+  let lotteryDetails: LotteryDetail[]
+  try {
+    lotteryDetails = await Promise.all(lotteryInfo.value!.map(l => {
+      const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
+      url.searchParams.set('act_id', actID.value.toString())
+      url.searchParams.set('lottery_id', l.lottery_id.toString())
 
-    if (downloadConfig.downloadCover) {
-      lotteryInfo.value!.forEach(l => {
-        downloadFileInfo.files.push({
-          name: '封面' + extractExtensionName(l.lottery_image),
-          url: l.lottery_image,
-        })
-      })
-
-    }
-
-    if (downloadConfig.downloadContents.includes('image')) {
-      lotteryDetails.forEach(detail => {
-        detail.item_list.forEach(({ card_info: cardInfo }) => {
-          if (downloadConfig.useWatermarkVersion) {
-            downloadFileInfo.files.push({
-              name: detail.name + sep() + cardInfo.card_name + '（水印）' + extractExtensionName(cardInfo.card_img_download),
-              url: cardInfo.card_img_download,
-            })
-          } else {
-            downloadFileInfo.files.push({
-              name: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img),
-              url: cardInfo.card_img,
-            })
-          }
-        })
-      })
-    }
-
-    if (downloadConfig.downloadContents.includes('video')) {
-      lotteryDetails.forEach(detail => {
-        detail.item_list
-            .filter(i => i.card_info.video_list?.length ?? 0 > 0)
-            .forEach(({ card_info: cardInfo }) => {
-              if (downloadConfig.useWatermarkVersion) {
-                downloadFileInfo.files.push({
-                  name: detail.name + sep() + cardInfo.card_name + '（水印）' + extractExtensionName(cardInfo.video_list_download![0]),
-                  url: cardInfo.video_list_download![0],
-                })
-              } else {
-                downloadFileInfo.files.push({
-                  name: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list![0]),
-                  url: cardInfo.video_list![0],
-                })
-              }
-            })
-      })
-    }
-
-    console.debug(downloadFileInfo)
-
-    await pushNewTask(downloadFileInfo)
+      return cachedAPIFetch(url).then(r => r.data) as Promise<LotteryDetail>
+    }))
+  } catch (e) {
+    console.error(e)
     ElMessage({
-      message: '已提交下载任务，请到下载管理界面进行查看',
-      type: 'success',
+      message: `获取收藏集信息出错：${e}`,
+      type: 'error',
     })
+    return
+  }
 
-    showDialog.value = false
+  // 每个收藏集的封面
+  lotteryInfo.value!.forEach(l => {
+    downloadFileInfo.files.push({
+      name: l.lottery_name + ' - 封面' + extractExtensionName(l.lottery_image),
+      url: l.lottery_image,
+    })
   })
+
+  // 每个收藏集的所有图片
+  lotteryDetails.forEach(detail => {
+    detail.item_list.forEach(({ card_info: cardInfo }) => {
+      downloadFileInfo.files.push({
+        name: detail.name + '（水印）' + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img_download),
+        url: cardInfo.card_img_download,
+      })
+      downloadFileInfo.files.push({
+        name: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img),
+        url: cardInfo.card_img,
+      })
+    })
+  })
+
+  // 每个收藏集的所有视频
+  lotteryDetails.forEach(detail => {
+    detail.item_list
+        .filter(i => i.card_info.video_list?.length ?? 0 > 0)
+        .forEach(({ card_info: cardInfo }) => {
+          downloadFileInfo.files.push({
+            name: detail.name + '（水印）' + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list_download![0]),
+            url: cardInfo.video_list_download![0],
+          })
+          downloadFileInfo.files.push({
+            name: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list![0]),
+            url: cardInfo.video_list![0],
+          })
+        })
+  })
+
+  console.debug(downloadFileInfo)
+  batchDownloadInfo.value = downloadFileInfo
 }
 
-const selectSaveFolder = async () => {
-  const path = await open({
-    defaultPath: downloadConfig.path,
-    directory: true,
-  })
-
-  if (path === null) return
-  downloadConfig.path = path
-}
 
 // https://api.bilibili.com/x/emote/setting/panel?business=dynamic
 // 获得所有表情表（需要登录）
@@ -236,7 +193,7 @@ const selectSaveFolder = async () => {
       </template>
 
       <template #extra>
-        <ElButton type="primary" @click="showDialog = true">全部下载</ElButton>
+        <BatchDownloadButton :task="batchDownloadInfo"/>
       </template>
 
       <ElDescriptionsItem label="名称" name="name">
@@ -291,40 +248,5 @@ const selectSaveFolder = async () => {
         </KeepAlive>
       </ElCarouselItem>
     </ElCarousel>
-
-    <!-- 批量保存对话框 -->
-    <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
-      <ElForm label-width="auto"
-              ref="formRef"
-              :model="downloadConfig"
-              :rules="rules"
-              class="max-w-lg"
-      >
-        <ElFormItem label="保存路径" prop="name">
-          <ElInput v-model="downloadConfig.path" readonly>
-            <template #append>
-              <ElButton @click="selectSaveFolder">浏览</ElButton>
-            </template>
-          </ElInput>
-        </ElFormItem>
-        <ElFormItem label="下载封面" prop="downloadCover">
-          <ElSwitch v-model="downloadConfig.downloadCover"/>
-        </ElFormItem>
-        <ElFormItem label="下载水印版本" prop="useWatermarkVersion">
-          <ElSwitch v-model="downloadConfig.useWatermarkVersion"/>
-        </ElFormItem>
-        <ElFormItem label="下载内容选择">
-          <ElCheckboxGroup v-model="downloadConfig.downloadContents">
-            <ElCheckbox label="图片" value="image"/>
-            <ElCheckbox label="视频" value="video"/>
-          </ElCheckboxGroup>
-        </ElFormItem>
-      </ElForm>
-
-      <template #footer>
-        <ElButton type="primary" @click="submit">确定</ElButton>
-        <ElButton @click="showDialog = false">取消</ElButton>
-      </template>
-    </ElDialog>
   </div>
 </template>
