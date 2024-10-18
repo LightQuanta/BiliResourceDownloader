@@ -58,6 +58,10 @@ const showDebugInfo = () => {
 
 const hasPendant = computed(() => UPInfo.value?.card?.pendant.pid ?? 0 !== 0)
 
+const router = useRouter()
+const searchPendant = () => {
+  router.push({ path: '/search/garb', query: { keyword: UPInfo.value?.card.pendant.name } })
+}
 // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/space.md#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%8A%A8%E6%80%81
 // 尝试根据第一条获取的动态获得装扮信息？
 
@@ -123,10 +127,8 @@ const hasPendant = computed(() => UPInfo.value?.card?.pendant.pid ?? 0 !== 0)
         <span class="whitespace-pre-wrap">{{ UPInfo?.card.sign }}</span>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="头像框" :span="6" v-if="hasPendant">
-        <RouterLink :to="`/search/garb?keyword=${UPInfo?.card.pendant?.name}`">
-          <!--  TODO 头像框的pid是否可以解析？ -->
-          <ElLink type="primary">{{ UPInfo.card.pendant.name }} - 点击搜索</ElLink>
-        </RouterLink>
+        <!--  TODO 头像框的pid是否可以解析？ -->
+        <ElLink type="primary" @click="searchPendant">{{ UPInfo.card.pendant.name }} - 点击搜索</ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="直播间" :span="6" v-if="roomID">
         <RouterLink :to="`/liveroom/${roomID}`">
