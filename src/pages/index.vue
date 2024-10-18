@@ -50,7 +50,7 @@ const jump = async () => {
     }
   }
 
-  await autoJump(input, true)
+  await autoJump(input, true, type)
 }
 </script>
 
