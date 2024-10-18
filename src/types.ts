@@ -418,6 +418,53 @@ interface BasicUserInfo {
     like_num: number
 }
 
+// https://api.live.bilibili.com/live_user/v1/Master/info?uid=${uid}
+interface BasicLiveUserInfo {
+    info: {
+        uid: number
+        uname: string
+        face: string
+    }
+    // 粉丝数
+    follower_num: number
+    // 直播间号
+    room_id: number
+    // 粉丝牌
+    medal_name: string
+
+    // 房间公告
+    room_news: {
+        content: string
+        ctime: string
+        ctime_text: string
+    }
+}
+
+// https://api.live.bilibili.com/room/v1/Room/get_info?room_id=${liveroomID}
+interface BasicRoomInfo {
+    // 用户UID
+    uid: number
+    // 直播间号
+    room_id: number
+
+    // 直播间标题
+    title: string
+    // 直播间简介
+    description: string
+
+    // 背景图
+    background: string
+    // 直播间封面
+    user_cover: string
+    // 直播间关键帧（开播时才有）
+    keyframe: string
+
+    // 直播间分区名称
+    area_name: string
+    // 直播间Tag（逗号分隔）
+    tags: string
+}
+
 export type {
     BiliResourceDownloadEventEmitter,
     GarbSearchResult,
@@ -438,4 +485,6 @@ export type {
     VideoTextNode,
     AtTextNode,
     BasicUserInfo,
+    BasicLiveUserInfo,
+    BasicRoomInfo,
 }

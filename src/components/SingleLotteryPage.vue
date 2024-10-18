@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import type {
-  BatchDownloadTask,
   GarbSearchResult,
   LotteryCardInfo,
   LotteryDetail,
