@@ -9,6 +9,9 @@ let internalStore: Store | null = null
 
 const MAX_TASKS = 3
 
+// todo!: 长时间运行可能存在对象过大内存占用
+const taskDownloadFinishRecorder: Record<string, number> = {}
+
 async function getDownloadStore() {
     if (internalStore === null) {
         internalStore = await createStore('downloadManager')
@@ -84,8 +87,7 @@ async function startDownload() {
             if (files.length === 0) {
                 tasks.shift()
                 await store.set('tasks', tasks)
-                // todo!: 由于并发是非阻塞任务，当下载到同个任务集中的最后一个文件时，下一个异步循环会直接触发下载完成事件，从而移除该收藏集下所有可见文件，但事实上最后的几个文件仍处于下载中
-                emitter.emit('downloadFinish', { name })
+                // 不能在这触发文件下载完成事件，因为此时文件只是进入了队列，没有真正下载完成，在下方 then 事件有触发
                 continue
             }
 
@@ -102,8 +104,10 @@ async function startDownload() {
 
             // 调度器，检测当前放行下载数量，只有小于 3 时 object 对象才转为 fulfilled
             const endOperate = await enableDownloadScheduler()
-            console.log(`${path}${sep()}${file.name}`);
 
+            taskDownloadFinishRecorder[name] = taskDownloadFinishRecorder[name] ? taskDownloadFinishRecorder[name] + 1 : 1
+
+            // 不进行 await 的原因是不能阻塞这个循环，download 方法会在下载文件完成后才转为 fulfilled
             download(file.url,
                 `${path}${sep()}${file.name}`,
                 (downloadInfo) => {
@@ -111,6 +115,10 @@ async function startDownload() {
                 }, header).then(async () => {
                     endOperate()
                     emitter.emit('fileDownloadFinish', { name, file })
+                    taskDownloadFinishRecorder[name] = taskDownloadFinishRecorder[name] ? taskDownloadFinishRecorder[name] - 1 : 0
+                    if (taskDownloadFinishRecorder[name] === 0) {
+                        emitter.emit('downloadFinish', { name })
+                    }
                 })
             // end
             // 主动触发视图更新，不能放到 download then 里头，会触发错误的下载状态
