@@ -1,5 +1,5 @@
 import { createStore, Store } from '@tauri-apps/plugin-store';
-import { getLoginCookie } from "./pages/loginManager.ts";
+import { getLoginCookie } from "./loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
 
 let internalStore: Store | null = null
