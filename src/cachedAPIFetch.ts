@@ -1,4 +1,6 @@
 import { createStore, Store } from '@tauri-apps/plugin-store';
+import { getLoginCookie } from "./pages/loginManager.ts";
+import { GeneralAPIResponse } from "./types.ts";
 
 let internalStore: Store | null = null
 
@@ -31,13 +33,19 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
         }
     }
 
-    const json = await fetch(strURL, {
+    const cookie = await getLoginCookie()
+
+    const options = {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0'
         }
-    }).then(r => r.json())
-    if ((json as { code: number }).code !== 0) {
-        throw (json as { msg: string }).msg as string
+    }
+    if (cookie) {
+        options.headers.cookie = cookie
+    }
+    const json = await fetch(strURL, options).then(r => r.json()) as GeneralAPIResponse<unknown>
+    if (json.code !== 0) {
+        throw json
     }
 
     await store.set(strURL, {
@@ -50,4 +58,9 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
     return json
 }
 
-export { cachedAPIFetch }
+async function clearAPICache() {
+    const store = await getStore()
+    await store.clear()
+}
+
+export { cachedAPIFetch, clearAPICache }

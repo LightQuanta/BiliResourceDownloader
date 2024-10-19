@@ -1,3 +1,9 @@
+interface GeneralAPIResponse<T> {
+    code: number
+    message: string
+    data: T
+}
+
 interface GarbSearchResult<T extends LotteryProperties | SuitProperties> {
     // 神秘ID，貌似是装扮专用
     item_id: number
@@ -466,6 +472,7 @@ interface BasicRoomInfo {
 }
 
 export type {
+    GeneralAPIResponse,
     BiliResourceDownloadEventEmitter,
     GarbSearchResult,
     LotteryProperties,

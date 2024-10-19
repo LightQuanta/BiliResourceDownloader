@@ -21,12 +21,14 @@
     "@vueuse/core": "^11.1.0",
     "element-plus": "^2.8.4",
     "mitt": "^3.0.1",
+    "qrcode": "^1.5.4",
     "vue": "^3.3.4",
     "vue-router": "4"
   },
   "devDependencies": {
     "@iconify-json/ep": "^1.2.1",
     "@tauri-apps/cli": ">=2.0.0",
+    "@types/qrcode": "^1.5.5",
     "@vitejs/plugin-vue": "^5.0.5",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
