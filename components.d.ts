@@ -42,6 +42,7 @@ declare module 'vue' {
     GarbSearchCard: typeof import('./src/components/GarbSearchCard.vue')['default']
     IEpDownload: typeof import('~icons/ep/download')['default']
     ImageCard: typeof import('./src/components/ImageCard.vue')['default']
+    LoginRequired: typeof import('./src/components/LoginRequired.vue')['default']
     LotteryCard: typeof import('./src/components/LotteryCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
