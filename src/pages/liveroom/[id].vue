@@ -19,7 +19,7 @@ const uid = ref('')
 const apiUrl = ref('')
 const responseText = ref('')
 
-const liveroomUserInfo = ref<BasicLiveUserInfo>(null)
+const liveroomUserInfo = ref<BasicLiveUserInfo>()
 
 const fetchData = async (paramID: string) => {
   loading.value = true
@@ -33,7 +33,7 @@ const fetchData = async (paramID: string) => {
   let data: BasicRoomInfo
   try {
     const resp = await cachedAPIFetch(url)
-    data = resp.data
+    data = resp.data as BasicRoomInfo
     responseText.value = JSON.stringify(resp, null, 2)
   } catch (e) {
     console.error(e)
@@ -147,10 +147,10 @@ const showDebugInfo = () => {
       </ElDescriptionsItem>
       <ElDescriptionsItem label="直播间公告" :span="2" v-if="liveroomUserInfo?.room_news?.content.length ?? 0 > 0">
         <span class="whitespace-pre-wrap">
-          {{ liveroomUserInfo.room_news.content }}
+          {{ liveroomUserInfo?.room_news.content }}
         </span>
         <br/>
-        <ElText size="small">{{ liveroomUserInfo.room_news.ctime_text }}更新</ElText>
+        <ElText size="small">{{ liveroomUserInfo?.room_news.ctime_text }}更新</ElText>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="主播信息" :span="2">
         <UPInfo :mid="uid"/>

@@ -44,12 +44,12 @@ watch(displayMode, () => updateQuery())
 
 // 浏览器返回或前进时，同步更新搜索参数和显示模式
 
-const route = useRoute()
+const route = useRoute<'/search/garb'>()
 watch(() => route.query.keyword, () => {
-  keyword.value = route.query.keyword ?? ''
+  keyword.value = route.query.keyword as string ?? ''
   newSearch()
 })
-watch(() => route.query.display, () => displayMode.value = route.query.display ?? 'all')
+watch(() => route.query.display, () => displayMode.value = route.query.display as string ?? 'all')
 
 // 更新路由参数
 const updateQuery = () => {
@@ -74,7 +74,7 @@ const load = async () => {
     const resp = await cachedAPIFetch(url)
 
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
-    totalCount.value = resp.data.total
+    totalCount.value = resp.data.total as number
     if (totalCount.value === 0) return
     currentPage.value++
   } catch (e) {

@@ -2,14 +2,14 @@
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { BasicLiveUserInfo, BasicUserInfo } from "../../types.ts";
 
-const route = useRoute()
+const route = useRoute<'/space/[id]'>()
 const uid = computed(() => route.params.id)
 const roomID = ref('')
 
 const apiUrl = ref('')
 const responseText = ref('')
 
-const UPInfo = ref<BasicUserInfo>(null)
+const UPInfo = ref<BasicUserInfo>()
 
 const fetchData = async () => {
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
@@ -38,7 +38,7 @@ const fetchData = async () => {
 
   try {
     const resp = await cachedAPIFetch(url2)
-    roomID.value = (resp.data as BasicLiveUserInfo).room_id
+    roomID.value = (resp.data as BasicLiveUserInfo).room_id.toString()
     // responseText.value = JSON.stringify(resp, null, 2)
   } catch (e) {
     console.error(e)
@@ -128,7 +128,7 @@ const searchPendant = () => {
       </ElDescriptionsItem>
       <ElDescriptionsItem label="头像框" :span="6" v-if="hasPendant">
         <!--  TODO 头像框的pid是否可以解析？ -->
-        <ElLink type="primary" @click="searchPendant">{{ UPInfo.card.pendant.name }} - 点击搜索</ElLink>
+        <ElLink type="primary" @click="searchPendant">{{ UPInfo?.card.pendant.name }} - 点击搜索</ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem label="直播间" :span="6" v-if="roomID">
         <RouterLink :to="`/liveroom/${roomID}`">

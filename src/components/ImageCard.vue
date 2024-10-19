@@ -55,7 +55,7 @@ const downloadImage = async (url: string) => {
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">
-        <ElButton type="primary" @click="downloadImage(image)">
+        <ElButton type="primary" @click="downloadImage(image ?? '')">
           <ElIcon size="20">
             <i-ep-download/>
           </ElIcon>

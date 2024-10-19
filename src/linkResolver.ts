@@ -134,7 +134,7 @@ function resolveSuitID(text: string): string | null {
 }
 
 // 根据输入内容自动跳转至指定处理界面，若输入无效则不进行操作
-async function autoJump(input?: string, showMessage = false, typeOverride?: string = undefined): Promise<boolean> {
+async function autoJump(input?: string, showMessage = false, typeOverride: string = ''): Promise<boolean> {
     if (input === undefined) return false
 
     let processedInput = input.trim()
@@ -150,7 +150,7 @@ async function autoJump(input?: string, showMessage = false, typeOverride?: stri
         processedInput = link
     }
 
-    const type = typeOverride ?? resolveText(processedInput)
+    const type = typeOverride.length > 0 ? typeOverride : resolveText(processedInput)
     if (type === null) return false
     if (type === 'user') {
         const uid = resolveUID(processedInput)

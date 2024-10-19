@@ -13,20 +13,20 @@ const EACH_PAGE_COUNT = 30
 const keyword = ref('')
 const currentIndex = ref(DEFAULT_SHOW_COUNT)
 
-const emojiInfo = ref<EmojiPackages>(null)
+const emojiInfo = ref<EmojiPackages>()
 const allEmojis = ref<EmojiPackageInfo[]>([])
 
-const hasMore = computed(() => currentIndex.value < allEmojis.value?.length ?? 114514)
+const hasMore = computed(() => currentIndex.value < allEmojis.value.length)
 const onlyMyEmoji = ref(false)
-const myEmojiIDs = computed(() => emojiInfo.value.user_panel_packages.map(p => p.id))
+const myEmojiIDs = computed(() => emojiInfo.value?.user_panel_packages.map(p => p.id))
 
-const filteredEmojiGroups = ref([])
+const filteredEmojiGroups = ref<EmojiPackageInfo[]>([])
 
 watch(keyword, () => currentIndex.value = DEFAULT_SHOW_COUNT)
 const updateSearch = () => {
   let filtered = allEmojis.value ?? []
   if (onlyMyEmoji.value) {
-    filtered = filtered.filter(p => myEmojiIDs.value.includes(p.id))
+    filtered = filtered.filter(p => myEmojiIDs.value?.includes(p.id))
   }
 
   if (keyword.value !== '') {
@@ -63,7 +63,7 @@ const load = async () => {
   loading.value = false
 }
 
-const route = useRoute()
+const route = useRoute<"/search/emoji">()
 onMounted(async () => {
   keyword.value = route.query.keyword as string ?? ''
   await load()
@@ -75,7 +75,7 @@ const router = useRouter()
 
 // 浏览器返回或前进时，同步更新搜索参数
 watch(() => route.query.keyword, () => {
-  keyword.value = route.query.keyword ?? ''
+  keyword.value = route.query.keyword as string ?? ''
   onlyMyEmoji.value = route.query.only_mine === 'true'
   updateSearch()
 })

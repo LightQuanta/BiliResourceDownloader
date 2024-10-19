@@ -38,11 +38,11 @@ const initData = () => {
 
   files.forEach(file => {
     const paths = file.name.split(sep())
-    const name = paths.pop()
+    const name = paths.pop()!
 
     let currentNode: FilePathData[] = newData
     while (paths.length > 0) {
-      const dir = paths.shift()
+      const dir = paths.shift()!
       let nextNode = currentNode.find(d => d.value === dir)
 
       if (!nextNode) {
@@ -53,7 +53,7 @@ const initData = () => {
         }
         currentNode.push(nextNode)
       }
-      currentNode = nextNode.children
+      currentNode = nextNode!.children!
     }
 
     currentNode.push({
@@ -73,10 +73,10 @@ const selectedFiles = ref<string[]>([])
 interface FilePathData {
   value: string
   label: string
-  children?: FilePathData
+  children?: FilePathData[]
 }
 
-const treeRef = ref<TreeInstance>(null)
+const treeRef = ref<TreeInstance>()
 const submit = async () => {
   await formRef.value?.validate(async (valid) => {
     if (!valid || !downloadConfig.path) {
@@ -87,7 +87,7 @@ const submit = async () => {
       return
     }
 
-    if ((treeRef.value?.getCheckedNodes() ?? 0).length === 0) {
+    if (treeRef.value?.getCheckedNodes()?.length ?? 0 === 0) {
       ElMessage({
         message: '请选择要下载的内容！',
         type: 'error',
@@ -98,7 +98,7 @@ const submit = async () => {
     // 获取选择的单文件
     const selected: string[] = treeRef.value?.getCheckedNodes()
         .filter((data: FilePathData) => data.value?.startsWith('[final]'))
-        .map((data: FilePathData) => data.value.substring(7))
+        .map((data: FilePathData) => data.value.substring(7)) ?? []
 
     console.debug('已选择列表：')
     console.debug(selected)
@@ -107,14 +107,14 @@ const submit = async () => {
     const selectedFiles = selected.map(selection => {
       return {
         name: selection,
-        url: props.task.files.find(f => f.name === selection).url,
+        url: props.task!.files.find(f => f.name === selection)!.url,
       }
     })
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {
-      name: props.task.name,
-      path: `${downloadConfig.path}${sep()}${props.task.name}`,
+      name: props.task!.name,
+      path: `${downloadConfig.path}${sep()}${props.task!.name}`,
       files: selectedFiles
     }
 
