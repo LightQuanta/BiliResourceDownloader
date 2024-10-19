@@ -2,6 +2,8 @@ import { createStore, Store } from "@tauri-apps/plugin-store";
 
 let internalStore: Store | null = null
 
+const userLoggedIn = ref(false)
+
 async function getLoginStore() {
     if (internalStore === null) {
         internalStore = await createStore('login.bin')
@@ -13,6 +15,7 @@ async function saveLoginCookie(cookie: string) {
     const store = await getLoginStore()
     await store.set('cookie', cookie)
     await store.save()
+    userLoggedIn.value = true
 }
 
 async function getLoginCookie() {
@@ -20,15 +23,17 @@ async function getLoginCookie() {
     return await store.get('cookie')
 }
 
-async function loggedIn() {
+async function checkLoginState() {
     const cookie = await getLoginCookie()
-    return cookie !== null
+    userLoggedIn.value = cookie !== null
+    return userLoggedIn.value
 }
 
 async function clearLoginCookie() {
     const store = await getLoginStore()
     await store.clear()
     await store.save()
+    userLoggedIn.value = false
 }
 
-export { saveLoginCookie, getLoginCookie, loggedIn, clearLoginCookie }
+export { saveLoginCookie, getLoginCookie, checkLoginState, clearLoginCookie, userLoggedIn }

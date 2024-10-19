@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toDataURL } from 'qrcode'
 import { ElMessage } from "element-plus";
-import { clearLoginCookie, loggedIn, saveLoginCookie } from "./loginManager.ts";
+import { clearLoginCookie, checkLoginState, saveLoginCookie, userLoggedIn } from "./loginManager.ts";
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import { GeneralAPIResponse } from "../types.ts";
 
@@ -9,13 +9,10 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const qrCodeData = ref('')
 
-// 是否已经登录
-const userLoggedIn = ref(false)
-
 // 是否正在进行登录
 const loggingIn = ref(false)
 const login = async () => {
-  userLoggedIn.value = await loggedIn()
+  userLoggedIn.value = await checkLoginState()
   if (userLoggedIn.value) {
     ElMessage({
       message: '已经登录！',
@@ -100,7 +97,7 @@ const logoff = async () => {
 }
 
 onMounted(async () => {
-  userLoggedIn.value = await loggedIn()
+  userLoggedIn.value = await checkLoginState()
 })
 
 const testLoginState = async () => {

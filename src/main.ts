@@ -7,6 +7,7 @@ import mitt from "mitt";
 import { getDownloadStore, startDownload } from "./downloadManager.ts";
 import { BiliResourceDownloadEventEmitter } from "./types.ts";
 import { startClipboardListening } from "./cliboardListener.ts";
+import { checkLoginState } from "./pages/loginManager.ts";
 
 const emitter = mitt<BiliResourceDownloadEventEmitter>()
 
@@ -36,5 +37,6 @@ getDownloadStore().then(async store => {
 })
 
 startClipboardListening()
+checkLoginState();
 
 export { emitter, router }
