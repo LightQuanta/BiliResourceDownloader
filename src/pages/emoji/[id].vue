@@ -5,6 +5,7 @@ import { autoJump, resolveText } from "../../linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/emoji/[id]'>()
+const loading = ref(false)
 
 const id = ref('')
 const requestURL = ref('')
@@ -31,6 +32,7 @@ const generateDownloadTask = () => {
 }
 
 const fetchData = async () => {
+  loading.value = true
   id.value = route.params.id
 
   const url = new URL('https://api.bilibili.com/x/emote/package')
@@ -52,6 +54,7 @@ const fetchData = async () => {
   }
 
   generateDownloadTask()
+  loading.value = false
 }
 
 watch(() => route.params.id, fetchData, { immediate: true })
@@ -69,7 +72,7 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
 </script>
 
 <template>
-  <div>
+  <div v-loading="loading">
     <ElDescriptions border :column="2">
       <template #title>表情包信息</template>
 

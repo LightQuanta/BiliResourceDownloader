@@ -119,23 +119,26 @@ const showMore = () => {
     </ElInput>
     <ElSwitch v-model="onlyMyEmoji" @change="updateSearchAndQuery" active-text="只看我拥有的表情"/>
 
-    <div class="flex flex-wrap gap-4 items-stretch justify-center" v-infinite-scroll="showMore">
+    <div class="flex flex-wrap gap-4 items-center justify-center" v-infinite-scroll="showMore">
       <TransitionGroup name="list">
         <!-- TODO 修改这个抽象UI -->
-        <div v-for="emojiGroup in filteredEmojiGroups"
-             :key="emojiGroup.id"
+        <RouterLink v-for="emojiGroup in filteredEmojiGroups"
+                    :key="emojiGroup.id"
+                    :to="`/emoji/${emojiGroup.id}`"
+                    class="bg-white bg-opacity-60 rounded-xl flex items-center gap-2 p-4 w-72 transition-all shadow hover:shadow-2xl"
         >
           <ElImage :src="emojiGroup.url"
                    referrerpolicy="no-referrer"
-                   class="h-8 w-8"
+                   class="h-12 w-12 shrink-0"
                    lazy
           />
-          <RouterLink :to="`/emoji/${emojiGroup.id}`">
-            <ElLink type="primary">
+          <div class="flex flex-col w-full justify-end">
+            <ElText type="primary" size="large">
               {{ emojiGroup.text }}
-            </ElLink>
-          </RouterLink>
-        </div>
+            </ElText>
+            <ElText size="small">{{ new Date(emojiGroup.mtime * 1000).toLocaleString() }}</ElText>
+          </div>
+        </RouterLink>
       </TransitionGroup>
     </div>
 
