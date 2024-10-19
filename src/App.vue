@@ -25,7 +25,7 @@ const showDownloadDrawer = ref(false)
   </div>
 
 
-  <ElDrawer v-model="showDownloadDrawer" title="下载管理" size="80%" @open="emitter.emit('drawerOpen')">
+  <ElDrawer v-model="showDownloadDrawer" title="下载管理" size="60%" @open="emitter.emit('drawerOpen')">
     <DownloadManager/>
   </ElDrawer>
 </template>

@@ -131,7 +131,7 @@ const showDebugInfo = () => {
       <template #extra>
         <ElDrawer v-model="showDebugDrawer"
                   title="调试信息"
-                  size="70%"
+                  size="60%"
         >
           <ElDescriptions :column="1" border>
             <ElDescriptionsItem label="API调用地址">
