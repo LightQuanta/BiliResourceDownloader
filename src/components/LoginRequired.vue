@@ -16,26 +16,29 @@ const hideTooltip = () => {
 </script>
 
 <template>
-  <template>
-    <ElTooltip :visible="showTooltip" placement="top">
-      <template #content>
-        由于B站的API限制，该功能需要用户登录后才可以使用，请至登录界面进行扫码登录
-      </template>
-      <div v-loading="!userLoggedIn"
-           :element-loading-text="'该功能需要登录后才能使用'"
-           element-loading-spinner="''"
-           element-loading-background="rgba(0, 0, 0, 0.6)"
-           @mouseenter="displayTooltip"
-           @mouseleave="hideTooltip"
-      >
-        <slot/>
-      </div>
-    </ElTooltip>
-  </template>
+  <div v-loading="!userLoggedIn"
+       :element-loading-text="'由于B站API的限制，该功能需要用户登录后才可以使用\n请至登录界面进行扫码登录'"
+       element-loading-spinner="''"
+       element-loading-background="rgba(255, 255, 255, 0.3)"
+       @mouseenter="displayTooltip"
+       @mouseleave="hideTooltip"
+       class="min-h-20"
+  >
+    <slot/>
+  </div>
 </template>
 
 <style scoped>
 :deep(.circular) {
-  animation: none;
+  display: none;
+}
+
+:deep(.el-loading-text) {
+  white-space: pre-wrap;
+}
+
+:deep(.el-loading-mask) {
+  backdrop-filter: blur(3px);
+  box-shadow: rgba(128, 128, 128, 0.3) 0 0 10px;
 }
 </style>
