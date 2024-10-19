@@ -130,7 +130,11 @@ const showMore = () => {
                    class="h-8 w-8"
                    lazy
           />
-          {{ emojiGroup.text }}
+          <RouterLink :to="`/emoji/${emojiGroup.id}`">
+            <ElLink type="primary">
+              {{ emojiGroup.text }}
+            </ElLink>
+          </RouterLink>
         </div>
       </TransitionGroup>
     </div>

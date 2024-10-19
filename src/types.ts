@@ -485,7 +485,7 @@ interface EmojiPackageInfo {
     text: string
     // 封面图片链接
     url: string
-    //创建时间？
+    // 创建时间？
     mtime: number
     // 1:普通 2:会员专属 3:购买所得 4:颜文字
     type: 1 | 2 | 3 | 4
@@ -505,6 +505,30 @@ interface EmojiPackageInfo {
     package_sub_title: string
     ref_mid: number
     resource_type: number
+}
+
+interface EmojiPackageDetail extends EmojiPackageInfo {
+    emote: EmoteInfo[]
+}
+
+interface EmoteInfo {
+    // 表情本身ID（好像没啥用）
+    id: number
+    // 所属表情表ID
+    package_id: number
+    // 显示文本（[XXX_xxx]格式）
+    text: string
+    // 图片链接
+    url: string
+    meta: {
+        size: number
+        // 表情名称？
+        alias?: string
+    }
+    flags: {
+        no_access: boolean
+        unlocked: boolean
+    }
 }
 
 export type {
@@ -532,4 +556,6 @@ export type {
     BasicRoomInfo,
     EmojiPackages,
     EmojiPackageInfo,
+    EmojiPackageDetail,
+    EmoteInfo,
 }
