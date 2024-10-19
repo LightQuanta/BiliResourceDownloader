@@ -3,6 +3,7 @@ import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import type { EmojiPackageInfo, EmojiPackages, GeneralAPIResponse } from "../../types.ts";
 import Fuse from "fuse.js";
+import { userLoggedIn } from "../../loginManager.ts";
 
 // 默认首页展示的表情数
 const DEFAULT_SHOW_COUNT = 50
@@ -42,6 +43,7 @@ const updateSearch = () => {
 }
 
 const load = async () => {
+  if (!userLoggedIn.value) return
   loading.value = true
 
   const url = new URL('https://api.bilibili.com/x/emote/setting/panel')
@@ -82,6 +84,11 @@ watch(() => route.query.keyword, () => {
 
 watch(() => route.query.only_mine, () => {
   onlyMyEmoji.value = route.query.only_mine === 'true'
+  updateSearch()
+})
+
+watch(userLoggedIn, async () => {
+  await load()
   updateSearch()
 })
 
