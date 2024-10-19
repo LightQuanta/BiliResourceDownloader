@@ -130,12 +130,13 @@ const searchPendant = () => {
         <!--  TODO 头像框的pid是否可以解析？ -->
         <ElLink type="primary" @click="searchPendant">{{ UPInfo?.card.pendant.name }} - 点击搜索</ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="直播间" :span="6" v-if="roomID">
-        <RouterLink :to="`/liveroom/${roomID}`">
+      <ElDescriptionsItem label="直播间" :span="6">
+        <RouterLink :to="`/liveroom/${roomID}`" v-if="roomID > 0">
           <ElLink type="primary">
             {{ roomID }}
           </ElLink>
         </RouterLink>
+        <ElText v-else type="danger">未开通</ElText>
       </ElDescriptionsItem>
 
     </ElDescriptions>
