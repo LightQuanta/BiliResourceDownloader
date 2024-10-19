@@ -2,7 +2,7 @@
 import { toDataURL } from 'qrcode'
 import { ElMessage } from "element-plus";
 import { clearLoginCookie, loggedIn, saveLoginCookie } from "./loginManager.ts";
-import { cachedAPIFetch, clearAPICache } from "../cachedAPIFetch.ts";
+import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import { GeneralAPIResponse } from "../types.ts";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
@@ -104,14 +104,12 @@ onMounted(async () => {
 })
 
 const testLoginState = async () => {
-  await clearAPICache()
-
   let resp: GeneralAPIResponse<{
     isLogin: boolean
     uname?: string
   }>
   try {
-    resp = await cachedAPIFetch('https://api.bilibili.com/x/web-interface/nav')
+    resp = await cachedAPIFetch('https://api.bilibili.com/x/web-interface/nav', undefined, false)
   } catch (e) {
     if (e?.code ?? 0 == -101) {
       ElMessage({

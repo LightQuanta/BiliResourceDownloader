@@ -1,6 +1,7 @@
 import { createStore, Store } from '@tauri-apps/plugin-store';
 import { getLoginCookie } from "./pages/loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
+import { RequestInit } from "node/globals";
 
 let internalStore: Store | null = null
 
@@ -19,11 +20,11 @@ async function getStore() {
     return internalStore
 }
 
-async function cachedAPIFetch(url: URL | string): Promise<any> {
+async function cachedAPIFetch(url: URL | string, init?: RequestInit, useCache: boolean = true): Promise<any> {
     const strURL = (url as URL).href ?? url
     const store = await getStore()
 
-    if (await store.has(strURL)) {
+    if (useCache && await store.has(strURL)) {
         const cacheData = (await store.get(strURL)) as CachedJSONResponse
         if (cacheData.cachedTime > Date.now()) {
             console.debug(`using cached ${strURL}`)
@@ -34,7 +35,6 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
     }
 
     const cookie = await getLoginCookie()
-
     const options = {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0'
@@ -43,17 +43,21 @@ async function cachedAPIFetch(url: URL | string): Promise<any> {
     if (cookie) {
         options.headers.cookie = cookie
     }
-    const json = await fetch(strURL, options).then(r => r.json()) as GeneralAPIResponse<unknown>
+
+    const finalOptions = { ...options, ...init }
+
+    const json = await fetch(strURL, finalOptions).then(r => r.json()) as GeneralAPIResponse<unknown>
     if (json.code !== 0) {
         throw json
     }
 
-    await store.set(strURL, {
-        cachedTime: Date.now() + CACHE_TIME,
-        response: json,
-    })
-
-    console.debug(`cached ${strURL}`)
+    if (useCache) {
+        await store.set(strURL, {
+            cachedTime: Date.now() + CACHE_TIME,
+            response: json,
+        })
+        console.debug(`cached ${strURL}`)
+    }
 
     return json
 }
