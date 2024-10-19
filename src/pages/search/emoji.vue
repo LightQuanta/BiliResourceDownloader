@@ -130,7 +130,6 @@ const showMore = () => {
           <ElImage :src="emojiGroup.url"
                    referrerpolicy="no-referrer"
                    class="h-12 w-12 shrink-0"
-                   lazy
           />
           <div class="flex flex-col w-full justify-end">
             <ElText type="primary" size="large">
