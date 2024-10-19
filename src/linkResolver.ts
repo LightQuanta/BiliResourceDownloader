@@ -33,9 +33,8 @@ function resolveText(text?: string): Types | null {
             }
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/equity-link/collect-home') {
             const itemId = url.searchParams.get('item_id')
-            const part = url.searchParams.get('part')
 
-            if (/^\d+$/.test(itemId ?? '') && part === 'card') {
+            if (/^\d+$/.test(itemId ?? '')) {
                 return 'suit'
             }
         } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/suit/detail') {
