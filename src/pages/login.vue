@@ -139,7 +139,7 @@ const testLoginState = async () => {
 
 <template>
   <div>
-    <ElButton type="primary" @click="login" :disabled="loggingIn || loggedIn">登录</ElButton>
+    <ElButton type="primary" @click="login" :disabled="loggingIn || userLoggedIn">登录</ElButton>
     <ElButton type="primary" @click="testLoginState">测试登录状态</ElButton>
     <ElButton type="primary" @click="logoff" v-if="userLoggedIn">退出登录</ElButton>
     <br/>
