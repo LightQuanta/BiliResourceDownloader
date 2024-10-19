@@ -37,7 +37,7 @@ const initData = () => {
   const newData: FilePathData[] = []
 
   files.forEach(file => {
-    const paths = file.name.split(sep())
+    const paths = file.path.split(sep())
     const name = paths.pop()!
 
     let currentNode: FilePathData[] = newData
@@ -57,7 +57,7 @@ const initData = () => {
     }
 
     currentNode.push({
-      value: `[final]${file.name}`,
+      value: `[final]${file.path}`,
       label: name,
     })
   })
@@ -87,7 +87,7 @@ const submit = async () => {
       return
     }
 
-    if (treeRef.value?.getCheckedNodes()?.length ?? 0 === 0) {
+    if ((treeRef.value?.getCheckedNodes()?.length ?? 0) === 0) {
       ElMessage({
         message: '请选择要下载的内容！',
         type: 'error',
@@ -106,15 +106,15 @@ const submit = async () => {
     // 将所选文件转换为下载任务格式
     const selectedFiles = selected.map(selection => {
       return {
-        name: selection,
-        url: props.task!.files.find(f => f.name === selection)!.url,
+        path: selection,
+        url: props.task!.files.find(f => f.path === selection)!.url,
       }
     })
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {
       name: props.task!.name,
-      path: `${downloadConfig.path}${sep()}${props.task!.name}`,
+      path: downloadConfig.path,
       files: selectedFiles
     }
 

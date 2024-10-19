@@ -45,13 +45,13 @@ async function clearDownload() {
 
 let concurrentCount = ref(0)
 const subConcurrentCount = () => concurrentCount.value--
+
 function enableDownloadScheduler() {
     return new Promise<() => void>((res) => {
         if (concurrentCount.value < MAX_TASKS) {
             concurrentCount.value++
             res(subConcurrentCount)
-        }
-        else {
+        } else {
             const unwatch = watch(() => concurrentCount.value, (n, _) => {
                 if (n < MAX_TASKS) {
                     unwatch()
@@ -95,7 +95,7 @@ async function startDownload() {
             const header = new Map<string, string>()
             header.set('User-Agent', '111')
             // start
-            const finalDirectory = `${path}${sep()}${file.name}`
+            const finalDirectory = `${path}${sep()}${file.path}`
                 .split(sep())
                 .slice(0, -1)
                 .join(sep())
@@ -109,10 +109,11 @@ async function startDownload() {
 
             // 不进行 await 的原因是不能阻塞这个循环，download 方法会在下载文件完成后才转为 fulfilled
             download(file.url,
-                `${path}${sep()}${file.name}`,
+                `${path}${sep()}${file.path}`,
                 (downloadInfo) => {
                     emitter.emit('downloadProgress', { name, file, downloadInfo })
-                }, header).then(async () => {
+                }, header)
+                .then(async () => {
                     endOperate()
                     emitter.emit('fileDownloadFinish', { name, file })
                     taskDownloadFinishRecorder[name] = taskDownloadFinishRecorder[name] ? taskDownloadFinishRecorder[name] - 1 : 0

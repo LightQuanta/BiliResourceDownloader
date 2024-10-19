@@ -237,9 +237,9 @@ interface LotteryCardInfo {
 
 interface BatchDownloadTask {
     name: string
-    path: string
+    path?: string
     files: {
-        name: string
+        path: string
         url: string
         percentage?: number
         total?: number

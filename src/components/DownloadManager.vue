@@ -23,7 +23,7 @@ interface Progress {
 interface DownloadProgress {
   name: string
   file: {
-    name: string
+    path: string
     url: string
   }
   downloadInfo: {
@@ -35,7 +35,7 @@ interface DownloadProgress {
 interface FileDownloadFinish {
   name: string
   file: {
-    name: string
+    path: string
     url: string
   }
 }
@@ -44,7 +44,7 @@ emitter.on('downloadProgress', (info: DownloadProgress) => {
   const task = tasks.find(t => t.name === info.name)
   if (!task) return
 
-  const file = task.files?.find(f => f.name === info.file.name)
+  const file = task.files?.find(f => f.path === info.file.path)
   if (!file) return
 
   if (!file.percentage) file.percentage = 0
@@ -58,7 +58,7 @@ emitter.on('drawerOpen', async () => {
 })
 
 emitter.on('fileDownloadFinish', (info: FileDownloadFinish) => {
-  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.name === info.file.name)!, 1)
+  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.path === info.file.path)!, 1)
 })
 
 emitter.on('downloadFinish', (info: { name: string }) => {
@@ -101,11 +101,11 @@ const getProgress = (file: Progress) => {
     <div class="flex flex-col overflow-hidden">
 
       <TransitionGroup name="list">
-        <div v-for="task in tasks" :key="task.name + '-' + task.path">
+        <div v-for="task in tasks" :key="task.path + '-' + task.path">
           <ElText type="primary" class="block" size="large">{{ task.name }}</ElText>
           <TransitionGroup name="list">
-            <div v-for="file in task.files" :key="file.name">
-              <ElText>{{ file.name }}</ElText>
+            <div v-for="file in task.files" :key="file.path">
+              <ElText>{{ file.path }}</ElText>
               <ElProgress :percentage="getProgress(file)" />
             </div>
           </TransitionGroup>
