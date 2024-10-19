@@ -20,6 +20,7 @@
     "@tauri-apps/plugin-upload": "~2",
     "@vueuse/core": "^11.1.0",
     "element-plus": "^2.8.4",
+    "fuse.js": "^7.0.0",
     "mitt": "^3.0.1",
     "qrcode": "^1.5.4",
     "vue": "^3.3.4",

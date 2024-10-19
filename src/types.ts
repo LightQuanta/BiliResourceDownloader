@@ -471,6 +471,42 @@ interface BasicRoomInfo {
     tags: string
 }
 
+interface EmojiPackages {
+    user_panel_packages: EmojiPackageInfo[]
+    all_packages: EmojiPackageInfo[]
+
+}
+
+// 参考https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/emoji/list.md
+interface EmojiPackageInfo {
+    // 表情包组ID
+    id: number
+    // 表情包组名称
+    text: string
+    // 封面图片链接
+    url: string
+    //创建时间？
+    mtime: number
+    // 1:普通 2:会员专属 3:购买所得 4:颜文字
+    type: 1 | 2 | 3 | 4
+    attr: number
+    meta: {
+        size: 1 | 2
+        // 购买ID
+        item_id: number
+        // 购买链接
+        item_url?: string
+    }
+    flags: {
+        added: boolean
+        preview: boolean
+    }
+    label?: string
+    package_sub_title: string
+    ref_mid: number
+    resource_type: number
+}
+
 export type {
     GeneralAPIResponse,
     BiliResourceDownloadEventEmitter,
@@ -494,4 +530,6 @@ export type {
     BasicUserInfo,
     BasicLiveUserInfo,
     BasicRoomInfo,
+    EmojiPackages,
+    EmojiPackageInfo,
 }
