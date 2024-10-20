@@ -6,10 +6,6 @@ import { ElMessage } from "element-plus";
 
 const tasks = reactive<BatchDownloadTask[]>([])
 
-onMounted(async () => {
-  await refreshTasks()
-})
-
 const refreshTasks = async () => {
   tasks.splice(0, tasks.length)
   tasks.push(...await getAllDownloadTasks())
@@ -53,6 +49,7 @@ emitter.on('downloadProgress', (info: DownloadProgress) => {
   file.total = info.downloadInfo.total
 })
 
+// 该组件位于 drawer 内是懒加载的，所以页面首次渲染时触发的事件与该回调处于同个任务循环，因此不需要 onMounted 来触发刷新，否则会导致任务列表重复
 emitter.on('drawerOpen', async () => {
   await refreshTasks()
 })
