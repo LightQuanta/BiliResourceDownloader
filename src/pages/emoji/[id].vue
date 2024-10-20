@@ -44,10 +44,17 @@ const fetchData = async () => {
     responseJSON.value = JSON.stringify(packageDetail.value, null, 2)
   } catch (e) {
     console.error(e)
-    ElMessage({
-      message: `获取表情信息出错：${e}`,
-      type: 'error',
-    })
+    if (e.code === -101) {
+      ElMessage({
+        message: '登录失效，请至登录界面重新进行登录',
+        type: 'error',
+      })
+    } else {
+      ElMessage({
+        message: `获取表情信息出错：${e}`,
+        type: 'error',
+      })
+    }
   }
 
   generateDownloadTask()

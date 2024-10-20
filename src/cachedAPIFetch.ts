@@ -1,5 +1,5 @@
 import { createStore, Store } from '@tauri-apps/plugin-store';
-import { getLoginCookie } from "./loginManager.ts";
+import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
 
 let internalStore: Store | null = null
@@ -47,6 +47,13 @@ async function cachedAPIFetch(url: URL | string, init?: RequestInit, useCache = 
 
     const json = await fetch(strURL, finalOptions).then(r => r.json()) as GeneralAPIResponse<unknown>
     if (json.code !== 0) {
+
+        // 账号登录失效时清空登录信息
+        if (json.code === -101) {
+            userLoggedIn.value = false
+            await clearLoginCookie()
+        }
+
         throw json
     }
 
