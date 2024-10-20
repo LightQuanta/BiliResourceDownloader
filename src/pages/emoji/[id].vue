@@ -16,15 +16,12 @@ const emojis = computed(() => packageDetail.value?.emote ?? [])
 
 const downloadTask = ref<BatchDownloadTask>()
 
-const extractExtensionName = (url: string) => {
-  return '.' + url.split('?')[0].split('.').pop().split('_')[0]
-}
 const generateDownloadTask = () => {
   downloadTask.value = {
     name: packageDetail.value.text + ' - 表情包',
     files: packageDetail.value?.emote.map(e => {
       return {
-        path: packageDetail.value.text + ' - 表情包' + sep() + (e.meta.alias ?? e.text) + extractExtensionName(e.url),
+        path: packageDetail.value.text + ' - 表情包' + sep() + (e.meta.alias ?? e.text),
         url: e.url,
       }
     }) ?? [],

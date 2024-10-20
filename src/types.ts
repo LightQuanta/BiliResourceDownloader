@@ -533,6 +533,26 @@ interface EmoteInfo {
     }
 }
 
+/** 充电权益
+ *
+ *  https://api.bilibili.com/x/upowerv2/gw/rights/index?up_mid=${mid}
+ */
+interface PowerRights {
+    privilege_rights: Record<string, {
+        emote?: {
+            type: 'emote'
+            num: number
+            emojis: ChargeEmojiInfo[]
+        }
+    }>
+}
+
+interface ChargeEmojiInfo {
+    id: number
+    name: string
+    icon: string
+}
+
 export type {
     GeneralAPIResponse,
     BiliResourceDownloadEventEmitter,
@@ -560,4 +580,6 @@ export type {
     EmojiPackageInfo,
     EmojiPackageDetail,
     EmoteInfo,
+    PowerRights,
+    ChargeEmojiInfo,
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BasicLiveUserInfo, BasicUserInfo } from "../../types.ts";
+import { BasicLiveUserInfo, BasicUserInfo, BatchDownloadTask, ChargeEmojiInfo, PowerRights } from "../../types.ts";
+import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/space/[id]'>()
 const uid = computed(() => route.params.id)
@@ -9,7 +10,39 @@ const roomID = ref('')
 const apiUrl = ref('')
 const responseText = ref('')
 
-const UPInfo = ref<BasicUserInfo>()
+const userInfo = ref<BasicUserInfo>()
+const chargeEmojiInfo = ref<ChargeEmojiInfo[]>([])
+
+const batchDownloadTask = ref<BatchDownloadTask>()
+
+const generateBatchDownloadTask = () => {
+  const userName = userInfo.value?.card.name
+  const task: BatchDownloadTask = {
+    name: userInfo.value?.card.name,
+    files: [],
+  }
+
+  task.files.push({
+    path: `${userName} - 头像`,
+    url: userInfo.value?.card.face,
+  })
+
+  if (hasPendant.value) {
+    task.files.push({
+      path: `头像框 - ${userInfo.value?.card.pendant?.name}`,
+      url: userInfo.value?.card.pendant?.image,
+    })
+  }
+
+  if (chargeEmojiInfo.value?.length ?? 0 > 0) {
+    task.files.push(...chargeEmojiInfo.value.map(emoji => ({
+      path: `${userName}充电表情${sep()}${emoji.name}`,
+      url: emoji.icon,
+    })))
+  }
+
+  batchDownloadTask.value = task
+}
 
 const fetchData = async () => {
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
@@ -30,7 +63,7 @@ const fetchData = async () => {
   }
 
   responseText.value = JSON.stringify(resp, null, 2)
-  UPInfo.value = resp
+  userInfo.value = resp
 
   // 尝试获取直播间号
   const url2 = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
@@ -47,6 +80,32 @@ const fetchData = async () => {
       type: 'error',
     })
   }
+
+  const url3 = new URL('https://api.bilibili.com/x/upowerv2/gw/rights/index')
+  url3.searchParams.set('up_mid', uid.value)
+
+  let rightsData: PowerRights | null
+  try {
+    rightsData = await cachedAPIFetch(url3).then(r => r.data) as PowerRights | null
+  } catch (e) {
+    console.error(e)
+    ElMessage({
+      message: `获取充电信息出错：${e}`,
+      type: 'error',
+    })
+  }
+
+  if (rightsData !== null) {
+    const rights = rightsData.privilege_rights
+    const levels = Object.keys(rights).sort((a, b) => +b - +a)[0]
+    const levelRights = rights[levels]
+
+    if (levelRights.emote !== undefined) {
+      chargeEmojiInfo.value = levelRights.emote.emojis
+    }
+  }
+
+  generateBatchDownloadTask()
 }
 onMounted(fetchData)
 watch(uid, fetchData)
@@ -56,11 +115,11 @@ const showDebugInfo = () => {
   showDebugDrawer.value = true
 }
 
-const hasPendant = computed(() => UPInfo.value?.card?.pendant.pid ?? 0 !== 0)
+const hasPendant = computed(() => userInfo.value?.card?.pendant.pid ?? 0 !== 0)
 
 const router = useRouter()
 const searchPendant = () => {
-  router.push({ path: '/search/garb', query: { keyword: UPInfo.value?.card.pendant.name } })
+  router.push({ path: '/search/garb', query: { keyword: userInfo.value?.card.pendant.name } })
 }
 // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/space.md#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%8A%A8%E6%80%81
 // 尝试根据第一条获取的动态获得装扮信息？
@@ -115,6 +174,8 @@ const searchPendant = () => {
             type="textarea"
           />
         </ElDrawer>
+
+        <BatchDownloadButton :task="batchDownloadTask" />
       </template>
 
 
@@ -127,44 +188,44 @@ const searchPendant = () => {
           target="_blank"
           type="primary"
         >
-          {{ UPInfo?.card.name }}
+          {{ userInfo?.card.name }}
         </ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="性别"
       >
-        {{ UPInfo?.card.sex }}
+        {{ userInfo?.card.sex }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="UID"
       >
-        {{ UPInfo?.card.mid }}
+        {{ userInfo?.card.mid }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="关注数"
       >
-        {{ UPInfo?.card.attention }}
+        {{ userInfo?.card.attention }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="粉丝数"
       >
-        {{ UPInfo?.follower }}
+        {{ userInfo?.follower }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="获赞数"
       >
-        {{ UPInfo?.like_num }}
+        {{ userInfo?.like_num }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="6"
         label="签名"
       >
-        <span class="whitespace-pre-wrap">{{ UPInfo?.card.sign }}</span>
+        <span class="whitespace-pre-wrap">{{ userInfo?.card.sign }}</span>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         v-if="hasPendant"
@@ -176,7 +237,7 @@ const searchPendant = () => {
           type="primary"
           @click="searchPendant"
         >
-          {{ UPInfo?.card.pendant.name }} - 点击搜索
+          {{ userInfo?.card.pendant.name }} - 点击搜索
         </ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem
@@ -200,18 +261,35 @@ const searchPendant = () => {
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider>图片资源</ElDivider>
+    <ElDivider>用户相关图片</ElDivider>
     <div class="flex flex-wrap gap-4 justify-center">
       <ImageCard
-        :download-name="`${UPInfo?.card.name} - 头像`"
-        :image="UPInfo?.card.face"
+        :download-name="`${userInfo?.card.name} - 头像`"
+        :image="userInfo?.card.face"
         title="头像"
       />
       <ImageCard
         v-if="hasPendant"
-        :image="UPInfo?.card.pendant?.image"
-        :title="`头像框 - ${UPInfo?.card.pendant.name}`"
+        :image="userInfo?.card.pendant?.image"
+        :title="`头像框 - ${userInfo?.card.pendant.name}`"
       />
     </div>
+    <template v-if="chargeEmojiInfo.length > 0">
+      <ElDivider>充电表情</ElDivider>
+      <ElSpace
+        class="w-full justify-center"
+        wrap
+      >
+        <ImageCard
+          v-for="(emoji, index) in chargeEmojiInfo"
+          :key="emoji"
+          :download-name="emoji.name"
+          :image="emoji.icon"
+          :index="index"
+          :preview-images="chargeEmojiInfo.map(e => e.icon)"
+          :title="emoji.name"
+        />
+      </ElSpace>
+    </template>
   </div>
 </template>

@@ -29,6 +29,11 @@ const rules = reactive({
 // 最终可选择数据
 const finalData = ref<FilePathData[]>([])
 
+// 根据下载链接提前文件扩展名
+const extractExtensionName = (url: string) => {
+  return '.' + url.split('?')[0].split('.').pop().split('_')[0]
+}
+
 // 生成文件选择数据
 const initData = () => {
   finalData.value = []
@@ -105,9 +110,11 @@ const submit = async () => {
 
     // 将所选文件转换为下载任务格式
     const selectedFiles = selected.map(selection => {
+      const url = props.task.files.find(f => f.path === selection).url
+      const extension = extractExtensionName(url)
       return {
-        path: selection,
-        url: props.task.files.find(f => f.path === selection).url,
+        path: selection + extension,
+        url,
       }
     })
 
@@ -145,6 +152,7 @@ const selectSaveFolder = async () => {
   <ElButton
     type="primary"
     @click="showDialog = true"
+    class="ml-2"
   >
     批量下载
   </ElButton>

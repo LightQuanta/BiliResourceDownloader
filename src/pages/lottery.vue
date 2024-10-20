@@ -96,11 +96,6 @@ watch(selectedKey, () => {
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
 
-
-const extractExtensionName = (url: string) => {
-  return '.' + url.split('?')[0].split('.').pop().split('_')[0]
-}
-
 // 批量下载相关信息生成
 const batchDownloadInfo = ref<BatchDownloadTask>()
 const generateDownloadTask = async () => {
@@ -133,7 +128,7 @@ const generateDownloadTask = async () => {
   // 每个收藏集的封面
   lotteryInfo.value.forEach(l => {
     downloadFileInfo.files.push({
-      path: l.lottery_name + ' - 封面' + extractExtensionName(l.lottery_image),
+      path: l.lottery_name + ' - 封面',
       url: l.lottery_image,
     })
   })
@@ -145,7 +140,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.card_img_download?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + '（水印）' + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img_download),
+            path: detail.name + '（水印）' + sep() + cardInfo.card_name,
             url: cardInfo.card_img_download,
           })
         })
@@ -154,7 +149,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.card_img?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img),
+            path: detail.name + sep() + cardInfo.card_name,
             url: cardInfo.card_img,
           })
         })
@@ -167,7 +162,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.video_list_download?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + '（水印）' + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list_download[0]),
+            path: detail.name + '（水印）' + sep() + cardInfo.card_name,
             url: cardInfo.video_list_download[0],
           })
         })
@@ -176,7 +171,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.video_list?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list[0]),
+            path: detail.name + sep() + cardInfo.card_name,
             url: cardInfo.video_list[0],
           })
         })
