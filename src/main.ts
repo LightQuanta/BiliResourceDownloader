@@ -8,6 +8,9 @@ import { getDownloadStore, startDownload } from "./downloadManager.ts";
 import { BiliResourceDownloadEventEmitter } from "./types.ts";
 import { startClipboardListening } from "./cliboardListener.ts";
 import { checkLoginState } from "./loginManager.ts";
+import { createPinia } from 'pinia'
+
+const pinia = createPinia()
 
 const emitter = mitt<BiliResourceDownloadEventEmitter>()
 
@@ -24,6 +27,7 @@ if (import.meta.hot) {
 console.debug(routes)
 
 createApp(App)
+    .use(pinia)
     .use(router)
     .mount("#app");
 

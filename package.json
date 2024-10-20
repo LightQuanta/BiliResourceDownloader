@@ -21,7 +21,9 @@
     "@vueuse/core": "^11.1.0",
     "element-plus": "^2.8.4",
     "fuse.js": "^7.0.0",
+    "md5": "^2.3.0",
     "mitt": "^3.0.1",
+    "pinia": "^2.2.4",
     "qrcode": "^1.5.4",
     "vue": "^3.3.4",
     "vue-router": "4"
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@iconify-json/ep": "^1.2.1",
     "@tauri-apps/cli": ">=2.0.0",
+    "@types/md5": "^2.3.5",
     "@types/qrcode": "^1.5.5",
     "@vitejs/plugin-vue": "^5.0.5",
     "autoprefixer": "^10.4.20",
