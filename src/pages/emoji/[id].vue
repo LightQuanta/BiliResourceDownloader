@@ -14,6 +14,8 @@ const responseJSON = ref('')
 const packageDetail = ref<EmojiPackageDetail>()
 const emojis = computed(() => packageDetail.value?.emote ?? [])
 
+const isPureText = ref(false)
+
 const downloadTask = ref<BatchDownloadTask>()
 
 const generateDownloadTask = () => {
@@ -41,6 +43,7 @@ const fetchData = async () => {
   try {
     const resp = await cachedAPIFetch(url)
     packageDetail.value = resp.data.packages[0] as EmojiPackageDetail
+    isPureText.value = packageDetail.value.type === 4
     responseJSON.value = JSON.stringify(packageDetail.value, null, 2)
   } catch (e) {
     console.error(e)
@@ -86,7 +89,10 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
       </template>
 
       <template #extra>
-        <BatchDownloadButton :task="downloadTask" />
+        <BatchDownloadButton
+          v-if="!isPureText"
+          :task="downloadTask"
+        />
       </template>
 
       <ElDescriptionsItem label="名称">
@@ -123,6 +129,7 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
     <ElSpace
       class="w-full justify-center"
       wrap
+      v-if="!isPureText"
     >
       <ImageCard
         v-for="(emoji, index) in emojis"
@@ -134,5 +141,18 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
         :title="emoji.meta.alias ?? emoji.text"
       />
     </ElSpace>
+    <div
+      v-else
+      class="flex flex-col gap-4 justify-center"
+    >
+      <ElText
+        type="primary"
+        size="large"
+        v-for="emoji in emojis"
+        :key="emoji.text"
+      >
+        {{ emoji.text }}
+      </ElText>
+    </div>
   </div>
 </template>
