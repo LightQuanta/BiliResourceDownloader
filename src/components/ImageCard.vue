@@ -36,7 +36,7 @@ const downloadImage = async (url: string) => {
 </script>
 
 <template>
-  <ElCard class="w-80">
+  <ElCard class="max-w-80">
     <template
       v-if="title"
       #header
@@ -61,7 +61,6 @@ const downloadImage = async (url: string) => {
       :lazy="lazy ?? true"
       :preview-src-list="previewImages ?? [image]"
       :src="image"
-      class="w-full"
       fit="contain"
       preview-teleported
       referrerpolicy="no-referrer"

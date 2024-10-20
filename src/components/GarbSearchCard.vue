@@ -19,7 +19,7 @@ const jump = () => {
 </script>
 
 <template>
-  <ElCard class="w-80">
+  <ElCard class="max-w-80">
     <template #header>
       <ElTooltip
         :content="garb.name"
@@ -49,9 +49,7 @@ const jump = () => {
       :hide-on-click-modal="true"
       :preview-src-list="[garb.properties?.image_cover]"
       :src="garb.properties?.image_cover"
-      class="w-full h-96"
       fit="contain"
-      lazy
       preview-teleported
       referrerpolicy="no-referrer"
     />

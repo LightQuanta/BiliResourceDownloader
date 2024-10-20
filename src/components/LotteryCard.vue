@@ -58,7 +58,7 @@ const downloadFile = async (url: string) => {
 </script>
 
 <template>
-  <ElCard class="w-80">
+  <ElCard class="max-w-80">
     <template #header>
       <div class="flex">
         <div class="flex flex-col items-start">
@@ -91,7 +91,6 @@ const downloadFile = async (url: string) => {
       :initial-index="index ?? 0"
       :preview-src-list="previewImages ?? [imgUrl]"
       :src="imgUrl"
-      class="h-96 w-full"
       fit="contain"
       preview-teleported
       referrerpolicy="no-referrer"
