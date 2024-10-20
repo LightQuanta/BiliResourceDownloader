@@ -17,7 +17,7 @@ const currentIndex = ref(DEFAULT_SHOW_COUNT)
 const emojiInfo = ref<EmojiPackages>()
 const allEmojis = ref<EmojiPackageInfo[]>([])
 
-const hasMore = computed(() => currentIndex.value < allEmojis.value.length)
+const hasMore = computed(() => allEmojis.value.length === 0 || currentIndex.value < filteredEmojiGroups.value.length)
 const onlyMyEmoji = ref(false)
 const myEmojiIDs = computed(() => emojiInfo.value?.user_panel_packages.map(p => p.id))
 
@@ -168,9 +168,6 @@ const showMore = () => {
 
     <ElDivider v-if="hasMore">
       正在加载...
-    </ElDivider>
-    <ElDivider v-else>
-      已加载全部搜索结果
     </ElDivider>
   </LoginRequired>
 </template>
