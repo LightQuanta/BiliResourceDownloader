@@ -4,6 +4,8 @@ import { BasicLiveUserInfo, BasicUserInfo, BatchDownloadTask, ChargeEmojiInfo, P
 import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/space/[id]'>()
+const loading = ref(false)
+
 const uid = computed(() => route.params.id)
 const roomID = ref('')
 
@@ -45,6 +47,7 @@ const generateBatchDownloadTask = () => {
 }
 
 const fetchData = async () => {
+  loading.value = true
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', uid.value)
 
@@ -59,6 +62,7 @@ const fetchData = async () => {
       message: `获取UP主信息出错：${e}`,
       type: 'error',
     })
+    loading.value = false
     return
   }
 
@@ -84,18 +88,22 @@ const fetchData = async () => {
   const url3 = new URL('https://api.bilibili.com/x/upowerv2/gw/rights/index')
   url3.searchParams.set('up_mid', uid.value)
 
-  let rightsData: PowerRights | null
+  let rightsData: PowerRights | undefined
   try {
-    rightsData = await cachedAPIFetch(url3).then(r => r.data) as PowerRights | null
+    const tempResp = await cachedAPIFetch(url3)
+    rightsData = tempResp.data as PowerRights | undefined
   } catch (e) {
-    console.error(e)
-    ElMessage({
-      message: `获取充电信息出错：${e}`,
-      type: 'error',
-    })
+    // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
+    if (e.code !== 203010) {
+      console.error(e)
+      ElMessage({
+        message: `获取充电信息出错：${e}`,
+        type: 'error',
+      })
+    }
   }
 
-  if (rightsData !== null) {
+  if (rightsData !== undefined) {
     const rights = rightsData.privilege_rights
     const levels = Object.keys(rights).sort((a, b) => +b - +a)[0]
     const levelRights = rights[levels]
@@ -106,6 +114,7 @@ const fetchData = async () => {
   }
 
   generateBatchDownloadTask()
+  loading.value = false
 }
 onMounted(fetchData)
 watch(uid, fetchData)
@@ -127,7 +136,10 @@ const searchPendant = () => {
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div
+    class="flex flex-col"
+    v-loading="loading"
+  >
     <!-- 信息展示界面 -->
     <ElDescriptions
       :column="6"
