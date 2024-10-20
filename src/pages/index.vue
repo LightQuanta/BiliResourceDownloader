@@ -5,7 +5,7 @@ import { resolveText, autoJump } from "../linkResolver.ts";
 const inputText = ref('')
 const processedInputText = computed<string>(() => {
   if (URL.canParse(inputText.value)) {
-    const url = URL.parse(inputText.value)!
+    const url = new URL(inputText.value)
     if (url.protocol === 'http:') {
       url.protocol = 'https:'
     }

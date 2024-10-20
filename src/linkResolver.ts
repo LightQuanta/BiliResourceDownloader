@@ -59,7 +59,7 @@ function resolveUID(text: string): string | null {
     let uid = ''
     if (resolveText(text) === 'user') {
         if (URL.canParse(text)) {
-            uid = URL.parse(text)!.pathname.split('?')[0].split('/')[1]
+            uid = new URL(text).pathname.split('?')[0].split('/')[1]
         } else {
             uid = text.substring(4)
         }
@@ -74,7 +74,7 @@ function resolveUID(text: string): string | null {
 function resolveLiveroomID(text: string): string | null {
     let roomId: string
     if (resolveText(text) === 'liveroom') {
-        roomId = URL.parse(text)!.pathname.substring(1).split('?')[0]
+        roomId = new URL(text).pathname.substring(1).split('?')[0]
     } else if (/^\d+$/.test(text)) {
         roomId = text
     } else {
@@ -90,10 +90,10 @@ function resolveDynamicID(text: string): string | null {
 
     let id: string
     if (/^https:\/\/t\.bilibili\.com\/\d+(\?.+)?$/.test(text)) {
-        id = URL.parse(text)!.pathname.substring(1).split('?')[0]
+        id = new URL(text).pathname.substring(1).split('?')[0]
     } else {
         // /新版动态 opus/id 类型
-        id = URL.parse(text)!.pathname.substring(6).split('?')[0]
+        id = new URL(text).pathname.substring(6).split('?')[0]
     }
     return id
 }
@@ -105,7 +105,7 @@ function resolveAVBVID(text: string): string | null {
 
     let id: string
     if (/^https:\/\/(www\.)?bilibili\.com\/(video\/)?((av|AV)\d+|BV\w+)(\?.+)?$/.test(text)) {
-        id = URL.parse(text)!.pathname.substring(1).split('?')[0]
+        id = new URL(text).pathname.substring(1).split('?')[0]
         if (id.startsWith('video/')) {
             id = id.substring(6).replace('/', '')
         }
@@ -120,7 +120,7 @@ function resolveActID(text: string): string | null {
         return null
     }
 
-    const url = URL.parse(text)!
+    const url = new URL(text)
     return url.searchParams.get('id') ?? url.searchParams.get('act_id')!
 }
 
@@ -129,7 +129,7 @@ function resolveSuitID(text: string): string | null {
         return null
     }
 
-    const url = URL.parse(text)!
+    const url = new URL(text)
     return url.searchParams.get('id') ?? url.searchParams.get('item_id')
 }
 
