@@ -256,7 +256,6 @@ const generateDownloadTask = async () => {
         :value="lottery.properties.dlc_lottery_id.toString()"
       />
     </ElRadioGroup>
-    <br>
     <ElCarousel
       v-if="!loading"
       ref="carousel"
