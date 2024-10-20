@@ -69,23 +69,37 @@ const searchPendant = () => {
 
 <template>
   <div class="flex flex-col">
-
     <!-- 信息展示界面 -->
-    <ElDescriptions border :column="6">
+    <ElDescriptions
+      :column="6"
+      border
+    >
       <template #title>
         UP主信息
       </template>
 
       <template #extra>
-        <ElButton @click="showDebugInfo">显示调试信息</ElButton>
+        <ElButton @click="showDebugInfo">
+          显示调试信息
+        </ElButton>
         <!-- 调试信息 -->
-        <ElDrawer v-model="showDebugDrawer"
-                  title="调试信息"
-                  size="60%"
+        <ElDrawer
+          v-model="showDebugDrawer"
+          size="60%"
+          title="调试信息"
         >
-          <ElDescriptions :column="1" border>
+          <ElDescriptions
+            :column="1"
+            border
+          >
             <ElDescriptionsItem label="API调用地址">
-              <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
+              <ElLink
+                :href="apiUrl"
+                target="_blank"
+                type="primary"
+              >
+                {{ apiUrl }}
+              </ElLink>
             </ElDescriptionsItem>
             <ElDescriptionsItem label="用户UID">
               {{ uid }}
@@ -93,61 +107,110 @@ const searchPendant = () => {
           </ElDescriptions>
 
           <ElDivider>原始返回数据</ElDivider>
-          <ElInput v-model="responseText"
-                   type="textarea"
-                   readonly
-                   aria-multiline="true"
-                   autosize
+          <ElInput
+            v-model="responseText"
+            aria-multiline="true"
+            autosize
+            readonly
+            type="textarea"
           />
         </ElDrawer>
       </template>
 
 
-      <ElDescriptionsItem label="名称" :span="2">
-        <ElLink type="primary" :href="`https://space.bilibili.com/${uid}`" target="_blank">
+      <ElDescriptionsItem
+        :span="2"
+        label="名称"
+      >
+        <ElLink
+          :href="`https://space.bilibili.com/${uid}`"
+          target="_blank"
+          type="primary"
+        >
           {{ UPInfo?.card.name }}
         </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="性别" :span="2">
+      <ElDescriptionsItem
+        :span="2"
+        label="性别"
+      >
         {{ UPInfo?.card.sex }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="UID" :span="2">
+      <ElDescriptionsItem
+        :span="2"
+        label="UID"
+      >
         {{ UPInfo?.card.mid }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="关注数" :span="2">
+      <ElDescriptionsItem
+        :span="2"
+        label="关注数"
+      >
         {{ UPInfo?.card.attention }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="粉丝数" :span="2">
+      <ElDescriptionsItem
+        :span="2"
+        label="粉丝数"
+      >
         {{ UPInfo?.follower }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="获赞数" :span="2">
+      <ElDescriptionsItem
+        :span="2"
+        label="获赞数"
+      >
         {{ UPInfo?.like_num }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="签名" :span="6">
+      <ElDescriptionsItem
+        :span="6"
+        label="签名"
+      >
         <span class="whitespace-pre-wrap">{{ UPInfo?.card.sign }}</span>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="头像框" :span="6" v-if="hasPendant">
+      <ElDescriptionsItem
+        v-if="hasPendant"
+        :span="6"
+        label="头像框"
+      >
         <!--  TODO 头像框的pid是否可以解析？ -->
-        <ElLink type="primary" @click="searchPendant">{{ UPInfo?.card.pendant.name }} - 点击搜索</ElLink>
+        <ElLink
+          type="primary"
+          @click="searchPendant"
+        >
+          {{ UPInfo?.card.pendant.name }} - 点击搜索
+        </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="直播间" :span="6">
-        <RouterLink :to="`/liveroom/${roomID}`" v-if="roomID > 0">
+      <ElDescriptionsItem
+        :span="6"
+        label="直播间"
+      >
+        <RouterLink
+          v-if="roomID > 0"
+          :to="`/liveroom/${roomID}`"
+        >
           <ElLink type="primary">
             {{ roomID }}
           </ElLink>
         </RouterLink>
-        <ElText v-else type="danger">未开通</ElText>
+        <ElText
+          v-else
+          type="danger"
+        >
+          未开通
+        </ElText>
       </ElDescriptionsItem>
-
     </ElDescriptions>
 
     <ElDivider>图片资源</ElDivider>
     <div class="flex flex-wrap gap-4 justify-center">
-      <ImageCard title="头像" :image="UPInfo?.card.face"
-                 :download-name="`${UPInfo?.card.name} - 头像`"/>
-      <ImageCard :title="`头像框 - ${UPInfo?.card.pendant.name}`"
-                 v-if="hasPendant"
-                 :image="UPInfo?.card.pendant?.image"
+      <ImageCard
+        :download-name="`${UPInfo?.card.name} - 头像`"
+        :image="UPInfo?.card.face"
+        title="头像"
+      />
+      <ImageCard
+        v-if="hasPendant"
+        :image="UPInfo?.card.pendant?.image"
+        :title="`头像框 - ${UPInfo?.card.pendant.name}`"
       />
     </div>
   </div>

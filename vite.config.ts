@@ -31,7 +31,8 @@ export default defineConfig(async () => ({
                 IconsResolver({
                     prefix: 'Icon'
                 }),
-            ]
+            ],
+            vueTemplate: true,
         }),
         vue(),
         Components({

@@ -159,14 +159,16 @@ interface SuitDetail {
         }[]
         space_bg: {
             name: string
-            properties: {
-                // cnm这怎么标注类型
+            /**
+             * cnm这怎么标注类型
+             *
+             *  空间背景图（完整）
+             *  image1_landscape: string
+             *  空间背景图（肖像）
+             *  image1_portrait: string
+             */
+            properties: Record<string, string>
 
-                // // 空间背景图（完整）
-                // image1_landscape: string
-                // // 空间背景图（肖像）
-                // image1_portrait: string
-            }
         }
         thumbup: {
             name: string
@@ -380,7 +382,7 @@ interface AtTextNode extends RichTextNode {
 
 type BiliResourceDownloadEventEmitter = {
     // preset events
-} & Record<string, any>;
+} & Record<string, unknown>;
 
 interface BasicUserInfo {
     card: {

@@ -93,27 +93,47 @@ const showDebugInfo = () => {
 <template>
   <div v-loading="loading">
     <!-- TODO 什么b玩意丑死了，谁能帮忙改改UI -->
-    <ElDescriptions border :column="2">
-
+    <ElDescriptions
+      :column="2"
+      border
+    >
       <template #title>
         <div class="flex gap-1">
           <ElText>直播间</ElText>
-          <ElLink type="primary" :href="`https://live.bilibili.com/${roomId}`" target="_blank">{{ roomId }}</ElLink>
+          <ElLink
+            :href="`https://live.bilibili.com/${roomId}`"
+            target="_blank"
+            type="primary"
+          >
+            {{ roomId }}
+          </ElLink>
           <ElText>基础信息</ElText>
         </div>
       </template>
 
       <template #extra>
-        <ElButton @click="showDebugInfo">显示调试信息</ElButton>
+        <ElButton @click="showDebugInfo">
+          显示调试信息
+        </ElButton>
         <!-- 调试信息 -->
         <!-- TODO 多API链接支持 -->
-        <ElDrawer v-model="showDebugDrawer"
-                  title="调试信息"
-                  size="60%"
+        <ElDrawer
+          v-model="showDebugDrawer"
+          size="60%"
+          title="调试信息"
         >
-          <ElDescriptions :column="1" border>
+          <ElDescriptions
+            :column="1"
+            border
+          >
             <ElDescriptionsItem label="API调用地址">
-              <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
+              <ElLink
+                :href="apiUrl"
+                target="_blank"
+                type="primary"
+              >
+                {{ apiUrl }}
+              </ElLink>
             </ElDescriptionsItem>
             <ElDescriptionsItem label="直播间号">
               {{ route.params.id }}
@@ -124,63 +144,120 @@ const showDebugInfo = () => {
           </ElDescriptions>
 
           <ElDivider>原始返回数据</ElDivider>
-          <ElInput v-model="responseText"
-                   type="textarea"
-                   readonly
-                   aria-multiline="true"
-                   autosize
+          <ElInput
+            v-model="responseText"
+            aria-multiline="true"
+            autosize
+            readonly
+            type="textarea"
           />
         </ElDrawer>
       </template>
 
-      <ElDescriptionsItem label="标题" min-width="80px">{{ liveroomTitle }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="分区" min-width="80px">{{ areaType }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="简介" :span="2">{{ liveroomDescription }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="标签" :span="2">
-        <ElSpace wrap v-if="(roomTags[0]?.length ?? 0) > 0">
-          <ElTag v-for="tag in roomTags" :key="tag">{{ tag }}</ElTag>
+      <ElDescriptionsItem
+        label="标题"
+        min-width="80px"
+      >
+        {{ liveroomTitle }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        label="分区"
+        min-width="80px"
+      >
+        {{ areaType }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        :span="2"
+        label="简介"
+      >
+        {{ liveroomDescription }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        :span="2"
+        label="标签"
+      >
+        <ElSpace
+          v-if="(roomTags[0]?.length ?? 0) > 0"
+          wrap
+        >
+          <ElTag
+            v-for="tag in roomTags"
+            :key="tag"
+          >
+            {{ tag }}
+          </ElTag>
         </ElSpace>
-        <ElText v-else>无</ElText>
+        <ElText v-else>
+          无
+        </ElText>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="粉丝牌" :span="2" v-if="liveroomUserInfo?.medal_name">
-        <ElTag type="success" size="large" round>{{ liveroomUserInfo?.medal_name }}</ElTag>
+      <ElDescriptionsItem
+        v-if="liveroomUserInfo?.medal_name"
+        :span="2"
+        label="粉丝牌"
+      >
+        <ElTag
+          round
+          size="large"
+          type="success"
+        >
+          {{ liveroomUserInfo?.medal_name }}
+        </ElTag>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="直播间公告" :span="2" v-if="liveroomUserInfo?.room_news?.content.length ?? 0 > 0">
+      <ElDescriptionsItem
+        v-if="liveroomUserInfo?.room_news?.content.length ?? 0 > 0"
+        :span="2"
+        label="直播间公告"
+      >
         <span class="whitespace-pre-wrap">
           {{ liveroomUserInfo?.room_news.content }}
         </span>
-        <br/>
-        <ElText size="small">{{ liveroomUserInfo?.room_news.ctime_text }}更新</ElText>
+        <br>
+        <ElText size="small">
+          {{ liveroomUserInfo?.room_news.ctime_text }}更新
+        </ElText>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="主播信息" :span="2">
-        <UPInfo :mid="uid"/>
+      <ElDescriptionsItem
+        :span="2"
+        label="主播信息"
+      >
+        <UPInfo :mid="uid" />
       </ElDescriptionsItem>
     </ElDescriptions>
 
     <template v-if="hasImages">
       <ElDivider>直播间相关图片</ElDivider>
-      <ElSpace direction="vertical" class="w-full justify-center">
-        <ElSpace wrap class="justify-center">
-          <ImageCard v-if="backgroundImage"
-                     :image="backgroundImage"
-                     title="网页端直播间背景图"
-                     :preview-images="previewImages"
-                     :index="0"
-                     :download-name="`直播间背景图 - ${route.params.id}`"
+      <ElSpace
+        class="w-full justify-center"
+        direction="vertical"
+      >
+        <ElSpace
+          class="justify-center"
+          wrap
+        >
+          <ImageCard
+            v-if="backgroundImage"
+            :download-name="`直播间背景图 - ${route.params.id}`"
+            :image="backgroundImage"
+            :index="0"
+            :preview-images="previewImages"
+            title="网页端直播间背景图"
           />
-          <ImageCard v-if="coverImage"
-                     :image="coverImage"
-                     title="直播间封面"
-                     :preview-images="previewImages"
-                     :index="1"
-                     :download-name="`直播间封面 - ${route.params.id}`"
+          <ImageCard
+            v-if="coverImage"
+            :download-name="`直播间封面 - ${route.params.id}`"
+            :image="coverImage"
+            :index="1"
+            :preview-images="previewImages"
+            title="直播间封面"
           />
-          <ImageCard v-if="keyframeImage != ''"
-                     :image="keyframeImage"
-                     title="直播间关键帧"
-                     :preview-images="previewImages"
-                     :index="2"
-                     :download-name="`直播间关键帧 - ${route.params.id}`"
+          <ImageCard
+            v-if="keyframeImage != ''"
+            :download-name="`直播间关键帧 - ${route.params.id}`"
+            :image="keyframeImage"
+            :index="2"
+            :preview-images="previewImages"
+            title="直播间关键帧"
           />
         </ElSpace>
       </ElSpace>

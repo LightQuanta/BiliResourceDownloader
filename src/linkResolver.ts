@@ -5,7 +5,7 @@ type Types = 'liveroom' | 'user' | 'dynamic' | 'video' | 'suit' | 'lottery'
 function resolveText(text?: string): Types | null {
     if (text === null || text === undefined) return null
     if (URL.canParse(text)) {
-        const url = new URL(text)!
+        const url = new URL(text)
         if (/^https:\/\/live\.bilibili\.com\/\d+(\?.+)?$/.test(text)) {
             return 'liveroom'
         } else if (/^https:\/\/space\.bilibili\.com\/\d+(.+)?$/.test(text) || /^UID:\d+$/.test(text)) {
@@ -121,7 +121,7 @@ function resolveActID(text: string): string | null {
     }
 
     const url = new URL(text)
-    return url.searchParams.get('id') ?? url.searchParams.get('act_id')!
+    return url.searchParams.get('id') ?? url.searchParams.get('act_id')
 }
 
 function resolveSuitID(text: string): string | null {
@@ -134,17 +134,19 @@ function resolveSuitID(text: string): string | null {
 }
 
 // 根据输入内容自动跳转至指定处理界面，若输入无效则不进行操作
-async function autoJump(input?: string, showMessage = false, typeOverride: string = ''): Promise<boolean> {
+async function autoJump(input?: string, showMessage = false, typeOverride = ''): Promise<boolean> {
     if (input === undefined) return false
 
     let processedInput = input.trim()
     if (processedInput.startsWith('https://b23.tv/')) {
         const link = await resolveB23Link(processedInput)
         if (link === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的b23短链接！',
-                type: 'error',
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的b23短链接！',
+                    type: 'error',
+                })
+            }
             return false
         }
         processedInput = link
@@ -155,10 +157,12 @@ async function autoJump(input?: string, showMessage = false, typeOverride: strin
     if (type === 'user') {
         const uid = resolveUID(processedInput)
         if (uid === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的用户空间链接或UID！',
-                type: 'error',
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的用户空间链接或UID！',
+                    type: 'error',
+                })
+            }
             return false
         }
 
@@ -167,10 +171,12 @@ async function autoJump(input?: string, showMessage = false, typeOverride: strin
     } else if (type === 'liveroom') {
         const roomId = resolveLiveroomID(processedInput)
         if (roomId === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的直播间链接或直播间号！',
-                type: 'error'
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的直播间链接或直播间号！',
+                    type: 'error'
+                })
+            }
             return false
         }
 
@@ -179,10 +185,12 @@ async function autoJump(input?: string, showMessage = false, typeOverride: strin
     } else if (type === 'dynamic') {
         const id = resolveDynamicID(processedInput)
         if (id === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的动态链接！',
-                type: 'error',
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的动态链接！',
+                    type: 'error',
+                })
+            }
             return false
         }
         await router.push({ path: `/dynamic/${id}` })
@@ -190,10 +198,12 @@ async function autoJump(input?: string, showMessage = false, typeOverride: strin
     } else if (type === 'video') {
         const id = resolveAVBVID(processedInput)
         if (id === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的视频链接、BV号或AV号！',
-                type: 'error',
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的视频链接、BV号或AV号！',
+                    type: 'error',
+                })
+            }
             return false
         }
 
@@ -202,10 +212,12 @@ async function autoJump(input?: string, showMessage = false, typeOverride: strin
     } else if (type === 'lottery') {
         const id = resolveActID(processedInput)
         if (id === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的收藏集链接！',
-                type: 'error',
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的收藏集链接！',
+                    type: 'error',
+                })
+            }
             return false
         }
 
@@ -214,10 +226,12 @@ async function autoJump(input?: string, showMessage = false, typeOverride: strin
     } else if (type === 'suit') {
         const id = resolveSuitID(processedInput)
         if (id === null) {
-            showMessage && ElMessage({
-                message: '请输入正确的收藏集链接！',
-                type: 'error',
-            })
+            if (showMessage) {
+                ElMessage({
+                    message: '请输入正确的收藏集链接！',
+                    type: 'error',
+                })
+            }
             return false
         }
 

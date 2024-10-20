@@ -14,7 +14,7 @@ function startClipboardListening() {
         let text: string
         try {
             text = await readText()
-        } catch (_) {
+        } catch {
             return
         }
         if (text !== clipboardCache) {

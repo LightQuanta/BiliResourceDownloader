@@ -78,7 +78,7 @@ const dynamicTopic = computed(() => dynamicInfo.value?.topic)
 // 动态@的用户
 const atUsers = computed<AtTextNode[]>(() => dynamicContent.value
         ?.rich_text_nodes
-        .filter(n => n!.type === 'RICH_TEXT_NODE_TYPE_AT') as AtTextNode[]
+        .filter(n => n.type === 'RICH_TEXT_NODE_TYPE_AT') as AtTextNode[]
     ?? []
 )
 
@@ -121,21 +121,40 @@ const showDebugInfo = () => {
 </script>
 <template>
   <div v-loading="loading">
-    <ElDescriptions :column="2" border v-if="!loading">
-
+    <ElDescriptions
+      v-if="!loading"
+      :column="2"
+      border
+    >
       <template #title>
-        <ElLink type="primary" :href="`https://t.bilibili.com/${dynamicID}`" target="_blank">动态信息</ElLink>
+        <ElLink
+          :href="`https://t.bilibili.com/${dynamicID}`"
+          target="_blank"
+          type="primary"
+        >
+          动态信息
+        </ElLink>
       </template>
 
       <!-- 调试信息 -->
       <template #extra>
-        <ElDrawer v-model="showDebugDrawer"
-                  title="调试信息"
-                  size="60%"
+        <ElDrawer
+          v-model="showDebugDrawer"
+          size="60%"
+          title="调试信息"
         >
-          <ElDescriptions :column="1" border>
+          <ElDescriptions
+            :column="1"
+            border
+          >
             <ElDescriptionsItem label="API调用地址">
-              <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
+              <ElLink
+                :href="apiUrl"
+                target="_blank"
+                type="primary"
+              >
+                {{ apiUrl }}
+              </ElLink>
             </ElDescriptionsItem>
             <ElDescriptionsItem label="动态ID">
               {{ dynamicID }}
@@ -143,102 +162,165 @@ const showDebugInfo = () => {
           </ElDescriptions>
 
           <ElDivider>原始返回数据</ElDivider>
-          <ElInput v-model="responseText"
-                   type="textarea"
-                   readonly
-                   aria-multiline="true"
-                   autosize
+          <ElInput
+            v-model="responseText"
+            aria-multiline="true"
+            autosize
+            readonly
+            type="textarea"
           />
         </ElDrawer>
-        <ElButton @click="showDebugInfo">显示调试信息</ElButton>
+        <ElButton @click="showDebugInfo">
+          显示调试信息
+        </ElButton>
       </template>
 
       <!-- UP主信息 -->
-      <ElDescriptionsItem label="UP主" min-width="80px">
-        <UPInfo :mid="authorInfo?.mid?.toString() ?? ''"
-                :face="authorInfo?.face"
-                :name="authorInfo?.name"
+      <ElDescriptionsItem
+        label="UP主"
+        min-width="80px"
+      >
+        <UPInfo
+          :face="authorInfo?.face"
+          :mid="authorInfo?.mid?.toString() ?? ''"
+          :name="authorInfo?.name"
         />
       </ElDescriptionsItem>
 
       <!-- 收藏集/装扮信息展示 -->
       <ElDescriptionsItem :label="decorateDescription">
         <div class="flex items-center">
-          <ElLink v-if="hasDecoration" type="primary" @click="jump">
+          <ElLink
+            v-if="hasDecoration"
+            type="primary"
+            @click="jump"
+          >
             {{ authorInfo?.decorate?.name ?? '无' }}
           </ElLink>
-          <template v-else>无</template>
-          <span class="ml-auto translate-x-24 z-50 font-bold select-none"
-                v-if="authorInfo?.decorate?.fan.is_fan"
-                :style="{color: authorInfo?.decorate?.fan.color}"
+          <template v-else>
+            无
+          </template>
+          <span
+            v-if="authorInfo?.decorate?.fan.is_fan"
+            :style="{color: authorInfo?.decorate?.fan.color}"
+            class="ml-auto translate-x-24 z-50 font-bold select-none"
           >{{ authorInfo.decorate.fan.num_str }}</span>
-          <ElImage v-if="hasDecoration"
-                   :class="authorInfo?.decorate?.fan.is_fan ? 'h-12 select-none' : 'ml-auto h-12 select-none'"
-                   referrerpolicy="no-referrer"
-                   :src="authorInfo?.decorate?.card_url">
-          </ElImage>
+          <ElImage
+            v-if="hasDecoration"
+            :class="authorInfo?.decorate?.fan.is_fan ? 'h-12 select-none' : 'ml-auto h-12 select-none'"
+            :src="authorInfo?.decorate?.card_url"
+            referrerpolicy="no-referrer"
+          />
         </div>
       </ElDescriptionsItem>
 
-      <ElDescriptionsItem label="类型" :span="2">{{ dynamicTypeDesc }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="标题" :span="2" v-if="dynamicInfo?.major?.opus?.title">
+      <ElDescriptionsItem
+        :span="2"
+        label="类型"
+      >
+        {{ dynamicTypeDesc }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        v-if="dynamicInfo?.major?.opus?.title"
+        :span="2"
+        label="标题"
+      >
         <span class="font-bold">{{ dynamicInfo?.major?.opus?.title ?? '无' }}</span>
       </ElDescriptionsItem>
 
       <!-- 动态内容 -->
-      <ElDescriptionsItem label="内容" :span="2">
+      <ElDescriptionsItem
+        :span="2"
+        label="内容"
+      >
         <span class="whitespace-pre-wrap">{{ dynamicContent?.text }}</span>
       </ElDescriptionsItem>
 
       <!-- @的用户 -->
-      <ElDescriptionsItem label="@的用户" v-if="atUsers.length > 0" :span="2">
-        <UPInfo v-for="user in atUsers"
-                :key="user.rid"
-                :mid="user.rid"
-                :name="user.text"
-                type="at"
+      <ElDescriptionsItem
+        v-if="atUsers.length > 0"
+        :span="2"
+        label="@的用户"
+      >
+        <UPInfo
+          v-for="user in atUsers"
+          :key="user.rid"
+          :mid="user.rid"
+          :name="user.text"
+          type="at"
         />
       </ElDescriptionsItem>
 
       <!-- 话题 -->
-      <ElDescriptionsItem v-if="hasTopic" label="话题" :span="2">
-        <ElLink type="primary" :href="dynamicTopic?.jump_url" target="_blank">#{{ dynamicTopic?.name }}#</ElLink>
+      <ElDescriptionsItem
+        v-if="hasTopic"
+        :span="2"
+        label="话题"
+      >
+        <ElLink
+          :href="dynamicTopic?.jump_url"
+          target="_blank"
+          type="primary"
+        >
+          #{{ dynamicTopic?.name }}#
+        </ElLink>
       </ElDescriptionsItem>
 
       <!-- 转发动态的原动态信息 -->
-      <ElDescriptionsItem v-if="isForward" label="原动态" :span="2">
+      <ElDescriptionsItem
+        v-if="isForward"
+        :span="2"
+        label="原动态"
+      >
         <RouterLink :to="`/dynamic/${originalDynamicID}`">
-          <ElLink type="primary">点击查看</ElLink>
+          <ElLink type="primary">
+            点击查看
+          </ElLink>
         </RouterLink>
       </ElDescriptionsItem>
 
       <!-- 视频投稿解析 -->
-      <ElDescriptionsItem v-if="dynamicType === 'DYNAMIC_TYPE_AV'" label="视频投稿">
+      <ElDescriptionsItem
+        v-if="dynamicType === 'DYNAMIC_TYPE_AV'"
+        label="视频投稿"
+      >
         <div class="flex justify-start">
-          <RouterLink :to="`/video/${BVID}`"
-                      class="flex items-stretch justify-start">
-            <ElImage :src="videoCover"
-                     referrerpolicy="no-referrer"
-                     class="h-36"
+          <RouterLink
+            :to="`/video/${BVID}`"
+            class="flex items-stretch justify-start"
+          >
+            <ElImage
+              :src="videoCover"
+              class="h-36"
+              referrerpolicy="no-referrer"
             />
             <div class="h-36 w-72 border text-wrap rounded-r-md p-2">
-              <ElText class="font-bold">{{ videoTitle }}</ElText>
-              <div class="text-wrap overflow-hidden h-16 text-ellipsis">{{ videoDesc }}</div>
+              <ElText class="font-bold">
+                {{ videoTitle }}
+              </ElText>
+              <div class="text-wrap overflow-hidden h-16 text-ellipsis">
+                {{ videoDesc }}
+              </div>
             </div>
           </RouterLink>
         </div>
       </ElDescriptionsItem>
-
     </ElDescriptions>
 
-    <ElDivider v-if="pictureLinks?.length ?? 0 > 0">动态配图</ElDivider>
-    <ElSpace class="w-full justify-center" wrap>
-      <ImageCard v-for="(image, index) in pictureLinks"
-                 :key="image"
-                 :image="image"
-                 :download-name="image.split('/').pop()"
-                 :preview-images="pictureLinks"
-                 :index="index"
+    <ElDivider v-if="pictureLinks?.length ?? 0 > 0">
+      动态配图
+    </ElDivider>
+    <ElSpace
+      class="w-full justify-center"
+      wrap
+    >
+      <ImageCard
+        v-for="(image, index) in pictureLinks"
+        :key="image"
+        :download-name="image.split('/').pop()"
+        :image="image"
+        :index="index"
+        :preview-images="pictureLinks"
       />
     </ElSpace>
   </div>

@@ -12,7 +12,7 @@ const prop = defineProps<{
 }>()
 
 const downloadImage = async (url: string) => {
-  const suffix = url.split('?')[0].split('.').pop()!
+  const suffix = url.split('?')[0].split('.').pop()
   const name = (prop.downloadName ?? prop.title) + '.' + suffix
 
   const path = await save({
@@ -37,27 +37,43 @@ const downloadImage = async (url: string) => {
 
 <template>
   <ElCard class="w-80">
-    <template #header v-if="title">
-      <ElLink :href="image" class="w-full block text-center" target="_blank">
-        <ElText size="large" type="primary">{{ title }}</ElText>
+    <template
+      v-if="title"
+      #header
+    >
+      <ElLink
+        :href="image"
+        class="w-full block text-center"
+        target="_blank"
+      >
+        <ElText
+          size="large"
+          type="primary"
+        >
+          {{ title }}
+        </ElText>
       </ElLink>
     </template>
-    <ElImage fit="contain"
-             :src="image"
-             :alt="title"
-             :preview-src-list="previewImages ?? [image]"
-             :initial-index="index ?? 0"
-             :hide-on-click-modal="true"
-             referrerpolicy="no-referrer"
-             class="w-full"
-             :lazy="lazy ?? true"
-             preview-teleported
+    <ElImage
+      :alt="title"
+      :hide-on-click-modal="true"
+      :initial-index="index ?? 0"
+      :lazy="lazy ?? true"
+      :preview-src-list="previewImages ?? [image]"
+      :src="image"
+      class="w-full"
+      fit="contain"
+      preview-teleported
+      referrerpolicy="no-referrer"
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">
-        <ElButton type="primary" @click="downloadImage(image ?? '')">
+        <ElButton
+          type="primary"
+          @click="downloadImage(image ?? '')"
+        >
           <ElIcon size="20">
-            <i-ep-download/>
+            <i-ep-download />
           </ElIcon>
         </ElButton>
       </div>

@@ -9,7 +9,7 @@ const CACHE_TIME = 5 * 60 * 1000
 
 interface CachedJSONResponse {
     cachedTime: number
-    response: any
+    response: unknown
 }
 
 async function getStore() {
@@ -19,7 +19,7 @@ async function getStore() {
     return internalStore
 }
 
-async function cachedAPIFetch(url: URL | string, init?: RequestInit, useCache: boolean = true): Promise<GeneralAPIResponse<any>> {
+async function cachedAPIFetch(url: URL | string, init?: RequestInit, useCache = true): Promise<GeneralAPIResponse<unknown>> {
     const strURL = (url as URL).href ?? url
     const store = await getStore()
 
@@ -40,7 +40,7 @@ async function cachedAPIFetch(url: URL | string, init?: RequestInit, useCache: b
         }
     }
     if (cookie) {
-        options.headers!.cookie! = cookie
+        options.headers.cookie = cookie
     }
 
     const finalOptions = { ...options, ...init }

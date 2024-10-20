@@ -38,11 +38,11 @@ const initData = () => {
 
   files.forEach(file => {
     const paths = file.path.split(sep())
-    const name = paths.pop()!
+    const name = paths.pop()
 
     let currentNode: FilePathData[] = newData
     while (paths.length > 0) {
-      const dir = paths.shift()!
+      const dir = paths.shift()
       let nextNode = currentNode.find(d => d.value === dir)
 
       if (!nextNode) {
@@ -53,7 +53,7 @@ const initData = () => {
         }
         currentNode.push(nextNode)
       }
-      currentNode = nextNode!.children!
+      currentNode = nextNode.children
     }
 
     currentNode.push({
@@ -107,13 +107,13 @@ const submit = async () => {
     const selectedFiles = selected.map(selection => {
       return {
         path: selection,
-        url: props.task!.files.find(f => f.path === selection)!.url,
+        url: props.task.files.find(f => f.path === selection).url,
       }
     })
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {
-      name: props.task!.name,
+      name: props.task.name,
       path: downloadConfig.path,
       files: selectedFiles
     }
@@ -142,43 +142,68 @@ const selectSaveFolder = async () => {
 </script>
 
 <template>
-  <ElButton type="primary" @click="showDialog = true">批量下载</ElButton>
+  <ElButton
+    type="primary"
+    @click="showDialog = true"
+  >
+    批量下载
+  </ElButton>
 
   <!-- 批量保存对话框 -->
   <Teleport to="body">
-    <ElDialog v-model="showDialog" title="批量下载设置" class="max-w-lg">
-      <ElForm label-width="auto"
-              ref="formRef"
-              :model="downloadConfig"
-              :rules="rules"
-              class="max-w-lg"
+    <ElDialog
+      v-model="showDialog"
+      class="max-w-lg"
+      title="批量下载设置"
+    >
+      <ElForm
+        ref="formRef"
+        :model="downloadConfig"
+        :rules="rules"
+        class="max-w-lg"
+        label-width="auto"
       >
-        <ElFormItem label="保存路径" prop="name">
-          <ElInput v-model="downloadConfig.path" readonly>
+        <ElFormItem
+          label="保存路径"
+          prop="name"
+        >
+          <ElInput
+            v-model="downloadConfig.path"
+            readonly
+          >
             <template #append>
-              <ElButton @click="selectSaveFolder">浏览</ElButton>
+              <ElButton @click="selectSaveFolder">
+                浏览
+              </ElButton>
             </template>
           </ElInput>
         </ElFormItem>
 
-        <ElTreeSelect v-model="selectedFiles"
-                      multiple
-                      :data="finalData"
-                      show-checkbox
-                      ref="treeRef"
-                      clearable
-                      size="large"
-                      collapse-tags
-                      collapse-tags-tooltip
-                      placeholder="选择要下载的内容"
-                      filterable
+        <ElTreeSelect
+          ref="treeRef"
+          v-model="selectedFiles"
+          :data="finalData"
+          clearable
+          collapse-tags
+          collapse-tags-tooltip
+          filterable
+          multiple
+          placeholder="选择要下载的内容"
+          show-checkbox
+          size="large"
         />
-
       </ElForm>
 
       <template #footer>
-        <ElButton type="primary" @click="submit">确定</ElButton>
-        <ElButton @click="showDialog = false">取消</ElButton>
+        <ElButton
+          type="primary"
+          @click="submit"
+        >
+          确定
+        </ElButton>
+        <ElButton @click="showDialog = false">
+          取消
+        </ElButton>
       </template>
     </ElDialog>
   </Teleport>

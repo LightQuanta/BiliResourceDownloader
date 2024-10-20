@@ -14,13 +14,13 @@ const imgUrl = computed(() => hasWatermark.value ? prop.card.card_img_download :
 const hasVideo = computed(() => (prop.card.video_list?.length ?? 0) != 0)
 const videoUrl = computed(() => {
   if (hasVideo.value) {
-    return hasWatermark.value ? prop.card.video_list_download![0] : prop.card.video_list![0]
+    return hasWatermark.value ? prop.card.video_list_download[0] : prop.card.video_list[0]
   }
   return ''
 })
 
 const downloadFile = async (url: string) => {
-  const suffix = url.split('?')[0].split('.').pop()!
+  const suffix = url.split('?')[0].split('.').pop()
   const name = prop.card.card_name + '.' + suffix
 
   const path = await save({
@@ -62,45 +62,81 @@ const downloadFile = async (url: string) => {
     <template #header>
       <div class="flex">
         <div class="flex flex-col items-start">
-          <ElText size="large" class="w-full" type="primary">{{ card.card_name }}</ElText>
-          <ElText size="small" class="w-full" type="info">稀有度：{{ card.card_scarcity }}</ElText>
+          <ElText
+            class="w-full"
+            size="large"
+            type="primary"
+          >
+            {{ card.card_name }}
+          </ElText>
+          <ElText
+            class="w-full"
+            size="small"
+            type="info"
+          >
+            稀有度：{{ card.card_scarcity }}
+          </ElText>
         </div>
-        <ElSwitch class="ml-auto" size="small" v-model="hasWatermark" active-text="水印"/>
+        <ElSwitch
+          v-model="hasWatermark"
+          active-text="水印"
+          class="ml-auto"
+          size="small"
+        />
       </div>
     </template>
-    <ElImage fit="contain"
-             :src="imgUrl"
-             :alt="card.card_name"
-             :preview-src-list="previewImages ?? [imgUrl]"
-             :initial-index="index ?? 0"
-             :hide-on-click-modal="true"
-             referrerpolicy="no-referrer"
-             class="h-96 w-full"
-             preview-teleported
+    <ElImage
+      :alt="card.card_name"
+      :hide-on-click-modal="true"
+      :initial-index="index ?? 0"
+      :preview-src-list="previewImages ?? [imgUrl]"
+      :src="imgUrl"
+      class="h-96 w-full"
+      fit="contain"
+      preview-teleported
+      referrerpolicy="no-referrer"
     />
     <template #footer>
       <div class="flex h-4 items-center">
         <ElButtonGroup v-if="hasVideo">
-          <ElButton type="primary" @click="downloadFile(imgUrl)">
+          <ElButton
+            type="primary"
+            @click="downloadFile(imgUrl)"
+          >
             图片
             <ElIcon size="16">
-              <i-ep-download/>
+              <i-ep-download />
             </ElIcon>
           </ElButton>
-          <ElButton type="primary" @click="downloadFile(videoUrl)">
+          <ElButton
+            type="primary"
+            @click="downloadFile(videoUrl)"
+          >
             视频
             <ElIcon size="16">
-              <i-ep-download/>
+              <i-ep-download />
             </ElIcon>
           </ElButton>
         </ElButtonGroup>
-        <ElButton v-else type="primary" @click="downloadFile(imgUrl)">
+        <ElButton
+          v-else
+          type="primary"
+          @click="downloadFile(imgUrl)"
+        >
           图片
           <ElIcon size="16">
-            <i-ep-download/>
+            <i-ep-download />
           </ElIcon>
         </ElButton>
-        <ElLink v-if="hasVideo" class="ml-auto" type="primary" :href="videoUrl" target="_blank">查看视频</ElLink>
+        <ElLink
+          v-if="hasVideo"
+          :href="videoUrl"
+          class="ml-auto"
+          target="_blank"
+          type="primary"
+        >
+          查看视频
+        </ElLink>
       </div>
     </template>
   </ElCard>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { resolveText, autoJump } from "../linkResolver.ts";
+import { autoJump, resolveText } from "../linkResolver.ts";
 
 const inputText = ref('')
 const processedInputText = computed<string>(() => {
@@ -57,29 +57,61 @@ const jump = async () => {
 <template>
   <div class="flex justify-center items-center w-full h-full">
     <ElInput
-        v-model="inputText"
-        placeholder="输入要搜索的内容"
-        autofocus
-        clearable
-        @input="onChange"
-        class="max-w-screen-sm"
-        autocomplete="on"
+      v-model="inputText"
+      placeholder="输入要搜索的内容"
+      autofocus
+      clearable
+      @input="onChange"
+      class="max-w-screen-sm"
+      autocomplete="on"
     >
       <template #prepend>
-        <ElSelect class="!w-40" v-model="selectedSearchType" placeholder="选择搜索类型">
-          <ElOption label="自动推断" value="auto"/>
-          <ElOption label="直播间信息" value="liveroom"/>
-          <ElOption label="用户信息" value="user"/>
-          <ElOption label="动态" value="dynamic"/>
-          <ElOption label="视频" value="video"/>
-          <ElOption label="收藏集" value="lottery"/>
-          <ElOption label="装扮" value="suit"/>
-          <ElOption label="装扮/收藏集搜索" value="garbSearch"/>
+        <ElSelect
+          v-model="selectedSearchType"
+          class="!w-40"
+          placeholder="选择搜索类型"
+        >
+          <ElOption
+            label="自动推断"
+            value="auto"
+          />
+          <ElOption
+            label="直播间信息"
+            value="liveroom"
+          />
+          <ElOption
+            label="用户信息"
+            value="user"
+          />
+          <ElOption
+            label="动态"
+            value="dynamic"
+          />
+          <ElOption
+            label="视频"
+            value="video"
+          />
+          <ElOption
+            label="收藏集"
+            value="lottery"
+          />
+          <ElOption
+            label="装扮"
+            value="suit"
+          />
+          <ElOption
+            label="装扮/收藏集搜索"
+            value="garbSearch"
+          />
         </ElSelect>
       </template>
       <template #append>
         <!-- TODO type为啥无效？ -->
-        <ElButton type="primary" @click="jump" :icon="Search"/>
+        <ElButton
+          :icon="Search"
+          type="primary"
+          @click="jump"
+        />
       </template>
     </ElInput>
   </div>
