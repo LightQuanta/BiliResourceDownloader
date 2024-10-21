@@ -45,6 +45,13 @@ const generateBatchDownloadTask = () => {
     })
   }
 
+  if (userInfo.value?.space.l_img) {
+    task.files.push({
+      path: `${userName} - 网页端空间背景图`,
+      url: userInfo.value?.space.l_img ?? '',
+    })
+  }
+
   if (chargeEmojiInfo.value?.length ?? 0 > 0) {
     task.files.push(...chargeEmojiInfo.value.map(emoji => ({
       path: `${userName}充电表情${sep()}${emoji.name}`,

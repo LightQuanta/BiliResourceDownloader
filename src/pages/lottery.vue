@@ -115,7 +115,7 @@ const generateDownloadTask = async () => {
       url.searchParams.set('lottery_id', l.lottery_id.toString())
 
       return cachedAPIFetch(url).then(r => r.data) as Promise<LotteryDetail>
-    }))
+    }) ?? [])
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -128,7 +128,7 @@ const generateDownloadTask = async () => {
   // 每个收藏集的封面
   lotteryInfo.value?.forEach(l => {
     downloadFileInfo.files.push({
-      path: l.lottery_name + ' - 封面',
+      path: l.lottery_name + sep() + '封面',
       url: l.lottery_image,
     })
   })
@@ -139,7 +139,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.card_img?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + sep() + cardInfo.card_name,
+            path: [detail.name, '图片', cardInfo.card_name].join(sep()),
             url: cardInfo.card_img,
           })
         })
@@ -151,7 +151,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.video_list?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + sep() + cardInfo.card_name,
+            path: [detail.name, '视频', cardInfo.card_name].join(sep()),
             url: cardInfo.video_list?.[0] ?? '',
           })
         })
