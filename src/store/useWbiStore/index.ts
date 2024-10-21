@@ -9,8 +9,6 @@ export const useWbiStore = defineStore('bilibili_wbi', () => {
     refreshWbi
   } = useWbi()
 
-  refreshWbi()
-
   return {
     state,
     data,
