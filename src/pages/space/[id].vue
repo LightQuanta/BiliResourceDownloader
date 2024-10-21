@@ -149,9 +149,9 @@ const jumpToPendant = async () => {
   url.searchParams.set('item_id', id.toString())
   url.searchParams.set('part', 'card')
 
-  let data: SuitDetail
+  let data: SuitDetail | null
   try {
-    data = await cachedAPIFetch<SuitDetail>(url).then(r => r.data)
+    data = await cachedAPIFetch<SuitDetail | null>(url).then(r => r.data)
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -160,6 +160,16 @@ const jumpToPendant = async () => {
     })
     return
   }
+
+  // 这玩意怎么还能为空的？
+  if (data === null) {
+    ElMessage({
+      message: '获取头像框信息失败，该头像框信息无效！',
+      type: 'error',
+    })
+    return
+  }
+
   // 收藏集
   if (data.buy_link.length > 0) {
     await autoJump(data.buy_link, true)
