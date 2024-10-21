@@ -336,7 +336,7 @@ const showDebugInfo = () => {
             :index="index"
             :image="emoji.url"
             :preview-images="upEmoji.emoticons.map(e => e.url)"
-            :title="`UP主大表情 - ${emoji.emoji}`"
+            :title="emoji.emoji"
             :download-name="`${roomID}UP主大表情 - ${emoji.emoji}`"
           />
         </ElSpace>
@@ -353,7 +353,7 @@ const showDebugInfo = () => {
             :index="index"
             :image="emoji.url"
             :preview-images="roomEmoji.emoticons.map(e => e.url)"
-            :title="`房间专属表情 - ${emoji.emoji}`"
+            :title="emoji.emoji"
             :download-name="`${roomID}房间专属表情 - ${emoji.emoji}`"
           />
         </ElSpace>
