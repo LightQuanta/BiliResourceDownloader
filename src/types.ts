@@ -432,6 +432,8 @@ interface PendantInfo {
     pid: number
     name: string
     image: string
+    // 推荐使用这个
+    image_enhance: string
     // 重要，可用此ID从装扮API处获取跳转链接
     n_pid: number
 }
