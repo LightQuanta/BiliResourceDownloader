@@ -218,8 +218,8 @@ const selectSaveFolder = async () => {
   </Teleport>
 </template>
 
-<style scoped>
-.download-treeselect :deep(.el-select-dropdown__wrap) {
+<style>
+.el-select-dropdown__wrap:has(.download-treeselect) {
   max-height: 500px;
 }
 </style>
