@@ -157,6 +157,12 @@ const testLoginState = async () => {
     >
       退出登录
     </ElButton>
+    <ElButton @click="userLoggedIn = false">
+      （调试） 模拟登出状态
+    </ElButton>
+    <ElButton @click="userLoggedIn = true">
+      （调试） 模拟登录状态
+    </ElButton>
     <br>
     <ElImage
       v-if="loggingIn"

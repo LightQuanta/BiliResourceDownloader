@@ -137,6 +137,7 @@ const showMore = () => {
     <div
       v-infinite-scroll="showMore"
       class="flex flex-wrap gap-4 items-center justify-center"
+      v-loading="loading"
     >
       <TransitionGroup name="list">
         <!-- TODO 修改这个抽象UI -->

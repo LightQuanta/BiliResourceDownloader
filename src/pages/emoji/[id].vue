@@ -21,7 +21,7 @@ const downloadTask = ref<BatchDownloadTask>()
 const generateDownloadTask = () => {
   downloadTask.value = {
     name: packageDetail.value.text + ' - 表情包',
-    files: packageDetail.value?.emote.map(e => {
+    files: packageDetail.value?.emote?.map(e => {
       return {
         path: packageDetail.value.text + ' - 表情包' + sep() + (e.meta.alias ?? e.text),
         url: e.url,
