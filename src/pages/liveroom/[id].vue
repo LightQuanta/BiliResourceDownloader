@@ -294,7 +294,7 @@ const showDebugInfo = () => {
         >
           <ImageCard
             v-if="backgroundImage"
-            :download-name="`直播间背景图 - ${route.params.id}`"
+            :download-name="`${liveroomUserInfo?.info.uname} - 直播间背景图`"
             :image="backgroundImage"
             :index="0"
             :preview-images="previewImages"
@@ -302,7 +302,7 @@ const showDebugInfo = () => {
           />
           <ImageCard
             v-if="coverImage"
-            :download-name="`直播间封面 - ${route.params.id}`"
+            :download-name="`${liveroomUserInfo?.info.uname} - 直播间封面`"
             :image="coverImage"
             :index="1"
             :preview-images="previewImages"
@@ -310,7 +310,7 @@ const showDebugInfo = () => {
           />
           <ImageCard
             v-if="keyframeImage != ''"
-            :download-name="`直播间关键帧 - ${route.params.id}`"
+            :download-name="`${liveroomUserInfo?.info.uname} - 直播间关键帧`"
             :image="keyframeImage"
             :index="2"
             :preview-images="previewImages"
@@ -337,7 +337,7 @@ const showDebugInfo = () => {
             :image="emoji.url"
             :preview-images="upEmoji.emoticons.map(e => e.url)"
             :title="emoji.emoji"
-            :download-name="`${roomID}UP主大表情 - ${emoji.emoji}`"
+            :download-name="`${liveroomUserInfo?.info.uname}UP主大表情 - ${emoji.emoji}`"
             :extra-title="emoji.unlock_show_text"
           />
         </ElSpace>
@@ -355,7 +355,7 @@ const showDebugInfo = () => {
             :image="emoji.url"
             :preview-images="roomEmoji.emoticons.map(e => e.url)"
             :title="emoji.emoji"
-            :download-name="`${roomID}房间专属表情 - ${emoji.emoji}`"
+            :download-name="`${liveroomUserInfo?.info.uname}房间专属表情 - ${emoji.emoji}`"
           />
         </ElSpace>
       </div>
