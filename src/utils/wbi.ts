@@ -12,7 +12,7 @@ const mixinKeyEncTab = [
 const getMixinKey = (orig: string) =>
     mixinKeyEncTab
         .map((n) => orig[n])
-        .join("")
+        .join('')
         .slice(0, 32);
 
 function handleQuery(
@@ -27,7 +27,7 @@ function handleQuery(
         .sort()
         .map((key) => {
             // 过滤 value 中的 "!'()*" 字符
-            const value = params[key].toString().replace(chr_filter, "");
+            const value = params[key].toString().replace(chr_filter, '');
             return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
         })
         .join("&")
@@ -37,15 +37,17 @@ function handleQuery(
 export function encWbi(
     params: Record<string, string | number | object>,
     img_key: string,
-    sub_key: string
+    sub_key: string,
+    w_webid: string,
 ) {
     const mixin_key = getMixinKey(img_key + sub_key)
 
+    Object.assign(params, { w_webid })
     const query = handleQuery(params)
 
     const wbi_sign = md5(query + mixin_key); // 计算 w_rid
 
-    return query + "&w_rid=" + wbi_sign;
+    return query + '&w_rid=' + wbi_sign;
 }
 
 /**
@@ -63,7 +65,7 @@ export async function encWbiWithFetch(
     if (!store.data) {
         await store.refreshWbi()
     }
-    return encWbi(params, store.data.img_url, store.data.sub_url)
+    return encWbi(params, store.data.img_url, store.data.sub_url, store.data.w_webid)
 }
 
 /**
@@ -82,5 +84,5 @@ export function encWbiByStore(
     if (store.state === 'ready' || !store.data) {
         return handleQuery(params)
     }
-    return encWbi(params, store.data.img_url, store.data.sub_url)
+    return encWbi(params, store.data.img_url, store.data.sub_url, store.data.w_webid)
 }

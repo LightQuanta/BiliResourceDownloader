@@ -1,6 +1,8 @@
 import { createStore, Store } from '@tauri-apps/plugin-store';
 import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
+import { encWbiWithFetch } from "./utils/wbi.ts";
+import { useWbiStore } from "./store/useWbiStore";
 
 let internalStore: Store | null = null
 
@@ -19,50 +21,91 @@ async function getStore() {
     return internalStore
 }
 
-async function cachedAPIFetch(url: URL | string, init?: RequestInit, useCache = true): Promise<GeneralAPIResponse<unknown>> {
-    const strURL = (url as URL).href ?? url
+interface ExtraAPIFetchOptions {
+    wbiSign?: boolean
+    useCache?: boolean
+    useCookie?: boolean
+}
+
+async function cachedAPIFetch(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<unknown>> {
+    const parsedURL = new URL(url)
+    const getURLStr = () => parsedURL.toString()
     const store = await getStore()
 
-    if (useCache && await store.has(strURL)) {
-        const cacheData = (await store.get(strURL)) as CachedJSONResponse
+    const { useCache, wbiSign, useCookie } = {
+        useCache: true,
+        wbiSign: false,
+        useCookie: true,
+        ...extraOptions
+    }
+
+    // wbi签名参数
+    if (wbiSign) {
+        const params: Record<string, string> = {}
+        for (const [key, value] of parsedURL.searchParams) {
+            params[key] = value
+        }
+        parsedURL.search = await encWbiWithFetch(params)
+    }
+
+    if (useCache && await store.has(getURLStr())) {
+        const cacheData = (await store.get(getURLStr())) as CachedJSONResponse
         if (cacheData.cachedTime > Date.now()) {
-            console.debug(`using cached ${strURL}`)
+            console.debug(`using cached ${getURLStr()}`)
             return cacheData.response
         } else {
-            console.debug(`expired cache ${strURL}`)
+            console.debug(`expired cache ${getURLStr()}`)
         }
     }
 
-    const cookie = await getLoginCookie()
     const options: RequestInit = {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0'
         }
     }
-    if (cookie) {
-        options.headers.cookie = cookie
+    if (useCookie) {
+        const cookie = await getLoginCookie()
+        if (cookie !== null) {
+            options.headers.Cookie = cookie
+        }
     }
 
     const finalOptions = { ...options, ...init }
 
-    const json = await fetch(strURL, finalOptions).then(r => r.json()) as GeneralAPIResponse<unknown>
-    if (json.code !== 0) {
 
-        // 账号登录失效时清空登录信息
-        if (json.code === -101) {
-            userLoggedIn.value = false
-            await clearLoginCookie()
+    let retryCount = 0
+    let json: GeneralAPIResponse<unknown>
+
+    do {
+        json = await fetch(parsedURL, finalOptions).then(r => r.json()) as GeneralAPIResponse<unknown>
+
+        if (json.code !== 0) {
+            if ((json.code === -352 || json.code === -403) && retryCount < 1) {
+                // 假设是wbi校验失败，刷新wbi后进行重试
+                const store = useWbiStore()
+                await store.refreshWbi()
+
+                retryCount++
+                continue
+            }
+
+            // 账号登录失效时清空登录信息
+            if (json.code === -101) {
+                userLoggedIn.value = false
+                await clearLoginCookie()
+            }
+
+            throw json
         }
-
-        throw json
-    }
+        break
+    } while (retryCount < 1)
 
     if (useCache) {
-        await store.set(strURL, {
+        await store.set(getURLStr(), {
             cachedTime: Date.now() + CACHE_TIME,
             response: json,
         })
-        console.debug(`cached ${strURL}`)
+        console.debug(`cached ${getURLStr()}`)
     }
 
     return json
