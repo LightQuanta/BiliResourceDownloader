@@ -304,17 +304,17 @@ const jumpToPendant = async () => {
 
     <ElDivider>用户相关图片</ElDivider>
     <div class="flex flex-wrap gap-4 justify-center items-center">
-      <ImageCard
+      <ImageVideoCard
         :download-name="`${userInfo?.card.name} - 头像`"
         :image="userInfo?.card.face"
         title="头像"
       />
-      <ImageCard
+      <ImageVideoCard
         v-if="hasPendant"
         :image="userInfo?.card.pendant?.image_enhance"
         :title="`头像框 - ${userInfo?.card.pendant.name}`"
       />
-      <ImageCard
+      <ImageVideoCard
         :image="userInfo?.space.l_img"
         title="网页端空间背景图"
         :download-name="`${userInfo?.card.name} - 网页端空间背景图`"
@@ -326,7 +326,7 @@ const jumpToPendant = async () => {
         class="w-full justify-center"
         wrap
       >
-        <ImageCard
+        <ImageVideoCard
           v-for="(emoji, index) in chargeEmojiInfo"
           :key="emoji.id"
           :download-name="`${userInfo?.card.name}充电表情 - ${emoji.name}`"

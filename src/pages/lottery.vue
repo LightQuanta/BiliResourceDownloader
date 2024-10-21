@@ -135,16 +135,6 @@ const generateDownloadTask = async () => {
 
   // 每个收藏集的所有图片
   lotteryDetails.forEach(detail => {
-    // 水印版
-    detail.item_list
-        .filter(i => i.card_info.card_img_download?.length ?? 0 > 0)
-        .forEach(({ card_info: cardInfo }) => {
-          downloadFileInfo.files.push({
-            path: detail.name + '（水印）' + sep() + cardInfo.card_name,
-            url: cardInfo.card_img_download,
-          })
-        })
-    // 原版
     detail.item_list
         .filter(i => i.card_info.card_img?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
@@ -157,16 +147,6 @@ const generateDownloadTask = async () => {
 
   // 每个收藏集的所有视频
   lotteryDetails.forEach(detail => {
-    // 水印版
-    detail.item_list
-        .filter(i => i.card_info.video_list_download?.length ?? 0 > 0)
-        .forEach(({ card_info: cardInfo }) => {
-          downloadFileInfo.files.push({
-            path: detail.name + '（水印）' + sep() + cardInfo.card_name,
-            url: cardInfo.video_list_download?.[0] ?? '',
-          })
-        })
-    // 原版
     detail.item_list
         .filter(i => i.card_info.video_list?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {

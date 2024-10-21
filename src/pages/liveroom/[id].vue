@@ -298,7 +298,7 @@ const showDebugInfo = () => {
           class="justify-center"
           wrap
         >
-          <ImageCard
+          <ImageVideoCard
             v-if="backgroundImage"
             :download-name="`${liveroomUserInfo?.info.uname} - 直播间背景图`"
             :image="backgroundImage"
@@ -306,7 +306,7 @@ const showDebugInfo = () => {
             :preview-images="previewImages"
             title="网页端直播间背景图"
           />
-          <ImageCard
+          <ImageVideoCard
             v-if="coverImage"
             :download-name="`${liveroomUserInfo?.info.uname} - 直播间封面`"
             :image="coverImage"
@@ -314,7 +314,7 @@ const showDebugInfo = () => {
             :preview-images="previewImages"
             title="直播间封面"
           />
-          <ImageCard
+          <ImageVideoCard
             v-if="keyframeImage != ''"
             :download-name="`${liveroomUserInfo?.info.uname} - 直播间关键帧`"
             :image="keyframeImage"
@@ -336,7 +336,7 @@ const showDebugInfo = () => {
           class="justify-center"
           wrap
         >
-          <ImageCard
+          <ImageVideoCard
             v-for="(emoji, index) in upEmoji.emoticons"
             :key="emoji.emoticon_unique"
             :index="index"
@@ -354,7 +354,7 @@ const showDebugInfo = () => {
           class="justify-center"
           wrap
         >
-          <ImageCard
+          <ImageVideoCard
             v-for="(emoji, index) in roomEmoji.emoticons"
             :key="emoji.emoticon_unique"
             :index="index"

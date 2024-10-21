@@ -314,7 +314,7 @@ const showDebugInfo = () => {
       class="w-full justify-center"
       wrap
     >
-      <ImageCard
+      <ImageVideoCard
         v-for="(image, index) in pictureLinks"
         :key="image"
         :download-name="image.split('/').pop()"
