@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BasicLiveUserInfo, BasicRoomInfo } from "../../types.ts";
+import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
+import { userLoggedIn } from "../../loginManager.ts";
+import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/liveroom/[id]'>()
 
@@ -12,7 +14,7 @@ const keyframeImage = ref('')
 const liveroomTitle = ref('')
 const liveroomDescription = ref('')
 const areaType = ref('')
-const roomId = ref('')
+const roomID = ref('')
 const roomTags = ref<string[]>([])
 const uid = ref('')
 
@@ -21,12 +23,47 @@ const responseText = ref('')
 
 const liveroomUserInfo = ref<BasicLiveUserInfo>()
 
+const liveroomEmojis = ref<LiveroomEmojiListInfo[]>()
+const upEmoji = computed<LiveroomEmojiListInfo | undefined>(() => liveroomEmojis.value?.find(e => e.pkg_name === 'UP主大表情') ?? undefined)
+const roomEmoji = computed<LiveroomEmojiListInfo | undefined>(() => liveroomEmojis.value?.find(e => e.pkg_name === '房间专属表情') ?? undefined)
+
+const batchDownloadTask = ref<BatchDownloadTask>()
+
+const generateTask = () => {
+  const task: BatchDownloadTask = {
+    name: `${roomID.value} 直播间图片`,
+    files: []
+  }
+
+  if (backgroundImage.value) {
+    task.files.push({ path: `${roomID.value} - 直播间背景图`, url: backgroundImage.value })
+  }
+
+  if (coverImage.value) {
+    task.files.push({ path: `${roomID.value} - 直播间封面`, url: coverImage.value })
+  }
+
+  if (keyframeImage.value) {
+    task.files.push({ path: `${roomID.value} - 直播间关键帧`, url: keyframeImage.value })
+  }
+
+  upEmoji.value?.emoticons.forEach(e => {
+    task.files.push({ path: `${roomID.value} UP主大表情${sep()}${e.emoji}`, url: e.url })
+  })
+
+  roomEmoji.value?.emoticons.forEach(e => {
+    task.files.push({ path: `${roomID.value} 房间专属表情${sep()}${e.emoji}`, url: e.url })
+  })
+
+  batchDownloadTask.value = task
+}
+
 const fetchData = async (paramID: string) => {
   loading.value = true
-  roomId.value = paramID
+  roomID.value = paramID
 
   const url = new URL('https://api.live.bilibili.com/room/v1/Room/get_info')
-  url.searchParams.set('room_id', roomId.value)
+  url.searchParams.set('room_id', roomID.value)
 
   apiUrl.value = url.toString()
 
@@ -67,11 +104,29 @@ const fetchData = async (paramID: string) => {
   } catch (e) {
     console.error(e)
     ElMessage({
-      message: `获取额外直播间信息出错：${e}`,
+      message: `获取额外直播间信息出错：${JSON.stringify(e)}`,
       type: 'error',
     })
   }
 
+  if (userLoggedIn.value) {
+    const url3 = new URL('https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons')
+    url3.searchParams.set('platform', 'pc')
+    url3.searchParams.set('room_id', roomID.value)
+
+    try {
+      const resp = await cachedAPIFetch(url3)
+      liveroomEmojis.value = resp.data.data as LiveroomEmojiListInfo
+    } catch (e) {
+      console.error(e)
+      ElMessage({
+        message: `获取直播间表情信息出错：${JSON.stringify(e)}`,
+        type: 'error',
+      })
+    }
+  }
+
+  generateTask()
   loading.value = false
 }
 watch(() => route.params.id, fetchData, { immediate: true })
@@ -101,11 +156,11 @@ const showDebugInfo = () => {
         <div class="flex gap-1">
           <ElText>直播间</ElText>
           <ElLink
-            :href="`https://live.bilibili.com/${roomId}`"
+            :href="`https://live.bilibili.com/${roomID}`"
             target="_blank"
             type="primary"
           >
-            {{ roomId }}
+            {{ roomID }}
           </ElLink>
           <ElText>基础信息</ElText>
         </div>
@@ -152,6 +207,8 @@ const showDebugInfo = () => {
             type="textarea"
           />
         </ElDrawer>
+
+        <BatchDownloadButton :task="batchDownloadTask" />
       </template>
 
       <ElDescriptionsItem
@@ -262,5 +319,45 @@ const showDebugInfo = () => {
         </ElSpace>
       </ElSpace>
     </template>
+
+    <ElDivider v-if="!userLoggedIn">
+      直播间表情
+    </ElDivider>
+    <LoginRequired>
+      <div v-if="upEmoji !== undefined">
+        <ElDivider>UP主大表情</ElDivider>
+        <ElSpace
+          class="justify-center"
+          wrap
+        >
+          <ImageCard
+            v-for="(emoji, index) in upEmoji.emoticons"
+            :key="emoji.emoticon_unique"
+            :index="index"
+            :image="emoji.url"
+            :preview-images="upEmoji.emoticons.map(e => e.url)"
+            :title="`UP主大表情 - ${emoji.emoji}`"
+            :download-name="`${roomID}UP主大表情 - ${emoji.emoji}`"
+          />
+        </ElSpace>
+      </div>
+      <div v-if="roomEmoji !== undefined">
+        <ElDivider>房间专属表情</ElDivider>
+        <ElSpace
+          class="justify-center"
+          wrap
+        >
+          <ImageCard
+            v-for="(emoji, index) in roomEmoji.emoticons"
+            :key="emoji.emoticon_unique"
+            :index="index"
+            :image="emoji.url"
+            :preview-images="roomEmoji.emoticons.map(e => e.url)"
+            :title="`房间专属表情 - ${emoji.emoji}`"
+            :download-name="`${roomID}房间专属表情 - ${emoji.emoji}`"
+          />
+        </ElSpace>
+      </div>
+    </LoginRequired>
   </div>
 </template>

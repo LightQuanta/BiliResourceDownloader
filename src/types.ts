@@ -554,6 +554,23 @@ interface ChargeEmojiInfo {
     icon: string
 }
 
+// https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=${roomID}
+interface LiveroomEmojiListInfo {
+    emoticons: LiveroomEmojiInfo[]
+    pkg_id: number
+    pkg_name: string
+}
+
+interface LiveroomEmojiInfo {
+    // 表情包名称
+    emoji: string
+    url: string
+    // 解锁条件
+    unlock_show_text: string
+    // 表情包识别名称？
+    emoticon_unique: string
+}
+
 export type {
     GeneralAPIResponse,
     BiliResourceDownloadEventEmitter,
@@ -583,4 +600,6 @@ export type {
     EmoteInfo,
     PowerRights,
     ChargeEmojiInfo,
+    LiveroomEmojiListInfo,
+    LiveroomEmojiInfo,
 }
