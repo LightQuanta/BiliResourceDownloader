@@ -1,12 +1,6 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
-import type {
-  GarbSearchResult,
-  LotteryProperties,
-  ActInfo,
-  BatchDownloadTask,
-  LotteryDetail,
-} from '../types.ts'
+import type { ActInfo, BatchDownloadTask, GarbSearchResult, LotteryDetail, LotteryProperties, } from '../types.ts'
 import { sep } from "@tauri-apps/api/path";
 import { CarouselInstance } from "element-plus/lib/components";
 
@@ -44,11 +38,11 @@ const route = useRoute()
 const fetchData = async () => {
   loading.value = true
 
-  if (actID.value !== +route.query.act_id!) {
+  if (actID.value !== +route.query.act_id) {
     lotteryID.value = -1
   }
 
-  actID.value = +route.query.act_id!
+  actID.value = +route.query.act_id
   const lotteryIDStr = route.query.lottery_id as string | undefined
   if (lotteryIDStr) {
     lotteryID.value = +lotteryIDStr
@@ -102,17 +96,12 @@ watch(selectedKey, () => {
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
 
-
-const extractExtensionName = (url: string) => {
-  return '.' + url.split('?')[0].split('.').pop()!.split('_')[0]
-}
-
 // 批量下载相关信息生成
 const batchDownloadInfo = ref<BatchDownloadTask>()
 const generateDownloadTask = async () => {
   const downloadFileInfo: BatchDownloadTask = {
-    name: actInfo.value!.act_title,
-    path: actInfo.value!.act_title,
+    name: actInfo.value.act_title,
+    path: actInfo.value.act_title,
     files: [],
   }
 
@@ -120,7 +109,7 @@ const generateDownloadTask = async () => {
 
   let lotteryDetails: LotteryDetail[]
   try {
-    lotteryDetails = await Promise.all(lotteryInfo.value!.map(l => {
+    lotteryDetails = await Promise.all(lotteryInfo.value.map(l => {
       const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
       url.searchParams.set('act_id', actID.value.toString())
       url.searchParams.set('lottery_id', l.lottery_id.toString())
@@ -137,9 +126,9 @@ const generateDownloadTask = async () => {
   }
 
   // 每个收藏集的封面
-  lotteryInfo.value!.forEach(l => {
+  lotteryInfo.value.forEach(l => {
     downloadFileInfo.files.push({
-      path: l.lottery_name + ' - 封面' + extractExtensionName(l.lottery_image),
+      path: l.lottery_name + ' - 封面',
       url: l.lottery_image,
     })
   })
@@ -151,7 +140,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.card_img_download?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + '（水印）' + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img_download),
+            path: detail.name + '（水印）' + sep() + cardInfo.card_name,
             url: cardInfo.card_img_download,
           })
         })
@@ -160,7 +149,7 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.card_img?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.card_img),
+            path: detail.name + sep() + cardInfo.card_name,
             url: cardInfo.card_img,
           })
         })
@@ -173,8 +162,8 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.video_list_download?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + '（水印）' + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list_download![0]),
-            url: cardInfo.video_list_download![0],
+            path: detail.name + '（水印）' + sep() + cardInfo.card_name,
+            url: cardInfo.video_list_download[0],
           })
         })
     // 原版
@@ -182,8 +171,8 @@ const generateDownloadTask = async () => {
         .filter(i => i.card_info.video_list?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: detail.name + sep() + cardInfo.card_name + extractExtensionName(cardInfo.video_list![0]),
-            url: cardInfo.video_list![0],
+            path: detail.name + sep() + cardInfo.card_name,
+            url: cardInfo.video_list[0],
           })
         })
   })
@@ -199,65 +188,95 @@ const generateDownloadTask = async () => {
 
 </script>
 <template>
-  <div class="flex flex-col content-center" v-loading="loading">
+  <div
+    v-loading="loading"
+    class="flex flex-col content-center"
+  >
     <!-- 收藏集组合详细信息 -->
-    <ElDescriptions border :column="2" v-if="!loading">
+    <ElDescriptions
+      v-if="!loading"
+      :column="2"
+      border
+    >
       <template #title>
-        <ElText size="large">收藏集组合信息</ElText>
+        <ElText size="large">
+          收藏集组合信息
+        </ElText>
       </template>
 
       <template #extra>
-        <BatchDownloadButton :task="batchDownloadInfo"/>
+        <BatchDownloadButton :task="batchDownloadInfo" />
       </template>
 
-      <ElDescriptionsItem label="名称" name="name">
-        <ElLink v-if="!loading"
-                type="primary"
-                :href="`https://www.bilibili.com/h5/mall/digital-card/home?-Abrowser=live&act_id=${parsedLotteryInfo[0].properties.dlc_act_id}&hybrid_set_header=2`"
-                target="_blank"
-        >{{ actInfo?.act_title }}
+      <ElDescriptionsItem
+        label="名称"
+        name="name"
+      >
+        <ElLink
+          v-if="!loading"
+          :href="`https://www.bilibili.com/h5/mall/digital-card/home?-Abrowser=live&act_id=${parsedLotteryInfo[0].properties.dlc_act_id}&hybrid_set_header=2`"
+          target="_blank"
+          type="primary"
+        >
+          {{ actInfo?.act_title }}
         </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="销售时间" :span="2">{{ saleTime }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="相关UP主" :span="2" v-if="(actInfo?.related_mids ?? undefined) !== undefined">
-        <UPInfo v-for="mid in actInfo?.related_mids"
-                :key="mid"
-                :mid="mid"
-                :name="actInfo!.related_user_infos[mid]!.nickname"
-                :face="actInfo!.related_user_infos[mid]!.avatar"
+      <ElDescriptionsItem
+        :span="2"
+        label="销售时间"
+      >
+        {{ saleTime }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        v-if="(actInfo?.related_mids ?? undefined) !== undefined"
+        :span="2"
+        label="相关UP主"
+      >
+        <UPInfo
+          v-for="mid in actInfo?.related_mids"
+          :key="mid"
+          :face="actInfo!.related_user_infos[mid]!.avatar"
+          :mid="mid"
+          :name="actInfo!.related_user_infos[mid]!.nickname"
         />
       </ElDescriptionsItem>
     </ElDescriptions>
 
     <ElDivider>收藏集内容</ElDivider>
 
-    <ElRadioGroup v-model="selectedKey" v-show="(parsedLotteryInfo?.length ?? 0) > 1" class="mx-auto">
-      <ElRadioButton v-for="lottery in parsedLotteryInfo"
-                     :key="lottery.properties.dlc_lottery_id"
-                     :value="lottery.properties.dlc_lottery_id.toString()"
-                     :label="lottery.name"
+    <ElRadioGroup
+      v-show="(parsedLotteryInfo?.length ?? 0) > 1"
+      v-model="selectedKey"
+      class="mx-auto"
+    >
+      <ElRadioButton
+        v-for="lottery in parsedLotteryInfo"
+        :key="lottery.properties.dlc_lottery_id"
+        :label="lottery.name"
+        :value="lottery.properties.dlc_lottery_id.toString()"
       />
     </ElRadioGroup>
-    <br/>
-    <ElCarousel class="!h-full !overflow-y-auto"
-                :autoplay="false"
-                arrow="never"
-                indicator-position="none"
-                height="100%"
-                ref="carousel"
-                v-if="!loading"
-                :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(lotteryID)"
-                :loop="false"
+    <ElCarousel
+      v-if="!loading"
+      ref="carousel"
+      :autoplay="false"
+      :initial-index="parsedLotteryInfo.map(l => l.properties.dlc_lottery_id).indexOf(lotteryID)"
+      :loop="false"
+      arrow="never"
+      class="!h-full !overflow-y-auto"
+      height="100%"
+      indicator-position="none"
     >
-      <ElCarouselItem v-for="lottery in parsedLotteryInfo"
-                      :key="lottery.properties.dlc_lottery_id"
-                      class="h-full !overflow-y-auto"
-                      :name="lottery.properties.dlc_lottery_id.toString()"
+      <ElCarouselItem
+        v-for="lottery in parsedLotteryInfo"
+        :key="lottery.properties.dlc_lottery_id"
+        :name="lottery.properties.dlc_lottery_id.toString()"
+        class="h-full !overflow-y-auto"
       >
         <KeepAlive>
           <SingleLotteryPage
-              :lottery="lottery"
-              class="h-full"
+            :lottery="lottery"
+            class="h-full"
           />
         </KeepAlive>
       </ElCarouselItem>

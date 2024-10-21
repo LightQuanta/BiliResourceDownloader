@@ -159,14 +159,16 @@ interface SuitDetail {
         }[]
         space_bg: {
             name: string
-            properties: {
-                // cnm这怎么标注类型
+            /**
+             * cnm这怎么标注类型
+             *
+             *  空间背景图（完整）
+             *  image1_landscape: string
+             *  空间背景图（肖像）
+             *  image1_portrait: string
+             */
+            properties: Record<string, string>
 
-                // // 空间背景图（完整）
-                // image1_landscape: string
-                // // 空间背景图（肖像）
-                // image1_portrait: string
-            }
         }
         thumbup: {
             name: string
@@ -380,7 +382,7 @@ interface AtTextNode extends RichTextNode {
 
 type BiliResourceDownloadEventEmitter = {
     // preset events
-} & Record<string, any>;
+} & Record<string, unknown>;
 
 interface BasicUserInfo {
     card: {
@@ -508,6 +510,7 @@ interface EmojiPackageInfo {
 }
 
 interface EmojiPackageDetail extends EmojiPackageInfo {
+    type: number
     emote: EmoteInfo[]
 }
 
@@ -529,6 +532,43 @@ interface EmoteInfo {
         no_access: boolean
         unlocked: boolean
     }
+}
+
+/** 充电权益
+ *
+ *  https://api.bilibili.com/x/upowerv2/gw/rights/index?up_mid=${mid}
+ */
+interface PowerRights {
+    privilege_rights: Record<string, {
+        emote?: {
+            type: 'emote'
+            num: number
+            emojis: ChargeEmojiInfo[]
+        }
+    }>
+}
+
+interface ChargeEmojiInfo {
+    id: number
+    name: string
+    icon: string
+}
+
+// https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=${roomID}
+interface LiveroomEmojiListInfo {
+    emoticons: LiveroomEmojiInfo[]
+    pkg_id: number
+    pkg_name: string
+}
+
+interface LiveroomEmojiInfo {
+    // 表情包名称
+    emoji: string
+    url: string
+    // 解锁条件
+    unlock_show_text: string
+    // 表情包识别名称？
+    emoticon_unique: string
 }
 
 export type {
@@ -558,4 +598,8 @@ export type {
     EmojiPackageInfo,
     EmojiPackageDetail,
     EmoteInfo,
+    PowerRights,
+    ChargeEmojiInfo,
+    LiveroomEmojiListInfo,
+    LiveroomEmojiInfo,
 }

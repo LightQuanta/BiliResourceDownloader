@@ -7,26 +7,55 @@ const showDownloadDrawer = ref(false)
 
 <template>
   <div class="flex w-full h-full items-stretch color-bg">
-    <ElMenu default-active="test" class="h-full w-32 m-0 shrink-0 router-mark" :router="true">
-      <ElMenuItem index="/">主页</ElMenuItem>
-      <ElMenuItem index="/search/garb">装扮/收藏集搜索</ElMenuItem>
-      <ElMenuItem index="/search/emoji">表情搜索</ElMenuItem>
-      <ElMenuItem @click="showDownloadDrawer = true">下载管理</ElMenuItem>
-      <ElMenuItem index="/login">登录</ElMenuItem>
-      <ElMenuItem index="/settings">设置</ElMenuItem>
-      <ElMenuItem index="/about">关于</ElMenuItem>
+    <ElMenu
+      :router="true"
+      class="h-full w-32 m-0 shrink-0 router-mark"
+      default-active="test"
+    >
+      <ElMenuItem index="/">
+        主页
+      </ElMenuItem>
+      <ElMenuItem index="/search/garb">
+        装扮/收藏集搜索
+      </ElMenuItem>
+      <ElMenuItem index="/search/emoji">
+        表情搜索
+      </ElMenuItem>
+      <ElMenuItem @click="showDownloadDrawer = true">
+        下载管理
+      </ElMenuItem>
+      <ElMenuItem index="/login">
+        登录
+      </ElMenuItem>
+      <ElMenuItem index="/settings">
+        设置
+      </ElMenuItem>
+      <ElMenuItem index="/about">
+        关于
+      </ElMenuItem>
     </ElMenu>
 
-    <RouterView class="p-4 flex-grow overflow-y-auto overflow-x-hidden" v-slot="{ Component }">
-      <Transition name="fade" mode="out-in">
-        <Component :is="Component"/>
+    <RouterView
+      v-slot="{ Component }"
+      class="p-4 flex-grow overflow-y-auto overflow-x-hidden"
+    >
+      <Transition
+        mode="out-in"
+        name="fade"
+      >
+        <Component :is="Component" />
       </Transition>
     </RouterView>
   </div>
 
 
-  <ElDrawer v-model="showDownloadDrawer" title="下载管理" size="60%" @open="emitter.emit('drawerOpen')">
-    <DownloadManager/>
+  <ElDrawer
+    v-model="showDownloadDrawer"
+    size="60%"
+    title="下载管理"
+    @open="emitter.emit('drawerOpen')"
+  >
+    <DownloadManager />
   </ElDrawer>
 </template>
 

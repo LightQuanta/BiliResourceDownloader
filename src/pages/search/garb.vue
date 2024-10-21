@@ -100,33 +100,56 @@ const filteredCards = computed(() => {
 <template>
   <div class="flex gap-4 flex-col">
     <ElInput
-        v-model="keyword"
-        placeholder="输入要搜索的内容"
-        autofocus
-        clearable
-        @change="newSearch"
+      v-model="keyword"
+      placeholder="输入要搜索的内容"
+      autofocus
+      clearable
+      @change="newSearch"
     >
       <template #append>
         <!-- TODO type为啥无效？ -->
-        <ElButton type="primary" @click="newSearch" :icon="Search"/>
+        <ElButton
+          :icon="Search"
+          type="primary"
+          @click="newSearch"
+        />
       </template>
     </ElInput>
 
     <ElRadioGroup v-model="displayMode">
-      <ElRadio value="all">全部显示</ElRadio>
-      <ElRadio value="lottery">只显示收藏集</ElRadio>
-      <ElRadio value="suit">只显示装扮</ElRadio>
+      <ElRadio value="all">
+        全部显示
+      </ElRadio>
+      <ElRadio value="lottery">
+        只显示收藏集
+      </ElRadio>
+      <ElRadio value="suit">
+        只显示装扮
+      </ElRadio>
     </ElRadioGroup>
 
-    <div class="flex flex-wrap gap-4 justify-center" v-infinite-scroll="load">
+    <div
+      v-infinite-scroll="load"
+      class="flex flex-wrap gap-4 justify-center"
+    >
       <TransitionGroup name="list">
-        <GarbSearchCard v-for="card in filteredCards" :key="card.jump_link" :garb="card"/>
+        <GarbSearchCard
+          v-for="card in filteredCards"
+          :key="card.jump_link"
+          :garb="card"
+        />
       </TransitionGroup>
     </div>
 
-    <ElDivider v-if="!searched">请输入关键词进行搜索</ElDivider>
-    <ElDivider v-else-if="hasMore">正在加载...</ElDivider>
-    <ElDivider v-else>已加载全部搜索结果</ElDivider>
+    <ElDivider v-if="!searched">
+      请输入关键词进行搜索
+    </ElDivider>
+    <ElDivider v-else-if="hasMore">
+      正在加载...
+    </ElDivider>
+    <ElDivider v-else>
+      已加载全部搜索结果
+    </ElDivider>
   </div>
 </template>
 

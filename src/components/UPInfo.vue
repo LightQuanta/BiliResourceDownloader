@@ -16,41 +16,41 @@ const props = withDefaults(defineProps<{
   openInBrowser: false,
   type: 'face'
 })
-const mid = ref('')
-const name = ref('')
-const face = ref('')
+const userMid = ref('')
+const userName = ref('')
+const faceURL = ref('')
 
 const hasFullInfo = computed(() => {
   if (props.type === 'face') {
-    return name.value.length > 0 && face.value.length > 0
+    return userName.value.length > 0 && faceURL.value.length > 0
   }
-  return name.value.length > 0
+  return userName.value.length > 0
 })
 
 const router = useRouter()
 const jump = () => {
   if (props.openInBrowser) {
-    window.open(`https://space.bilibili.com/${mid.value}`)
+    window.open(`https://space.bilibili.com/${userMid.value}`)
   } else {
-    router.push(`/space/${mid.value}`)
+    router.push(`/space/${userMid.value}`)
   }
 }
 
 const fetchData = async () => {
-  mid.value = props.mid
-  name.value = props.name
-  face.value = props.face
+  userMid.value = props.mid
+  userName.value = props.name
+  faceURL.value = props.face
 
   if (hasFullInfo.value) return
   if (props.mid.length === 0) return
 
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
-  url.searchParams.set('mid', String(mid.value))
+  url.searchParams.set('mid', String(userMid.value))
 
   const resp = await cachedAPIFetch(url).then(r => r.data) as BasicUserInfo
 
-  name.value = resp.card.name
-  face.value = resp.card.face
+  userName.value = resp.card.name
+  faceURL.value = resp.card.face
 }
 
 onMounted(fetchData)
@@ -59,8 +59,16 @@ watch(() => props.mid, fetchData)
 </script>
 
 <template>
-  <ElLink type="primary" @click="jump">
-    <ElImage v-if="type === 'face'" :src="face" referrerpolicy="no-referrer" class="h-8 w-8 rounded-full"/>
-    <span class="mx-1">{{ name }}</span>
+  <ElLink
+    type="primary"
+    @click="jump"
+  >
+    <ElImage
+      v-if="type === 'face'"
+      :src="faceURL"
+      class="h-8 w-8 rounded-full"
+      referrerpolicy="no-referrer"
+    />
+    <span class="mx-1">{{ userName }}</span>
   </ElLink>
 </template>

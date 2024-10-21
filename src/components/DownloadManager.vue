@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BatchDownloadTask } from "../types.ts";
-import { getAllDownloadTasks, pauseDownload, startDownload, clearDownload } from "../downloadManager.ts";
+import { clearDownload, getAllDownloadTasks, pauseDownload, startDownload } from "../downloadManager.ts";
 import { emitter } from "../main.ts";
 import { ElMessage } from "element-plus";
 
@@ -55,7 +55,7 @@ emitter.on('drawerOpen', async () => {
 })
 
 emitter.on('fileDownloadFinish', (info: FileDownloadFinish) => {
-  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.path === info.file.path)!, 1)
+  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.path === info.file.path), 1)
 })
 
 emitter.on('downloadFinish', (info: { name: string }) => {
@@ -92,23 +92,48 @@ const getProgress = (file: Progress) => {
 
 <template>
   <div>
-    <ElButton type="primary" @click="start">开始下载</ElButton>
-    <ElButton type="primary" @click="pause">暂停下载</ElButton>
-    <ElButton type="primary" @click="clear">清空任务</ElButton>
+    <ElButton
+      type="primary"
+      @click="start"
+    >
+      开始下载
+    </ElButton>
+    <ElButton
+      type="primary"
+      @click="pause"
+    >
+      暂停下载
+    </ElButton>
+    <ElButton
+      type="primary"
+      @click="clear"
+    >
+      清空任务
+    </ElButton>
     <div class="flex flex-col overflow-hidden">
-
       <TransitionGroup name="list">
-        <div v-for="task in tasks" :key="task.path + '-' + task.path">
-          <ElText type="primary" class="block" size="large">{{ task.name }}</ElText>
+        <div
+          v-for="task in tasks"
+          :key="task.path + '-' + task.path"
+        >
+          <ElText
+            class="block"
+            size="large"
+            type="primary"
+          >
+            {{ task.name }}
+          </ElText>
           <TransitionGroup name="list">
-            <div v-for="file in task.files" :key="file.path">
+            <div
+              v-for="file in task.files"
+              :key="file.path"
+            >
               <ElText>{{ file.path }}</ElText>
               <ElProgress :percentage="getProgress(file)" />
             </div>
           </TransitionGroup>
         </div>
       </TransitionGroup>
-
     </div>
   </div>
 </template>

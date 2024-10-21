@@ -21,30 +21,47 @@ const jump = () => {
 <template>
   <ElCard class="w-80">
     <template #header>
-      <ElTooltip placement="top" :content="garb.name">
-        <ElLink type="primary" :href="garb.jump_link" class="w-full text-center text-nowrap" target="_blank">
+      <ElTooltip
+        :content="garb.name"
+        placement="top"
+      >
+        <ElLink
+          :href="garb.jump_link"
+          class="w-full text-center text-nowrap"
+          target="_blank"
+          type="primary"
+        >
           {{ garb.name }}
         </ElLink>
       </ElTooltip>
-      <br/>
+      <br>
       <div class="flex flex-row w-full">
-        <ElText class="block">{{ isLottery ? '收藏集' : '装扮' }}</ElText>
-        <ElText class="block !ml-auto">销量：{{ garb.sale_count_desc }}</ElText>
+        <ElText class="block">
+          {{ isLottery ? '收藏集' : '装扮' }}
+        </ElText>
+        <ElText class="block !ml-auto">
+          销量：{{ garb.sale_count_desc }}
+        </ElText>
       </div>
     </template>
-    <ElImage fit="contain"
-             :src="garb.properties?.image_cover"
-             :alt="garb.name"
-             :preview-src-list="[garb.properties?.image_cover]"
-             :hide-on-click-modal="true"
-             referrerpolicy="no-referrer"
-             class="w-full h-96"
-             lazy
-             preview-teleported
+    <ElImage
+      :alt="garb.name"
+      :hide-on-click-modal="true"
+      :preview-src-list="[garb.properties?.image_cover]"
+      :src="garb.properties?.image_cover"
+      fit="contain"
+      preview-teleported
+      referrerpolicy="no-referrer"
+      class="h-96 w-full"
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">
-        <ElButton type="primary" @click="jump">查看</ElButton>
+        <ElButton
+          type="primary"
+          @click="jump"
+        >
+          查看
+        </ElButton>
       </div>
     </template>
   </ElCard>

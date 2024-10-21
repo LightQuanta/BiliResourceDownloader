@@ -43,7 +43,7 @@ async function clearDownload() {
     await store.clear()
 }
 
-let concurrentCount = ref(0)
+const concurrentCount = ref(0)
 const subConcurrentCount = () => concurrentCount.value--
 
 function enableDownloadScheduler() {
@@ -52,7 +52,7 @@ function enableDownloadScheduler() {
             concurrentCount.value++
             res(subConcurrentCount)
         } else {
-            const unwatch = watch(() => concurrentCount.value, (n, _) => {
+            const unwatch = watch(() => concurrentCount.value, (n) => {
                 if (n < MAX_TASKS) {
                     unwatch()
                     concurrentCount.value++
@@ -91,7 +91,7 @@ async function startDownload() {
                 continue
             }
 
-            const file = files.shift()!
+            const file = files.shift()
             const header = new Map<string, string>()
             header.set('User-Agent', '111')
             // start

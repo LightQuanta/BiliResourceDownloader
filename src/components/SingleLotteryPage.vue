@@ -1,11 +1,6 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
-import type {
-  GarbSearchResult,
-  LotteryCardInfo,
-  LotteryDetail,
-  LotteryProperties,
-} from '../types.ts'
+import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryProperties, } from '../types.ts'
 
 const name = ref('')
 const jumpLink = ref('')
@@ -70,32 +65,62 @@ onMounted(async () => {
 const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
 </script>
 <template>
-  <div class="flex flex-col gap-4" v-loading="loading">
+  <div
+    v-loading="loading"
+    class="flex flex-col gap-4"
+  >
     <!-- 收藏集详细信息 -->
-    <ElDescriptions border :column="2">
+    <ElDescriptions
+      :column="2"
+      border
+    >
       <template #title>
-        <ElText size="large">{{ name }}</ElText>
+        <ElText size="large">
+          {{ name }}
+        </ElText>
       </template>
 
-      <ElDescriptionsItem label="名称" name="name">
-        <ElLink type="primary" :href="jumpLink" target="_blank">{{ name }}</ElLink>
+      <ElDescriptionsItem
+        label="名称"
+        name="name"
+      >
+        <ElLink
+          :href="jumpLink"
+          target="_blank"
+          type="primary"
+        >
+          {{ name }}
+        </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="销量">{{ saleQuantity }}</ElDescriptionsItem>
-      <ElDescriptionsItem label="销售时间" :span="2">
+      <ElDescriptionsItem label="销量">
+        {{ saleQuantity }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        :span="2"
+        label="销售时间"
+      >
         {{ new Date(saleStartTime).toLocaleString() }} ~ {{ new Date(saleEndTime).toLocaleString() }}
       </ElDescriptionsItem>
     </ElDescriptions>
 
     <!-- 收藏集图片展示 -->
-    <ElSpace wrap class="justify-center">
-      <ImageCard v-if="!loading" title="收藏集封面" :image="coverURL" :download-name="`${name}-封面`"
-                 :preview-images="previewImages"/>
+    <ElSpace
+      class="justify-center"
+      wrap
+    >
+      <ImageCard
+        v-if="!loading"
+        :download-name="`${name}-封面`"
+        :image="coverURL"
+        :preview-images="previewImages"
+        title="收藏集封面"
+      />
       <LotteryCard
-          v-for="(card, index) in cards"
-          :key="card.card_type_id"
-          :card="card"
-          :preview-images="previewImages"
-          :index="index + 1"
+        v-for="(card, index) in cards"
+        :key="card.card_type_id"
+        :card="card"
+        :index="index + 1"
+        :preview-images="previewImages"
       />
     </ElSpace>
   </div>

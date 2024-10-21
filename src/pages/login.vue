@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toDataURL } from 'qrcode'
 import { ElMessage } from "element-plus";
-import { clearLoginCookie, checkLoginState, saveLoginCookie, userLoggedIn } from "../loginManager.ts";
+import { checkLoginState, clearLoginCookie, saveLoginCookie, userLoggedIn } from "../loginManager.ts";
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import { GeneralAPIResponse } from "../types.ts";
 
@@ -137,10 +137,36 @@ const testLoginState = async () => {
 
 <template>
   <div>
-    <ElButton type="primary" @click="login" :disabled="loggingIn || userLoggedIn">登录</ElButton>
-    <ElButton type="primary" @click="testLoginState">测试登录状态</ElButton>
-    <ElButton type="primary" @click="logoff" v-if="userLoggedIn">退出登录</ElButton>
-    <br/>
-    <ElImage v-if="loggingIn" :src="qrCodeData"/>
+    <ElButton
+      :disabled="loggingIn || userLoggedIn"
+      type="primary"
+      @click="login"
+    >
+      登录
+    </ElButton>
+    <ElButton
+      type="primary"
+      @click="testLoginState"
+    >
+      测试登录状态
+    </ElButton>
+    <ElButton
+      v-if="userLoggedIn"
+      type="primary"
+      @click="logoff"
+    >
+      退出登录
+    </ElButton>
+    <ElButton @click="userLoggedIn = false">
+      （调试） 模拟登出状态
+    </ElButton>
+    <ElButton @click="userLoggedIn = true">
+      （调试） 模拟登录状态
+    </ElButton>
+    <br>
+    <ElImage
+      v-if="loggingIn"
+      :src="qrCodeData"
+    />
   </div>
 </template>

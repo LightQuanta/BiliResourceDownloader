@@ -1,17 +1,53 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BasicLiveUserInfo, BasicUserInfo } from "../../types.ts";
+import { BasicLiveUserInfo, BasicUserInfo, BatchDownloadTask, ChargeEmojiInfo, PowerRights } from "../../types.ts";
+import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/space/[id]'>()
+const loading = ref(false)
+
 const uid = computed(() => route.params.id)
 const roomID = ref('')
 
 const apiUrl = ref('')
 const responseText = ref('')
 
-const UPInfo = ref<BasicUserInfo>()
+const userInfo = ref<BasicUserInfo>()
+const chargeEmojiInfo = ref<ChargeEmojiInfo[]>([])
+
+const batchDownloadTask = ref<BatchDownloadTask>()
+
+const generateBatchDownloadTask = () => {
+  const userName = userInfo.value?.card.name
+  const task: BatchDownloadTask = {
+    name: userInfo.value?.card.name,
+    files: [],
+  }
+
+  task.files.push({
+    path: `${userName} - 头像`,
+    url: userInfo.value?.card.face,
+  })
+
+  if (hasPendant.value) {
+    task.files.push({
+      path: `头像框 - ${userInfo.value?.card.pendant?.name}`,
+      url: userInfo.value?.card.pendant?.image,
+    })
+  }
+
+  if (chargeEmojiInfo.value?.length ?? 0 > 0) {
+    task.files.push(...chargeEmojiInfo.value.map(emoji => ({
+      path: `${userName}充电表情${sep()}${emoji.name}`,
+      url: emoji.icon,
+    })))
+  }
+
+  batchDownloadTask.value = task
+}
 
 const fetchData = async () => {
+  loading.value = true
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', uid.value)
 
@@ -26,11 +62,12 @@ const fetchData = async () => {
       message: `获取UP主信息出错：${e}`,
       type: 'error',
     })
+    loading.value = false
     return
   }
 
   responseText.value = JSON.stringify(resp, null, 2)
-  UPInfo.value = resp
+  userInfo.value = resp
 
   // 尝试获取直播间号
   const url2 = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
@@ -47,6 +84,37 @@ const fetchData = async () => {
       type: 'error',
     })
   }
+
+  const url3 = new URL('https://api.bilibili.com/x/upowerv2/gw/rights/index')
+  url3.searchParams.set('up_mid', uid.value)
+
+  let rightsData: PowerRights | undefined
+  try {
+    const tempResp = await cachedAPIFetch(url3)
+    rightsData = tempResp.data as PowerRights | undefined
+  } catch (e) {
+    // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
+    if (e.code !== 203010) {
+      console.error(e)
+      ElMessage({
+        message: `获取充电信息出错：${e}`,
+        type: 'error',
+      })
+    }
+  }
+
+  if (rightsData !== undefined) {
+    const rights = rightsData.privilege_rights
+    const levels = Object.keys(rights).sort((a, b) => +b - +a)[0]
+    const levelRights = rights[levels]
+
+    if (levelRights.emote !== undefined) {
+      chargeEmojiInfo.value = levelRights.emote.emojis
+    }
+  }
+
+  generateBatchDownloadTask()
+  loading.value = false
 }
 onMounted(fetchData)
 watch(uid, fetchData)
@@ -56,11 +124,11 @@ const showDebugInfo = () => {
   showDebugDrawer.value = true
 }
 
-const hasPendant = computed(() => UPInfo.value?.card?.pendant.pid ?? 0 !== 0)
+const hasPendant = computed(() => userInfo.value?.card?.pendant.pid ?? 0 !== 0)
 
 const router = useRouter()
 const searchPendant = () => {
-  router.push({ path: '/search/garb', query: { keyword: UPInfo.value?.card.pendant.name } })
+  router.push({ path: '/search/garb', query: { keyword: userInfo.value?.card.pendant.name } })
 }
 // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/space.md#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%8A%A8%E6%80%81
 // 尝试根据第一条获取的动态获得装扮信息？
@@ -68,24 +136,41 @@ const searchPendant = () => {
 </script>
 
 <template>
-  <div class="flex flex-col">
-
+  <div
+    class="flex flex-col"
+    v-loading="loading"
+  >
     <!-- 信息展示界面 -->
-    <ElDescriptions border :column="6">
+    <ElDescriptions
+      :column="6"
+      border
+    >
       <template #title>
         UP主信息
       </template>
 
       <template #extra>
-        <ElButton @click="showDebugInfo">显示调试信息</ElButton>
+        <ElButton @click="showDebugInfo">
+          显示调试信息
+        </ElButton>
         <!-- 调试信息 -->
-        <ElDrawer v-model="showDebugDrawer"
-                  title="调试信息"
-                  size="60%"
+        <ElDrawer
+          v-model="showDebugDrawer"
+          size="60%"
+          title="调试信息"
         >
-          <ElDescriptions :column="1" border>
+          <ElDescriptions
+            :column="1"
+            border
+          >
             <ElDescriptionsItem label="API调用地址">
-              <ElLink type="primary" :href="apiUrl" target="_blank">{{ apiUrl }}</ElLink>
+              <ElLink
+                :href="apiUrl"
+                target="_blank"
+                type="primary"
+              >
+                {{ apiUrl }}
+              </ElLink>
             </ElDescriptionsItem>
             <ElDescriptionsItem label="用户UID">
               {{ uid }}
@@ -93,62 +178,130 @@ const searchPendant = () => {
           </ElDescriptions>
 
           <ElDivider>原始返回数据</ElDivider>
-          <ElInput v-model="responseText"
-                   type="textarea"
-                   readonly
-                   aria-multiline="true"
-                   autosize
+          <ElInput
+            v-model="responseText"
+            aria-multiline="true"
+            autosize
+            readonly
+            type="textarea"
           />
         </ElDrawer>
+
+        <BatchDownloadButton :task="batchDownloadTask" />
       </template>
 
 
-      <ElDescriptionsItem label="名称" :span="2">
-        <ElLink type="primary" :href="`https://space.bilibili.com/${uid}`" target="_blank">
-          {{ UPInfo?.card.name }}
+      <ElDescriptionsItem
+        :span="2"
+        label="名称"
+      >
+        <ElLink
+          :href="`https://space.bilibili.com/${uid}`"
+          target="_blank"
+          type="primary"
+        >
+          {{ userInfo?.card.name }}
         </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="性别" :span="2">
-        {{ UPInfo?.card.sex }}
+      <ElDescriptionsItem
+        :span="2"
+        label="性别"
+      >
+        {{ userInfo?.card.sex }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="UID" :span="2">
-        {{ UPInfo?.card.mid }}
+      <ElDescriptionsItem
+        :span="2"
+        label="UID"
+      >
+        {{ userInfo?.card.mid }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="关注数" :span="2">
-        {{ UPInfo?.card.attention }}
+      <ElDescriptionsItem
+        :span="2"
+        label="关注数"
+      >
+        {{ userInfo?.card.attention }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="粉丝数" :span="2">
-        {{ UPInfo?.follower }}
+      <ElDescriptionsItem
+        :span="2"
+        label="粉丝数"
+      >
+        {{ userInfo?.follower }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="获赞数" :span="2">
-        {{ UPInfo?.like_num }}
+      <ElDescriptionsItem
+        :span="2"
+        label="获赞数"
+      >
+        {{ userInfo?.like_num }}
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="签名" :span="6">
-        <span class="whitespace-pre-wrap">{{ UPInfo?.card.sign }}</span>
+      <ElDescriptionsItem
+        :span="6"
+        label="签名"
+      >
+        <span class="whitespace-pre-wrap">{{ userInfo?.card.sign }}</span>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="头像框" :span="6" v-if="hasPendant">
+      <ElDescriptionsItem
+        v-if="hasPendant"
+        :span="6"
+        label="头像框"
+      >
         <!--  TODO 头像框的pid是否可以解析？ -->
-        <ElLink type="primary" @click="searchPendant">{{ UPInfo?.card.pendant.name }} - 点击搜索</ElLink>
+        <ElLink
+          type="primary"
+          @click="searchPendant"
+        >
+          {{ userInfo?.card.pendant.name }} - 点击搜索
+        </ElLink>
       </ElDescriptionsItem>
-      <ElDescriptionsItem label="直播间" :span="6">
-        <RouterLink :to="`/liveroom/${roomID}`" v-if="roomID > 0">
+      <ElDescriptionsItem
+        :span="6"
+        label="直播间"
+      >
+        <RouterLink
+          v-if="roomID > 0"
+          :to="`/liveroom/${roomID}`"
+        >
           <ElLink type="primary">
             {{ roomID }}
           </ElLink>
         </RouterLink>
-        <ElText v-else type="danger">未开通</ElText>
+        <ElText
+          v-else
+          type="danger"
+        >
+          未开通
+        </ElText>
       </ElDescriptionsItem>
-
     </ElDescriptions>
 
-    <ElDivider>图片资源</ElDivider>
+    <ElDivider>用户相关图片</ElDivider>
     <div class="flex flex-wrap gap-4 justify-center">
-      <ImageCard title="头像" :image="UPInfo?.card.face"
-                 :download-name="`${UPInfo?.card.name} - 头像`"/>
-      <ImageCard :title="`头像框 - ${UPInfo?.card.pendant.name}`"
-                 v-if="hasPendant"
-                 :image="UPInfo?.card.pendant?.image"
+      <ImageCard
+        :download-name="`${userInfo?.card.name} - 头像`"
+        :image="userInfo?.card.face"
+        title="头像"
+      />
+      <ImageCard
+        v-if="hasPendant"
+        :image="userInfo?.card.pendant?.image"
+        :title="`头像框 - ${userInfo?.card.pendant.name}`"
       />
     </div>
+    <template v-if="chargeEmojiInfo.length > 0">
+      <ElDivider>充电表情</ElDivider>
+      <ElSpace
+        class="w-full justify-center"
+        wrap
+      >
+        <ImageCard
+          v-for="(emoji, index) in chargeEmojiInfo"
+          :key="emoji"
+          :download-name="emoji.name"
+          :image="emoji.icon"
+          :index="index"
+          :preview-images="chargeEmojiInfo.map(e => e.icon)"
+          :title="emoji.name"
+        />
+      </ElSpace>
+    </template>
   </div>
 </template>
