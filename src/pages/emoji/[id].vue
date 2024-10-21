@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BatchDownloadTask, EmojiPackageDetail } from "../../types.ts";
+import { BatchDownloadTask, EmojiPackageDetail, GeneralAPIResponse } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
 
@@ -20,10 +20,10 @@ const downloadTask = ref<BatchDownloadTask>()
 
 const generateDownloadTask = () => {
   downloadTask.value = {
-    name: packageDetail.value.text + ' - 表情包',
+    name: packageDetail.value?.text + ' - 表情包',
     files: packageDetail.value?.emote?.map(e => {
       return {
-        path: packageDetail.value.text + ' - 表情包' + sep() + (e.meta.alias ?? e.text),
+        path: packageDetail.value?.text + ' - 表情包' + sep() + (e.meta.alias ?? e.text),
         url: e.url,
       }
     }) ?? [],
@@ -42,12 +42,14 @@ const fetchData = async () => {
 
   try {
     const resp = await cachedAPIFetch(url)
-    packageDetail.value = resp.data.packages[0] as EmojiPackageDetail
+    packageDetail.value = (resp as GeneralAPIResponse<{
+      packages: EmojiPackageDetail[]
+    }>).data.packages[0] as EmojiPackageDetail
     isPureText.value = packageDetail.value.type === 4
     responseJSON.value = JSON.stringify(packageDetail.value, null, 2)
   } catch (e) {
     console.error(e)
-    if (e.code === -101) {
+    if ((e as GeneralAPIResponse<unknown>).code === -101) {
       ElMessage({
         message: '登录失效，请至登录界面重新进行登录',
         type: 'error',
@@ -67,8 +69,8 @@ const fetchData = async () => {
 watch(() => route.params.id, fetchData, { immediate: true })
 
 const resolveLink = async () => {
-  const link = packageDetail.value.meta.item_url
-  if (await resolveText(link) !== null) {
+  const link = packageDetail.value?.meta.item_url ?? ''
+  if (resolveText(link) !== null) {
     await autoJump(link, true)
   } else {
     window.open(link)
@@ -106,7 +108,7 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
         label="创建时间"
       >
         {{
-          new Date(packageDetail?.mtime * 1000).toLocaleString()
+          new Date((packageDetail?.mtime ?? 0) * 1000).toLocaleString()
         }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
@@ -133,7 +135,7 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
     >
       <ImageCard
         v-for="(emoji, index) in emojis"
-        :key="emoji"
+        :key="emoji.id"
         :download-name="emoji.meta.alias ?? emoji.text"
         :image="emoji.url"
         :index="index"

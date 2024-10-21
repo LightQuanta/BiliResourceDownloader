@@ -31,7 +31,7 @@ const finalData = ref<FilePathData[]>([])
 
 // 根据下载链接提前文件扩展名
 const extractExtensionName = (url: string) => {
-  return '.' + url.split('?')[0].split('.').pop().split('_')[0]
+  return '.' + url.split('?')[0]?.split('.').pop()?.split('_')[0]
 }
 
 // 生成文件选择数据
@@ -43,11 +43,11 @@ const initData = () => {
 
   files.forEach(file => {
     const paths = file.path.split(sep())
-    const name = paths.pop()
+    const name = paths.pop() as string
 
     let currentNode: FilePathData[] = newData
     while (paths.length > 0) {
-      const dir = paths.shift()
+      const dir = paths.shift() as string
       let nextNode = currentNode.find(d => d.value === dir)
 
       if (!nextNode) {
@@ -58,7 +58,7 @@ const initData = () => {
         }
         currentNode.push(nextNode)
       }
-      currentNode = nextNode.children
+      currentNode = nextNode.children ?? []
     }
 
     currentNode.push({
@@ -110,7 +110,7 @@ const submit = async () => {
 
     // 将所选文件转换为下载任务格式
     const selectedFiles = selected.map(selection => {
-      const url = props.task.files.find(f => f.path === selection).url
+      const url = props.task?.files.find(f => f.path === selection)?.url ?? ''
       const extension = extractExtensionName(url)
       return {
         path: selection + extension,
@@ -120,7 +120,7 @@ const submit = async () => {
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {
-      name: props.task.name,
+      name: props.task?.name ?? '',
       path: downloadConfig.path,
       files: selectedFiles
     }

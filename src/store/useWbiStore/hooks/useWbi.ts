@@ -10,9 +10,9 @@ export default function useWbi() {
     }>()
 
     // todo!: 增加刷新错误处理
-    function refreshWbi(sessionData?: string) {
+    function refreshWbi() {
         state.value = 'pending'
-        return getWbiKeys(sessionData).then((keys) => {
+        return getWbiKeys().then((keys) => {
             data.value = {
                 img_url: keys.img_key,
                 sub_url: keys.sub_key,

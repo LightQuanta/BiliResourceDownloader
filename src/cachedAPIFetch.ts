@@ -46,13 +46,14 @@ async function cachedAPIFetch(url: URL | string, init?: RequestInit, extraOption
             params[key] = value
         }
         parsedURL.search = await encWbiWithFetch(params)
+        console.debug(`wbi signed url: ${getURLStr()}`)
     }
 
     if (useCache && await store.has(getURLStr())) {
         const cacheData = (await store.get(getURLStr())) as CachedJSONResponse
         if (cacheData.cachedTime > Date.now()) {
             console.debug(`using cached ${getURLStr()}`)
-            return cacheData.response
+            return cacheData.response as GeneralAPIResponse<unknown>
         } else {
             console.debug(`expired cache ${getURLStr()}`)
         }
@@ -60,13 +61,14 @@ async function cachedAPIFetch(url: URL | string, init?: RequestInit, extraOption
 
     const options: RequestInit = {
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
+            'Cookie': 'bili_ticket=1&b_nut=1&buvid3=1&buvid4=1',
         }
     }
     if (useCookie) {
         const cookie = await getLoginCookie()
         if (cookie !== null) {
-            options.headers.Cookie = cookie
+            options.headers['Cookie'] = cookie
         }
     }
 

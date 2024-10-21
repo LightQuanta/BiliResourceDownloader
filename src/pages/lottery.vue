@@ -38,11 +38,11 @@ const route = useRoute()
 const fetchData = async () => {
   loading.value = true
 
-  if (actID.value !== +route.query.act_id) {
+  if (actID.value !== parseInt(route.query.act_id as string ?? '')) {
     lotteryID.value = -1
   }
 
-  actID.value = +route.query.act_id
+  actID.value = parseInt(route.query.act_id as string ?? '')
   const lotteryIDStr = route.query.lottery_id as string | undefined
   if (lotteryIDStr) {
     lotteryID.value = +lotteryIDStr
@@ -50,7 +50,7 @@ const fetchData = async () => {
 
   let resp: ActInfo
   try {
-    resp = await cachedAPIFetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actID.value}`).then(r => r.data)
+    resp = await cachedAPIFetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actID.value}`).then(r => r.data) as ActInfo
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -100,8 +100,8 @@ const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1
 const batchDownloadInfo = ref<BatchDownloadTask>()
 const generateDownloadTask = async () => {
   const downloadFileInfo: BatchDownloadTask = {
-    name: actInfo.value.act_title,
-    path: actInfo.value.act_title,
+    name: actInfo.value?.act_title ?? '',
+    path: actInfo.value?.act_title ?? '',
     files: [],
   }
 
@@ -109,7 +109,7 @@ const generateDownloadTask = async () => {
 
   let lotteryDetails: LotteryDetail[]
   try {
-    lotteryDetails = await Promise.all(lotteryInfo.value.map(l => {
+    lotteryDetails = await Promise.all(lotteryInfo.value?.map(l => {
       const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
       url.searchParams.set('act_id', actID.value.toString())
       url.searchParams.set('lottery_id', l.lottery_id.toString())
@@ -126,7 +126,7 @@ const generateDownloadTask = async () => {
   }
 
   // 每个收藏集的封面
-  lotteryInfo.value.forEach(l => {
+  lotteryInfo.value?.forEach(l => {
     downloadFileInfo.files.push({
       path: l.lottery_name + ' - 封面',
       url: l.lottery_image,
@@ -163,7 +163,7 @@ const generateDownloadTask = async () => {
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
             path: detail.name + '（水印）' + sep() + cardInfo.card_name,
-            url: cardInfo.video_list_download[0],
+            url: cardInfo.video_list_download?.[0] ?? '',
           })
         })
     // 原版
@@ -172,7 +172,7 @@ const generateDownloadTask = async () => {
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
             path: detail.name + sep() + cardInfo.card_name,
-            url: cardInfo.video_list[0],
+            url: cardInfo.video_list?.[0] ?? '',
           })
         })
   })

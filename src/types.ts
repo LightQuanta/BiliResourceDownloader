@@ -522,7 +522,6 @@ interface EmojiPackageInfo {
 }
 
 interface EmojiPackageDetail extends EmojiPackageInfo {
-    type: number
     emote: EmoteInfo[]
 }
 

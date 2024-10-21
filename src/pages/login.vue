@@ -106,12 +106,12 @@ const testLoginState = async () => {
     uname?: string
   }>
   try {
-    resp = await cachedAPIFetch('https://api.bilibili.com/x/web-interface/nav', undefined, false) as GeneralAPIResponse<{
+    resp = await cachedAPIFetch('https://api.bilibili.com/x/web-interface/nav', undefined, { useCache: false }) as GeneralAPIResponse<{
       isLogin: boolean
       uname?: string
     }>
   } catch (e) {
-    if ((e.code as number) ?? 0 == -101) {
+    if ((e as GeneralAPIResponse<unknown>).code === -101) {
       ElMessage({
         message: '当前账号未登录',
         type: 'error',

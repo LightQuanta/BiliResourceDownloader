@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
+import {
+  BasicLiveUserInfo,
+  BasicRoomInfo,
+  BatchDownloadTask,
+  GeneralAPIResponse,
+  LiveroomEmojiListInfo
+} from "../../types.ts";
 import { userLoggedIn } from "../../loginManager.ts";
 import { sep } from "@tauri-apps/api/path";
 
@@ -116,7 +122,7 @@ const fetchData = async (paramID: string) => {
 
     try {
       const resp = await cachedAPIFetch(url3)
-      liveroomEmojis.value = resp.data.data as LiveroomEmojiListInfo
+      liveroomEmojis.value = (resp as GeneralAPIResponse<{ data: LiveroomEmojiListInfo[] }>).data.data
     } catch (e) {
       console.error(e)
       ElMessage({

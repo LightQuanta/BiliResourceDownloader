@@ -5,6 +5,7 @@ import {
   BasicUserInfo,
   BatchDownloadTask,
   ChargeEmojiInfo,
+  GeneralAPIResponse,
   PowerRights,
   SuitDetail
 } from "../../types.ts";
@@ -28,19 +29,19 @@ const batchDownloadTask = ref<BatchDownloadTask>()
 const generateBatchDownloadTask = () => {
   const userName = userInfo.value?.card.name
   const task: BatchDownloadTask = {
-    name: userInfo.value?.card.name,
+    name: userInfo.value?.card.name ?? '',
     files: [],
   }
 
   task.files.push({
     path: `${userName} - 头像`,
-    url: userInfo.value?.card.face,
+    url: userInfo.value?.card.face ?? '',
   })
 
   if (hasPendant.value) {
     task.files.push({
       path: `头像框 - ${userInfo.value?.card.pendant?.name}`,
-      url: userInfo.value?.card.pendant?.image_enhance,
+      url: userInfo.value?.card.pendant?.image_enhance ?? '',
     })
   }
 
@@ -103,7 +104,7 @@ const fetchData = async () => {
     rightsData = tempResp.data as PowerRights | undefined
   } catch (e) {
     // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
-    if (e.code !== 203010) {
+    if ((e as GeneralAPIResponse<unknown>).code !== 203010) {
       console.error(e)
       ElMessage({
         message: `获取充电信息出错：${e}`,
@@ -136,9 +137,9 @@ const showDebugInfo = () => {
 const hasPendant = computed(() => userInfo.value?.card?.pendant.pid ?? 0 !== 0)
 
 const jumpToPendant = async () => {
-  const id = userInfo.value?.card.pendant.n_pid
+  const id = userInfo.value?.card.pendant.n_pid ?? -1
   const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
-  url.searchParams.set('item_id', id)
+  url.searchParams.set('item_id', id.toString())
   url.searchParams.set('part', 'card')
 
   let data: SuitDetail
@@ -150,6 +151,7 @@ const jumpToPendant = async () => {
       message: `获取头像框信息出错：${e}`,
       type: 'error',
     })
+    return
   }
   // 收藏集
   if (data.buy_link.length > 0) {
@@ -284,7 +286,7 @@ const jumpToPendant = async () => {
         label="直播间"
       >
         <RouterLink
-          v-if="roomID > 0"
+          v-if="+roomID > 0"
           :to="`/liveroom/${roomID}`"
         >
           <ElLink type="primary">
@@ -326,7 +328,7 @@ const jumpToPendant = async () => {
       >
         <ImageCard
           v-for="(emoji, index) in chargeEmojiInfo"
-          :key="emoji"
+          :key="emoji.id"
           :download-name="`${userInfo?.card.name}充电表情 - ${emoji.name}`"
           :image="emoji.icon"
           :index="index"

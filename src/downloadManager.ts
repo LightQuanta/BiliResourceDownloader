@@ -95,7 +95,7 @@ async function startDownload() {
             const header = new Map<string, string>()
             header.set('User-Agent', '111')
             // start
-            const finalDirectory = `${path}${sep()}${file.path}`
+            const finalDirectory = `${path}${sep()}${file?.path ?? ''}`
                 .split(sep())
                 .slice(0, -1)
                 .join(sep())
@@ -108,8 +108,8 @@ async function startDownload() {
             taskDownloadFinishRecorder[name] = taskDownloadFinishRecorder[name] ? taskDownloadFinishRecorder[name] + 1 : 1
 
             // 不进行 await 的原因是不能阻塞这个循环，download 方法会在下载文件完成后才转为 fulfilled
-            download(file.url,
-                `${path}${sep()}${file.path}`,
+            download(file?.url ?? '',
+                `${path}${sep()}${file?.path ?? ''}`,
                 (downloadInfo) => {
                     emitter.emit('downloadProgress', { name, file, downloadInfo })
                 }, header)

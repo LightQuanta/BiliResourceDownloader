@@ -55,7 +55,7 @@ emitter.on('drawerOpen', async () => {
 })
 
 emitter.on('fileDownloadFinish', (info: FileDownloadFinish) => {
-  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.path === info.file.path), 1)
+  tasks.find(t => t.name === info.name)?.files.splice(tasks.find(t => t.name === info.name)?.files.findIndex(f => f.path === info.file.path) ?? 0, 1)
 })
 
 emitter.on('downloadFinish', (info: { name: string }) => {

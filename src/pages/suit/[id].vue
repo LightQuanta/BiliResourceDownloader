@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { SuitDetail } from "../../types.ts";
 
 const route = useRoute<'/suit/[id]'>()
 
@@ -13,10 +14,10 @@ const fetchData = async (paramID: string) => {
   url.searchParams.set('item_id', id.value)
   url.searchParams.set('part', 'card')
 
-  let data = null
+  let data: SuitDetail
   try {
     const resp = await cachedAPIFetch(url)
-    data = resp.data
+    data = resp.data as SuitDetail
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -26,7 +27,7 @@ const fetchData = async (paramID: string) => {
     return null
   }
 
-  resp.value = data
+  resp.value = JSON.stringify(data, null, 2)
 }
 
 watch(() => route.params.id, fetchData, { immediate: true })

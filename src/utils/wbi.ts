@@ -65,7 +65,7 @@ export async function encWbiWithFetch(
     if (!store.data) {
         await store.refreshWbi()
     }
-    return encWbi(params, store.data.img_url, store.data.sub_url, store.data.w_webid)
+    return encWbi(params, store.data?.img_url ?? '', store.data?.sub_url ?? '', store.data?.w_webid ?? '')
 }
 
 /**

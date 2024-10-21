@@ -20,7 +20,7 @@ export async function getWbiKeys() {
     const regex = /<script id="__RENDER_DATA__" type="application\/json">([^<]+)<\/script>/
 
     // 你是渲染数据吗？我觉得我是
-    const renderData = JSON.parse(decodeURIComponent(htmlResp.match(regex)[1])) as { access_id: string }
+    const renderData = JSON.parse(decodeURIComponent(htmlResp.match(regex)?.[1] ?? '')) as { access_id: string }
 
     return {
         img_key: img_url.slice(

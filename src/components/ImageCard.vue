@@ -13,7 +13,7 @@ const prop = defineProps<{
 }>()
 
 const downloadImage = async (url: string) => {
-  const suffix = url.split('?')[0].split('.').pop()
+  const suffix = url.split('?')[0].split('.').pop() ?? ''
   const name = (prop.downloadName ?? prop.title) + '.' + suffix
 
   const path = await save({
@@ -67,7 +67,7 @@ const downloadImage = async (url: string) => {
       :hide-on-click-modal="true"
       :initial-index="index ?? 0"
       :lazy="lazy ?? true"
-      :preview-src-list="previewImages ?? [image]"
+      :preview-src-list="previewImages ?? [image ?? '']"
       :src="image"
       fit="contain"
       preview-teleported

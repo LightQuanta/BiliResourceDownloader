@@ -14,13 +14,13 @@ const imgUrl = computed(() => hasWatermark.value ? prop.card.card_img_download :
 const hasVideo = computed(() => (prop.card.video_list?.length ?? 0) != 0)
 const videoUrl = computed(() => {
   if (hasVideo.value) {
-    return hasWatermark.value ? prop.card.video_list_download[0] : prop.card.video_list[0]
+    return hasWatermark.value ? prop.card.video_list_download?.[0] : prop.card.video_list?.[0]
   }
   return ''
 })
 
 const downloadFile = async (url: string) => {
-  const suffix = url.split('?')[0].split('.').pop()
+  const suffix = url.split('?')[0].split('.').pop() ?? ''
   const name = prop.card.card_name + '.' + suffix
 
   const path = await save({
@@ -109,7 +109,7 @@ const downloadFile = async (url: string) => {
           </ElButton>
           <ElButton
             type="primary"
-            @click="downloadFile(videoUrl)"
+            @click="downloadFile(videoUrl ?? '')"
           >
             视频
             <ElIcon size="16">
