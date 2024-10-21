@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BasicLiveUserInfo, BasicUserInfo, BatchDownloadTask, ChargeEmojiInfo, PowerRights } from "../../types.ts";
+import {
+  BasicLiveUserInfo,
+  BasicUserInfo,
+  BatchDownloadTask,
+  ChargeEmojiInfo,
+  PowerRights,
+  SuitDetail
+} from "../../types.ts";
 import { sep } from "@tauri-apps/api/path";
+import { autoJump } from "../../linkResolver.ts";
 
 const route = useRoute<'/space/[id]'>()
 const loading = ref(false)
@@ -126,9 +134,28 @@ const showDebugInfo = () => {
 
 const hasPendant = computed(() => userInfo.value?.card?.pendant.pid ?? 0 !== 0)
 
-const router = useRouter()
-const searchPendant = () => {
-  router.push({ path: '/search/garb', query: { keyword: userInfo.value?.card.pendant.name } })
+const jumpToPendant = async () => {
+  const id = userInfo.value?.card.pendant.n_pid
+  const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
+  url.searchParams.set('item_id', id)
+  url.searchParams.set('part', 'card')
+
+  let data: SuitDetail
+  try {
+    data = await cachedAPIFetch(url).then(r => r.data) as SuitDetail
+  } catch (e) {
+    console.error(e)
+    ElMessage({
+      message: `获取头像框信息出错：${e}`,
+      type: 'error',
+    })
+  }
+  // 收藏集
+  if (data.buy_link.length > 0) {
+    await autoJump(data.buy_link, true)
+  } else {
+    await autoJump(`https://www.bilibili.com/h5/mall/equity-link/collect-home?item_id=${id}&part=pendant`, true)
+  }
 }
 // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/space.md#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%8A%A8%E6%80%81
 // 尝试根据第一条获取的动态获得装扮信息？
@@ -244,12 +271,11 @@ const searchPendant = () => {
         :span="6"
         label="头像框"
       >
-        <!--  TODO 头像框的pid是否可以解析？ -->
         <ElLink
           type="primary"
-          @click="searchPendant"
+          @click="jumpToPendant"
         >
-          {{ userInfo?.card.pendant.name }} - 点击搜索
+          {{ userInfo?.card.pendant.name }}
         </ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem
@@ -274,7 +300,7 @@ const searchPendant = () => {
     </ElDescriptions>
 
     <ElDivider>用户相关图片</ElDivider>
-    <div class="flex flex-wrap gap-4 justify-center">
+    <div class="flex flex-wrap gap-4 justify-center items-center">
       <ImageCard
         :download-name="`${userInfo?.card.name} - 头像`"
         :image="userInfo?.card.face"
@@ -285,6 +311,7 @@ const searchPendant = () => {
         :image="userInfo?.card.pendant?.image"
         :title="`头像框 - ${userInfo?.card.pendant.name}`"
       />
+      <ImageCard />
     </div>
     <template v-if="chargeEmojiInfo.length > 0">
       <ElDivider>充电表情</ElDivider>

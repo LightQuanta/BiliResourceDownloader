@@ -192,6 +192,7 @@ interface SuitDetail {
             avatar: string
         }
     }
+    buy_link: string
 }
 
 interface LotteryDetail {
@@ -277,11 +278,7 @@ interface DynamicInfo {
             }
 
             // 头像框？
-            pendant: {
-                image: string
-                name: string
-                pid: number
-            }
+            pendant: PendantInfo
 
             // 发布时间（文本）
             pub_time: string
@@ -384,6 +381,7 @@ type BiliResourceDownloadEventEmitter = {
     // preset events
 } & Record<string, unknown>;
 
+// https://api.bilibili.com/x/web-interface/card?mid=${mid}
 interface BasicUserInfo {
     card: {
         mid: string
@@ -403,11 +401,7 @@ interface BasicUserInfo {
         birthday: string
 
         // 头像框
-        pendant: {
-            pid: number
-            name: string
-            image: string
-        }
+        pendant: PendantInfo
 
         official: {
             role: number
@@ -424,6 +418,22 @@ interface BasicUserInfo {
     follower: number
     // 获赞数
     like_num: number
+
+    // 网页端空间背景图（需要参数photo=true）
+    space: {
+        s_img: string
+        l_img: string
+    }
+}
+
+
+// 头像框信息
+interface PendantInfo {
+    pid: number
+    name: string
+    image: string
+    // 重要，可用此ID从装扮API处获取跳转链接
+    n_pid: number
 }
 
 // https://api.live.bilibili.com/live_user/v1/Master/info?uid=${uid}
