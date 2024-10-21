@@ -2,6 +2,7 @@ import { getWbiKeys } from "../api"
 
 export default function useWbi() {
   const state = ref<HookState>('ready')
+  const errMsg = ref('')
   const data = ref<{
     img_url: string
     sub_url: string
@@ -16,7 +17,8 @@ export default function useWbi() {
         sub_url: `https://wbi.biliapi.net/sub/${keys.sub_key}.jpg`
       }
       state.value = 'ok'
-    }).catch(() => {
+    }).catch((e) => {
+      errMsg.value = e
       state.value = 'error'
     })
   }
@@ -24,6 +26,7 @@ export default function useWbi() {
   return {
     state,
     data,
+    errMsg,
     refreshWbi
   }
 }

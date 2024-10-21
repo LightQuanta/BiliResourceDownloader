@@ -5,6 +5,7 @@ export const useWbiStore = defineStore('bilibili_wbi', () => {
   const {
     state,
     data,
+    errMsg,
     refreshWbi
   } = useWbi()
 
@@ -13,6 +14,7 @@ export const useWbiStore = defineStore('bilibili_wbi', () => {
   return {
     state,
     data,
+    errMsg,
     refreshWbi
   }
 })
