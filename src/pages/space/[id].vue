@@ -40,7 +40,7 @@ const generateBatchDownloadTask = () => {
   if (hasPendant.value) {
     task.files.push({
       path: `头像框 - ${userInfo.value?.card.pendant?.name}`,
-      url: userInfo.value?.card.pendant?.image,
+      url: userInfo.value?.card.pendant?.image_enhance,
     })
   }
 
@@ -309,7 +309,7 @@ const jumpToPendant = async () => {
       />
       <ImageCard
         v-if="hasPendant"
-        :image="userInfo?.card.pendant?.image"
+        :image="userInfo?.card.pendant?.image_enhance"
         :title="`头像框 - ${userInfo?.card.pendant.name}`"
       />
       <ImageCard
