@@ -14,6 +14,7 @@ const cards = ref<LotteryCardInfo[]>([])
 
 const loading = ref(false)
 
+const lotteryDetail = ref<LotteryDetail>()
 const coverURL = ref('')
 const saleQuantity = ref(0)
 const saleStartTime = ref(0)
@@ -40,9 +41,8 @@ onMounted(async () => {
   url.searchParams.set('act_id', String(actID))
   url.searchParams.set('lottery_id', String(lotteryID))
 
-  let lotteryDetail: LotteryDetail
   try {
-    lotteryDetail = await cachedAPIFetch(url).then(r => (r as GeneralAPIResponse<LotteryDetail>).data)
+    lotteryDetail.value = await cachedAPIFetch(url).then(r => (r as GeneralAPIResponse<LotteryDetail>).data)
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -64,7 +64,7 @@ onMounted(async () => {
   saleStartTime.value = +dlc_sale_start_time * 1000
   saleEndTime.value = +dlc_sale_end_time * 1000
 
-  cards.value = lotteryDetail.item_list.map(i => i.card_info).sort((a, b) => b.card_scarcity - a.card_scarcity)
+  cards.value = lotteryDetail.value?.item_list.map(i => i.card_info).sort((a, b) => b.card_scarcity - a.card_scarcity) ?? []
   loading.value = false
 })
 
@@ -114,17 +114,21 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
       class="justify-center"
       wrap
     >
-      <ImageCard
+      <ImageVideoCard
         v-if="!loading"
-        :download-name="`${name}-封面`"
+        :download-name="`${name} - 封面`"
         :image="coverURL"
         :preview-images="previewImages"
         title="收藏集封面"
       />
-      <LotteryCard
+      <ImageVideoCard
         v-for="(card, index) in cards"
         :key="card.card_type_id"
-        :card="card"
+        :title="card.card_name"
+        :subtitle="`稀有度：${card.card_scarcity}`"
+        :download-name="`${name} - ${card.card_name}`"
+        :image="card.card_img"
+        :video="card.video_list?.[0]"
         :index="index + 1"
         :preview-images="previewImages"
       />

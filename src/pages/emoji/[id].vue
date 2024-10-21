@@ -133,7 +133,7 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
       wrap
       v-if="!isPureText"
     >
-      <ImageCard
+      <ImageVideoCard
         v-for="(emoji, index) in emojis"
         :key="emoji.id"
         :download-name="emoji.meta.alias ?? emoji.text"
