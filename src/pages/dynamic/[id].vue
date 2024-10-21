@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { AtTextNode, DynamicInfo, DynamicTypes, GeneralAPIResponse } from "../../types.ts";
+import { AtTextNode, DynamicInfo, DynamicTypes } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 
 const loading = ref(false)
@@ -30,12 +30,12 @@ const fetchData = async (paramID: string) => {
 
   let data: DynamicInfo
   try {
-    const resp = await cachedAPIFetch(url)
+    const resp = await cachedAPIFetch<{ item: DynamicInfo }>(url)
 
     responseText.value = JSON.stringify(resp, null, 2)
     apiUrl.value = url.toString()
 
-    data = (resp as GeneralAPIResponse<{ item: DynamicInfo }>).data.item
+    data = resp.data.item
   } catch (e) {
     console.error(e)
     ElMessage({

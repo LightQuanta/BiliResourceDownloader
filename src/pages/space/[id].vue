@@ -65,7 +65,7 @@ const fetchData = async () => {
 
   let resp: BasicUserInfo
   try {
-    resp = await cachedAPIFetch(url).then(r => r.data) as BasicUserInfo
+    resp = await cachedAPIFetch<BasicUserInfo>(url).then(r => r.data)
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -84,8 +84,8 @@ const fetchData = async () => {
   url2.searchParams.set('uid', uid.value)
 
   try {
-    const resp = await cachedAPIFetch(url2)
-    roomID.value = (resp.data as BasicLiveUserInfo).room_id.toString()
+    const resp = await cachedAPIFetch<BasicLiveUserInfo>(url2)
+    roomID.value = resp.data.room_id.toString()
     // responseText.value = JSON.stringify(resp, null, 2)
   } catch (e) {
     console.error(e)
@@ -100,8 +100,8 @@ const fetchData = async () => {
 
   let rightsData: PowerRights | undefined
   try {
-    const tempResp = await cachedAPIFetch(url3)
-    rightsData = tempResp.data as PowerRights | undefined
+    const tempResp = await cachedAPIFetch<PowerRights | undefined>(url3)
+    rightsData = tempResp.data
   } catch (e) {
     // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
     if ((e as GeneralAPIResponse<unknown>).code !== 203010) {
@@ -144,7 +144,7 @@ const jumpToPendant = async () => {
 
   let data: SuitDetail
   try {
-    data = await cachedAPIFetch(url).then(r => r.data) as SuitDetail
+    data = await cachedAPIFetch<SuitDetail>(url).then(r => r.data)
   } catch (e) {
     console.error(e)
     ElMessage({

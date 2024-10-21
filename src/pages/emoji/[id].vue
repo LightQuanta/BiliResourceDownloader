@@ -41,10 +41,11 @@ const fetchData = async () => {
   requestURL.value = url.toString()
 
   try {
-    const resp = await cachedAPIFetch(url)
-    packageDetail.value = (resp as GeneralAPIResponse<{
+    const resp = await cachedAPIFetch<{
       packages: EmojiPackageDetail[]
-    }>).data.packages[0] as EmojiPackageDetail
+    }>(url)
+    
+    packageDetail.value = resp.data.packages[0] as EmojiPackageDetail
     isPureText.value = packageDetail.value.type === 4
     responseJSON.value = JSON.stringify(packageDetail.value, null, 2)
   } catch (e) {

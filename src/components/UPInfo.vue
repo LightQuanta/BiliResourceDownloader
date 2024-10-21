@@ -47,7 +47,7 @@ const fetchData = async () => {
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', String(userMid.value))
 
-  const resp = await cachedAPIFetch(url).then(r => r.data) as BasicUserInfo
+  const resp = await cachedAPIFetch<BasicUserInfo>(url).then(r => r.data)
 
   userName.value = resp.card.name
   faceURL.value = resp.card.face

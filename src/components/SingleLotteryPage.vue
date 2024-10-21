@@ -1,12 +1,6 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
-import type {
-  GarbSearchResult,
-  GeneralAPIResponse,
-  LotteryCardInfo,
-  LotteryDetail,
-  LotteryProperties,
-} from '../types.ts'
+import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryProperties, } from '../types.ts'
 
 const name = ref('')
 const jumpLink = ref('')
@@ -42,7 +36,7 @@ onMounted(async () => {
   url.searchParams.set('lottery_id', String(lotteryID))
 
   try {
-    lotteryDetail.value = await cachedAPIFetch(url).then(r => (r as GeneralAPIResponse<LotteryDetail>).data)
+    lotteryDetail.value = await cachedAPIFetch<LotteryDetail>(url).then(r => r.data)
   } catch (e) {
     console.error(e)
     ElMessage({

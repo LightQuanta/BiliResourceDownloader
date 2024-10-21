@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
-import type { EmojiPackageInfo, EmojiPackages, GeneralAPIResponse } from "../../types.ts";
+import type { EmojiPackageInfo, EmojiPackages } from "../../types.ts";
 import Fuse from "fuse.js";
 import { userLoggedIn } from "../../loginManager.ts";
 
@@ -50,7 +50,7 @@ const load = async () => {
   url.searchParams.set('business', 'reply')
 
   try {
-    const resp = await cachedAPIFetch(url) as GeneralAPIResponse<EmojiPackages>
+    const resp = await cachedAPIFetch<EmojiPackages>(url)
     emojiInfo.value = resp.data
     allEmojis.value = resp.data.all_packages
   } catch (e) {

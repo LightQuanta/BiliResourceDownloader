@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
-import type { GarbSearchResult, GeneralAPIResponse, LotteryProperties, SuitProperties } from "../../types.ts";
+import type { GarbSearchResult, LotteryProperties, SuitProperties } from "../../types.ts";
 
 const params = useUrlSearchParams()
 
@@ -71,12 +71,13 @@ const load = async () => {
 
   let data: GarbSearchResult<LotteryProperties | SuitProperties>[] = []
   try {
-    const resp = await cachedAPIFetch(url)
-
-    data = (resp as GeneralAPIResponse<{
+    const resp = await cachedAPIFetch<{
       list: GarbSearchResult<LotteryProperties | SuitProperties>[]
-    }>).data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
-    totalCount.value = (resp as GeneralAPIResponse<{ total: number }>).data.total as number
+      total: number
+    }>(url)
+
+    data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
+    totalCount.value = resp.data.total
     if (totalCount.value === 0) return
     currentPage.value++
   } catch (e) {

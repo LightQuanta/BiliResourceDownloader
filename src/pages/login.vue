@@ -106,10 +106,10 @@ const testLoginState = async () => {
     uname?: string
   }>
   try {
-    resp = await cachedAPIFetch('https://api.bilibili.com/x/web-interface/nav', undefined, { useCache: false }) as GeneralAPIResponse<{
+    resp = await cachedAPIFetch<{
       isLogin: boolean
       uname?: string
-    }>
+    }>('https://api.bilibili.com/x/web-interface/nav', undefined, { useCache: false })
   } catch (e) {
     if ((e as GeneralAPIResponse<unknown>).code === -101) {
       ElMessage({

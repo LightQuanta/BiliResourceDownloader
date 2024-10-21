@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import {
-  BasicLiveUserInfo,
-  BasicRoomInfo,
-  BatchDownloadTask,
-  GeneralAPIResponse,
-  LiveroomEmojiListInfo
-} from "../../types.ts";
+import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
 import { userLoggedIn } from "../../loginManager.ts";
 import { sep } from "@tauri-apps/api/path";
 
@@ -75,8 +69,8 @@ const fetchData = async (paramID: string) => {
 
   let data: BasicRoomInfo
   try {
-    const resp = await cachedAPIFetch(url)
-    data = resp.data as BasicRoomInfo
+    const resp = await cachedAPIFetch<BasicRoomInfo>(url)
+    data = resp.data
     responseText.value = JSON.stringify(resp, null, 2)
   } catch (e) {
     console.error(e)
@@ -104,8 +98,8 @@ const fetchData = async (paramID: string) => {
   url2.searchParams.set('uid', uid.value)
 
   try {
-    const resp = await cachedAPIFetch(url2)
-    liveroomUserInfo.value = resp.data as BasicLiveUserInfo
+    const resp = await cachedAPIFetch<BasicLiveUserInfo>(url2)
+    liveroomUserInfo.value = resp.data
     // responseText.value = JSON.stringify(resp, null, 2)
   } catch (e) {
     console.error(e)
@@ -121,8 +115,8 @@ const fetchData = async (paramID: string) => {
     url3.searchParams.set('room_id', roomID.value)
 
     try {
-      const resp = await cachedAPIFetch(url3)
-      liveroomEmojis.value = (resp as GeneralAPIResponse<{ data: LiveroomEmojiListInfo[] }>).data.data
+      const resp = await cachedAPIFetch<{ data: LiveroomEmojiListInfo[] }>(url3)
+      liveroomEmojis.value = resp.data.data
     } catch (e) {
       console.error(e)
       ElMessage({

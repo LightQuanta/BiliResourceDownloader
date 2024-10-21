@@ -16,8 +16,8 @@ const fetchData = async (paramID: string) => {
 
   let data: SuitDetail
   try {
-    const resp = await cachedAPIFetch(url)
-    data = resp.data as SuitDetail
+    const resp = await cachedAPIFetch<SuitDetail>(url)
+    data = resp.data
   } catch (e) {
     console.error(e)
     ElMessage({

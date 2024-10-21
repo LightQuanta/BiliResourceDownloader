@@ -102,8 +102,8 @@ const submit = async () => {
 
     // 获取选择的单文件
     const selected: string[] = (treeRef.value?.getCheckedNodes() as FilePathData[])
-      .filter((data: FilePathData) => data.value?.startsWith('[final]'))
-      .map((data: FilePathData) => data.value.substring(7)) ?? []
+        .filter((data: FilePathData) => data.value?.startsWith('[final]'))
+        .map((data: FilePathData) => data.value.substring(7)) ?? []
 
     console.debug('已选择列表：')
     console.debug(selected)

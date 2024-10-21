@@ -9,9 +9,9 @@ let internalStore: Store | null = null
 // 缓存5分钟
 const CACHE_TIME = 5 * 60 * 1000
 
-interface CachedJSONResponse {
+interface CachedJSONResponse<T> {
     cachedTime: number
-    response: unknown
+    response: T
 }
 
 async function getStore() {
@@ -27,7 +27,7 @@ interface ExtraAPIFetchOptions {
     useCookie?: boolean
 }
 
-async function cachedAPIFetch(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<unknown>> {
+async function cachedAPIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<T>> {
     const parsedURL = new URL(url)
     const getURLStr = () => parsedURL.toString()
     const store = await getStore()
@@ -53,7 +53,7 @@ async function cachedAPIFetch(url: URL | string, init?: RequestInit, extraOption
         const cacheData = (await store.get(getURLStr())) as CachedJSONResponse
         if (cacheData.cachedTime > Date.now()) {
             console.debug(`using cached ${getURLStr()}`)
-            return cacheData.response as GeneralAPIResponse<unknown>
+            return cacheData.response as GeneralAPIResponse<T>
         } else {
             console.debug(`expired cache ${getURLStr()}`)
         }
@@ -76,10 +76,10 @@ async function cachedAPIFetch(url: URL | string, init?: RequestInit, extraOption
 
 
     let retryCount = 0
-    let json: GeneralAPIResponse<unknown>
+    let json: GeneralAPIResponse<T>
 
     do {
-        json = await fetch(parsedURL, finalOptions).then(r => r.json()) as GeneralAPIResponse<unknown>
+        json = await fetch(parsedURL, finalOptions).then(r => r.json()) as GeneralAPIResponse<T>
 
         if (json.code !== 0) {
             if ((json.code === -352 || json.code === -403) && retryCount < 1) {

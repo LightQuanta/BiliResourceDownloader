@@ -50,7 +50,7 @@ const fetchData = async () => {
 
   let resp: ActInfo
   try {
-    resp = await cachedAPIFetch(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actID.value}`).then(r => r.data) as ActInfo
+    resp = await cachedAPIFetch<ActInfo>(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actID.value}`).then(r => r.data)
   } catch (e) {
     console.error(e)
     ElMessage({
