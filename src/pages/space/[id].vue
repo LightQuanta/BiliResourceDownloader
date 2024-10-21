@@ -58,6 +58,7 @@ const fetchData = async () => {
   loading.value = true
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', uid.value)
+  url.searchParams.set('photo', 'true')
 
   apiUrl.value = url.toString()
 
@@ -311,7 +312,11 @@ const jumpToPendant = async () => {
         :image="userInfo?.card.pendant?.image"
         :title="`头像框 - ${userInfo?.card.pendant.name}`"
       />
-      <ImageCard />
+      <ImageCard
+        :image="userInfo?.space.l_img"
+        title="网页端空间背景图"
+        :download-name="`${userInfo?.card.name} - 网页端空间背景图`"
+      />
     </div>
     <template v-if="chargeEmojiInfo.length > 0">
       <ElDivider>充电表情</ElDivider>
@@ -322,7 +327,7 @@ const jumpToPendant = async () => {
         <ImageCard
           v-for="(emoji, index) in chargeEmojiInfo"
           :key="emoji"
-          :download-name="emoji.name"
+          :download-name="`${userInfo?.card.name}充电表情 - ${emoji.name}`"
           :image="emoji.icon"
           :index="index"
           :preview-images="chargeEmojiInfo.map(e => e.icon)"
