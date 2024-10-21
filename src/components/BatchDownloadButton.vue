@@ -101,9 +101,9 @@ const submit = async () => {
     }
 
     // 获取选择的单文件
-    const selected: string[] = treeRef.value?.getCheckedNodes()
-        .filter((data: FilePathData) => data.value?.startsWith('[final]'))
-        .map((data: FilePathData) => data.value.substring(7)) ?? []
+    const selected: string[] = (treeRef.value?.getCheckedNodes() as FilePathData[])
+      .filter((data: FilePathData) => data.value?.startsWith('[final]'))
+      .map((data: FilePathData) => data.value.substring(7)) ?? []
 
     console.debug('已选择列表：')
     console.debug(selected)
@@ -198,6 +198,7 @@ const selectSaveFolder = async () => {
           multiple
           placeholder="选择要下载的内容"
           show-checkbox
+          class="download-treeselect"
           size="large"
         />
       </ElForm>
@@ -216,3 +217,9 @@ const selectSaveFolder = async () => {
     </ElDialog>
   </Teleport>
 </template>
+
+<style scoped>
+.download-treeselect :deep(.el-select-dropdown__wrap) {
+  max-height: 500px;
+}
+</style>
