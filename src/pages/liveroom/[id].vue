@@ -338,6 +338,7 @@ const showDebugInfo = () => {
             :preview-images="upEmoji.emoticons.map(e => e.url)"
             :title="emoji.emoji"
             :download-name="`${roomID}UP主大表情 - ${emoji.emoji}`"
+            :extra-title="emoji.unlock_show_text"
           />
         </ElSpace>
       </div>

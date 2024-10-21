@@ -9,6 +9,7 @@ const prop = defineProps<{
   previewImages?: string[]
   index?: number
   lazy?: boolean
+  extraTitle?: string
 }>()
 
 const downloadImage = async (url: string) => {
@@ -53,6 +54,13 @@ const downloadImage = async (url: string) => {
           {{ title }}
         </ElText>
       </ElLink>
+      <ElText
+        v-if="extraTitle?.length ?? 0 > 0"
+        size="small"
+        class="w-full text-center block"
+      >
+        {{ extraTitle }}
+      </ElText>
     </template>
     <ElImage
       :alt="title"
