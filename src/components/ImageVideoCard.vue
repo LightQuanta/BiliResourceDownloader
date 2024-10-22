@@ -81,6 +81,7 @@ function closeVideo() {
         class="w-full h-[calc(100vh-100px)]"
         :src="videoUrl"
         controls
+        autoplay
       />
     </div>
   </ElDialog>
