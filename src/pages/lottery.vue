@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import { cachedAPIFetch } from "../cachedAPIFetch.ts";
+import { APIFetch } from "../APIFetch.ts";
 import type { ActInfo, BatchDownloadTask, GarbSearchResult, LotteryDetail, LotteryProperties, } from '../types.ts'
 import { sep } from "@tauri-apps/api/path";
 import { CarouselInstance } from "element-plus/lib/components";
-import { setDebugInfo } from "../utils/debug.ts";
 
 const loading = ref(true)
 
@@ -51,9 +50,13 @@ const fetchData = async () => {
 
   try {
     const url = 'https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=' + actID.value
-    const resp = await cachedAPIFetch<ActInfo>(url)
+    const resp = await APIFetch<ActInfo>(url, null, {
+      debug: {
+        name: '收藏集组信息',
+        extra: { act_id: '收藏集组ID' }
+      }
+    })
     actInfo.value = resp.data
-    setDebugInfo('收藏集组信息', url, JSON.stringify(resp, null, 2), { act_id: '收藏集组ID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -115,7 +118,7 @@ const generateDownloadTask = async () => {
       url.searchParams.set('act_id', actID.value.toString())
       url.searchParams.set('lottery_id', l.lottery_id.toString())
 
-      return cachedAPIFetch(url).then(r => r.data) as Promise<LotteryDetail>
+      return APIFetch(url).then(r => r.data) as Promise<LotteryDetail>
     }) ?? [])
   } catch (e) {
     console.error(e)

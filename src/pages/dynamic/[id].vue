@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { APIFetch } from "../../APIFetch.ts";
 import { AtTextNode, BatchDownloadTask, DynamicInfo, DynamicTypes } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
-import { setDebugInfo } from "../../utils/debug.ts";
 import { sep } from "@tauri-apps/api/path";
 
 const loading = ref(false)
@@ -29,8 +28,12 @@ const fetchData = async (paramID: string) => {
 
   let data: DynamicInfo
   try {
-    const resp = await cachedAPIFetch<{ item: DynamicInfo }>(url)
-    setDebugInfo('动态信息', url, JSON.stringify(resp, null, 2), { id: '动态ID' })
+    const resp = await APIFetch<{ item: DynamicInfo }>(url, null, {
+      debug: {
+        name: '动态信息',
+        extra: { id: '动态ID' },
+      }
+    })
 
     data = resp.data.item
   } catch (e) {

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { APIFetch } from "../../APIFetch.ts";
 import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
 import { userLoggedIn } from "../../loginManager.ts";
 import { sep } from "@tauri-apps/api/path";
-import { setDebugInfo } from "../../utils/debug.ts";
 
 const route = useRoute<'/liveroom/[id]'>()
 
@@ -69,8 +68,12 @@ const fetchData = async (paramID: string) => {
 
   let data: BasicRoomInfo
   try {
-    const resp = await cachedAPIFetch<BasicRoomInfo>(url)
-    setDebugInfo('直播间信息', url, JSON.stringify(resp, null, 2), { room_id: '直播间ID' })
+    const resp = await APIFetch<BasicRoomInfo>(url, null, {
+      debug: {
+        name: '直播间信息',
+        extra: { room_id: '直播间ID' },
+      }
+    })
     data = resp.data
   } catch (e) {
     console.error(e)
@@ -98,9 +101,13 @@ const fetchData = async (paramID: string) => {
   url2.searchParams.set('uid', uid.value)
 
   try {
-    const resp = await cachedAPIFetch<BasicLiveUserInfo>(url2)
+    const resp = await APIFetch<BasicLiveUserInfo>(url2, null, {
+      debug: {
+        name: '直播间用户信息',
+        extra: { uid: '用户UID' },
+      }
+    })
     liveroomUserInfo.value = resp.data
-    setDebugInfo('直播间用户信息', url2, JSON.stringify(resp, null, 2), { uid: '用户UID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -115,8 +122,12 @@ const fetchData = async (paramID: string) => {
     url3.searchParams.set('room_id', roomID.value)
 
     try {
-      const resp = await cachedAPIFetch<{ data: LiveroomEmojiListInfo[] }>(url3)
-      setDebugInfo('直播间表情信息', url3, JSON.stringify(resp, null, 2), { room_id: '直播间ID' })
+      const resp = await APIFetch<{ data: LiveroomEmojiListInfo[] }>(url3, null, {
+        debug: {
+          name: '直播间表情信息',
+          extra: { room_id: '直播间ID' },
+        }
+      })
       liveroomEmojis.value = resp.data.data
     } catch (e) {
       console.error(e)

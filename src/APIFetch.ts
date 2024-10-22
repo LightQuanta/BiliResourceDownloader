@@ -3,6 +3,7 @@ import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./loginManager.t
 import { GeneralAPIResponse } from "./types.ts";
 import { encWbiWithFetch } from "./utils/wbi.ts";
 import { useWbiStore } from "./store/useWbiStore";
+import { setDebugInfo } from "./utils/debug.ts";
 
 let internalStore: Store | null = null
 
@@ -25,14 +26,18 @@ interface ExtraAPIFetchOptions {
     wbiSign?: boolean
     useCache?: boolean
     useCookie?: boolean
+    debug?: {
+        name: string
+        extraParams?: Record<string, string>
+    }
 }
 
-async function cachedAPIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<T>> {
+async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<T>> {
     const parsedURL = new URL(url)
     const getURLStr = () => parsedURL.toString()
     const store = await getStore()
 
-    const { useCache, wbiSign, useCookie } = {
+    const { useCache, wbiSign, useCookie, debug: debugInfo } = {
         useCache: true,
         wbiSign: false,
         useCookie: true,
@@ -50,9 +55,13 @@ async function cachedAPIFetch<T>(url: URL | string, init?: RequestInit, extraOpt
     }
 
     if (useCache && await store.has(getURLStr())) {
-        const cacheData = (await store.get(getURLStr())) as CachedJSONResponse
+        const cacheData = (await store.get(getURLStr())) as CachedJSONResponse<T>
         if (cacheData.cachedTime > Date.now()) {
             console.debug(`using cached ${getURLStr()}`)
+            
+            if (debugInfo) {
+                setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(cacheData.response, null, 2), debugInfo.extraParams)
+            }
             return cacheData.response as GeneralAPIResponse<T>
         } else {
             console.debug(`expired cache ${getURLStr()}`)
@@ -102,6 +111,10 @@ async function cachedAPIFetch<T>(url: URL | string, init?: RequestInit, extraOpt
         break
     } while (retryCount < 1)
 
+    if (debugInfo) {
+        setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(json, null, 2), debugInfo.extraParams)
+    }
+
     if (useCache) {
         await store.set(getURLStr(), {
             cachedTime: Date.now() + CACHE_TIME,
@@ -118,4 +131,4 @@ async function clearAPICache() {
     await store.clear()
 }
 
-export { cachedAPIFetch, clearAPICache }
+export { APIFetch, clearAPICache }

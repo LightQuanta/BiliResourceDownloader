@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { APIFetch } from "../../APIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import type { GarbSearchResult, LotteryProperties, SuitProperties } from "../../types.ts";
-import { setDebugInfo } from "../../utils/debug.ts";
 
 const params = useUrlSearchParams()
 
@@ -72,12 +71,15 @@ const load = async () => {
 
   let data: GarbSearchResult<LotteryProperties | SuitProperties>[] = []
   try {
-    const resp = await cachedAPIFetch<{
+    const resp = await APIFetch<{
       list: GarbSearchResult<LotteryProperties | SuitProperties>[]
       total: number
-    }>(url)
-
-    setDebugInfo('装扮/收藏集搜索结果', url, JSON.stringify(resp, null, 2), { key_word: '搜索关键词', pn: '页数' })
+    }>(url, null, {
+      debug: {
+        name: '装扮/收藏集搜索',
+        extra: { key_word: '搜索关键词', pn: '页数' },
+      }
+    })
 
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
     totalCount.value = resp.data.total

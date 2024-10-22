@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { APIFetch } from "../../APIFetch.ts";
 import {
   BasicLiveUserInfo,
   BasicUserInfo,
@@ -12,7 +12,6 @@ import {
 import { sep } from "@tauri-apps/api/path";
 import { autoJump } from "../../linkResolver.ts";
 import DebugButton from "../../components/DebugButton.vue";
-import { setDebugInfo } from "../../utils/debug.ts";
 
 const route = useRoute<'/space/[id]'>()
 const loading = ref(false)
@@ -72,9 +71,13 @@ const fetchData = async () => {
 
   let basicUserInfo: BasicUserInfo
   try {
-    const resp = await cachedAPIFetch<BasicUserInfo>(url)
+    const resp = await APIFetch<BasicUserInfo>(url, null, {
+      debug: {
+        name: '用户空间信息',
+        extra: { mid: '用户UID' },
+      },
+    })
     basicUserInfo = resp.data
-    setDebugInfo('用户空间信息', url, JSON.stringify(resp, null, 2), { mid: '用户UID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -93,9 +96,13 @@ const fetchData = async () => {
   url2.searchParams.set('uid', uid.value)
 
   try {
-    const resp = await cachedAPIFetch<BasicLiveUserInfo>(url2)
+    const resp = await APIFetch<BasicLiveUserInfo>(url2, null, {
+      debug: {
+        name: '用户直播间信息',
+        extra: { uid: '用户UID' },
+      },
+    })
     roomID.value = resp.data.room_id.toString()
-    setDebugInfo('用户直播间信息', url2, JSON.stringify(resp, null, 2), { uid: '用户UID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -109,9 +116,13 @@ const fetchData = async () => {
 
   let rightsData: PowerRights | undefined
   try {
-    const resp = await cachedAPIFetch<PowerRights | undefined>(url3)
+    const resp = await APIFetch<PowerRights | undefined>(url3, null, {
+      debug: {
+        name: '用户充电信息',
+        extra: { up_mid: '用户UID' },
+      },
+    })
     rightsData = resp.data
-    setDebugInfo('用户充电信息', url3, JSON.stringify(resp, null, 2), { up_mid: '用户UID' })
   } catch (e) {
     // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
     if ((e as GeneralAPIResponse<unknown>).code !== 203010) {
@@ -148,7 +159,7 @@ const jumpToPendant = async () => {
 
   let data: SuitDetail | null
   try {
-    const resp = await cachedAPIFetch<SuitDetail | null>(url)
+    const resp = await APIFetch<SuitDetail | null>(url)
     data = resp.data
   } catch (e) {
     console.error(e)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { APIFetch } from "../../APIFetch.ts";
 import { SuitDetail } from "../../types.ts";
 
 const route = useRoute<'/suit/[id]'>()
@@ -16,7 +16,7 @@ const fetchData = async (paramID: string) => {
 
   let data: SuitDetail
   try {
-    const resp = await cachedAPIFetch<SuitDetail>(url)
+    const resp = await APIFetch<SuitDetail>(url)
     data = resp.data
   } catch (e) {
     console.error(e)

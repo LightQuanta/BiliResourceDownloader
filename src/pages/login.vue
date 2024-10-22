@@ -2,7 +2,7 @@
 import { toDataURL } from 'qrcode'
 import { ElMessage } from "element-plus";
 import { checkLoginState, clearLoginCookie, saveLoginCookie, userLoggedIn } from "../loginManager.ts";
-import { cachedAPIFetch } from "../cachedAPIFetch.ts";
+import { APIFetch } from "../APIFetch.ts";
 import { GeneralAPIResponse } from "../types.ts";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
@@ -106,7 +106,7 @@ const testLoginState = async () => {
     uname?: string
   }>
   try {
-    resp = await cachedAPIFetch<{
+    resp = await APIFetch<{
       isLogin: boolean
       uname?: string
     }>('https://api.bilibili.com/x/web-interface/nav', undefined, { useCache: false })

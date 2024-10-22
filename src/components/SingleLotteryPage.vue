@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { cachedAPIFetch } from "../cachedAPIFetch.ts";
+import { APIFetch } from "../APIFetch.ts";
 import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryProperties, RedeemInfo, } from '../types.ts'
-import { setDebugInfo } from "../utils/debug.ts";
 
 const props = defineProps<{
   lottery: GarbSearchResult<LotteryProperties>
@@ -54,11 +53,15 @@ onMounted(async () => {
   url.searchParams.set('lottery_id', String(lotteryID))
 
   try {
-    lotteryDetail.value = await cachedAPIFetch<LotteryDetail>(url).then(r => r.data)
-    setDebugInfo(`收藏集${lotteryID}详情`, url, JSON.stringify(lotteryDetail.value, null, 2), {
-      act_id: '收藏集组ID',
-      lottery_id: '收藏集ID'
-    })
+    lotteryDetail.value = await APIFetch<LotteryDetail>(url, null, {
+      debug: {
+        name: `收藏集${lotteryID}详情`,
+        extraParams: {
+          act_id: '收藏集组ID',
+          lottery_id: '收藏集ID'
+        },
+      }
+    }).then(r => r.data)
   } catch (e) {
     console.error(e)
     ElMessage({

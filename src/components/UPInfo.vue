@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../cachedAPIFetch.ts";
+import { APIFetch } from "../APIFetch.ts";
 import { BasicUserInfo } from "../types.ts";
 
 type UPInfoType = 'face' | 'at'
@@ -47,7 +47,7 @@ const fetchData = async () => {
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', String(userMid.value))
 
-  const resp = await cachedAPIFetch<BasicUserInfo>(url).then(r => r.data)
+  const resp = await APIFetch<BasicUserInfo>(url).then(r => r.data)
 
   userName.value = resp.card.name
   faceURL.value = resp.card.face

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
+import { APIFetch } from "../../APIFetch.ts";
 import { BatchDownloadTask, EmojiPackageDetail, SuitDetail } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
-import { setDebugInfo } from "../../utils/debug.ts";
 
 const route = useRoute<'/emoji/[id]'>()
 const loading = ref(false)
@@ -58,11 +57,10 @@ const fetchData = async () => {
     requestURL.value = url.toString()
 
     try {
-      const resp = await cachedAPIFetch<{
+      const resp = await APIFetch<{
         packages: EmojiPackageDetail[]
-      }>(url)
+      }>(url, null, '表情包信息')
 
-      setDebugInfo('表情包信息', url, JSON.stringify(resp, null, 2))
       const packageDetail = resp.data.packages[0] as EmojiPackageDetail
 
       name.value = packageDetail.text
@@ -91,9 +89,8 @@ const fetchData = async () => {
     url.searchParams.set('part', 'card')
 
     try {
-      const resp = await cachedAPIFetch<SuitDetail>(url)
+      const resp = await APIFetch<SuitDetail>(url, null, '表情包信息')
 
-      setDebugInfo('表情包信息', url, JSON.stringify(resp, null, 2))
       const suitEmojiDetail = resp.data.suit_items.emoji ?? []
 
       name.value = resp.data.name
