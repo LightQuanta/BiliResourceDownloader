@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { AtTextNode, DynamicInfo, DynamicTypes } from "../../types.ts";
+import { AtTextNode, BatchDownloadTask, DynamicInfo, DynamicTypes } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 import { setDebugInfo } from "../../utils/debug.ts";
+import { sep } from "@tauri-apps/api/path";
 
 const loading = ref(false)
 const route = useRoute<'/dynamic/[id]'>()
@@ -104,7 +105,25 @@ const decorateDescription = computed(() => {
   return '装扮'
 })
 
-const pictureLinks = computed(() => dynamicInfo.value?.major?.opus?.pics?.map(p => p.url))
+const generateDownloadTask = () => {
+  const task: BatchDownloadTask = {
+    name: '动态' + dynamicID.value + '图片',
+    files: [],
+  }
+
+  pictures.value.forEach((p, index) => {
+    task.files.push({
+      path: '动态' + dynamicID.value + '图片' + sep() + '图片' + (index + 1),
+      url: p.url,
+    })
+  })
+
+  return task
+}
+
+
+const pictures = computed(() => dynamicInfo.value?.major?.opus?.pics ?? [])
+const pictureLinks = computed(() => pictures.value.map(p => p.url))
 
 const jump = async () => {
   await autoJump(authorInfo.value?.decorate?.jump_url, true)
@@ -131,6 +150,10 @@ const jump = async () => {
       <!-- 调试信息 -->
       <template #extra>
         <DebugButton :names="['动态信息']" />
+        <BatchDownloadButton
+          v-if="pictures.length > 1"
+          :task="generateDownloadTask"
+        />
       </template>
 
       <!-- UP主信息 -->
