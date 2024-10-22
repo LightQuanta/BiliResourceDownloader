@@ -53,13 +53,14 @@ const downloadFile = async (url: string) => {
   })
 }
 
-
 const videoVisible = ref(false)
 const videoUrl = ref('')
+
 function showVideo(url: string) {
   videoUrl.value = url
   videoVisible.value = true
 }
+
 function closeVideo() {
   videoVisible.value = false
 }
@@ -69,17 +70,19 @@ function closeVideo() {
   <ElDialog
     v-if="video"
     append-to-body
+    align-center
     v-model="videoVisible"
     title="视频预览"
     :before-close="closeVideo"
   >
-    <video
-      class="w-full min-h-[800px] h-auto"
-      :src="videoUrl"
-      controls
-      disable-picture-in-picture
-      no
-    />
+    <div class="h-[calc(100vh-100px)]">
+      <video
+        v-if="videoVisible"
+        class="w-full h-[calc(100vh-100px)]"
+        :src="videoUrl"
+        controls
+      />
+    </div>
   </ElDialog>
   <ElCard class="max-w-80">
     <template
