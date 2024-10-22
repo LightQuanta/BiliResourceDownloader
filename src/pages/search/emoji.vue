@@ -115,11 +115,7 @@ const showMore = () => {
 }
 
 const jumpToEmoji = (emoji: EmojiPackageInfo) => {
-  if ((emoji.meta.item_id ?? -1) > 0) {
-    router.push(`/emoji/${emoji.meta.item_id}`)
-  } else {
-    router.push({ path: `/emoji/${emoji.id}`, query: { emote: 'true' } })
-  }
+  router.push({ path: `/emoji/${emoji.id}` })
 }
 
 </script>

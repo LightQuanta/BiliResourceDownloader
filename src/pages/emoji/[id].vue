@@ -21,6 +21,8 @@ const emojiInfo = ref<EmojiInfo[]>([])
 const link = ref('')
 const createTime = ref(-1)
 
+const isSuitAPI = ref(false)
+
 const isPureText = ref(false)
 const downloadTask = ref<BatchDownloadTask>()
 
@@ -44,10 +46,11 @@ const fetchData = async () => {
   loading.value = true
   id.value = route.params.id
 
-  const useEmoteAPI = ((route.query.emote as string) ?? '') === 'true'
+  isSuitAPI.value = ((route.query.suit as string) ?? '') === 'true'
 
-  if (useEmoteAPI) {
+  if (!isSuitAPI.value) {
     // 使用表情包专属信息API，将ID视为表情包搜索界面ID
+    // 尽量优先使用该API，不容易出问题
     const url = new URL('https://api.bilibili.com/x/emote/package')
     url.searchParams.set('ids', id.value)
     url.searchParams.set('business', 'reply')
@@ -149,7 +152,7 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
         {{ name }}
       </ElDescriptionsItem>
       <ElDescriptionsItem label="ID">
-        {{ route.params.id }}
+        {{ route.params.id + (isSuitAPI ? ' (装扮信息ID)' : '') }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"

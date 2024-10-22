@@ -71,7 +71,7 @@ const resolveEmoji = () => {
   if (emojiInfo.value.length === 0) return
 
   const { redeem_item_id } = emojiInfo.value[0]
-  router.push(`/emoji/${redeem_item_id}`)
+  router.push(`/emoji/${redeem_item_id}?suit=true`)
 }
 </script>
 <template>
