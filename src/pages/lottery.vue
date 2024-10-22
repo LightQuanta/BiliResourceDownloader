@@ -111,6 +111,7 @@ const generateDownloadTask = async () => {
 
   let lotteryDetails: LotteryDetail[]
   try {
+    // 获取所有收藏集信息
     lotteryDetails = await Promise.all(lotteryInfo.value?.map(l => {
       const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
       url.searchParams.set('act_id', actID.value.toString())
@@ -127,36 +128,54 @@ const generateDownloadTask = async () => {
     return
   }
 
-  // 每个收藏集的封面
-  lotteryInfo.value?.forEach(l => {
-    downloadFileInfo.files.push({
-      path: l.lottery_name + sep() + '封面',
-      url: l.lottery_image,
-    })
-  })
-
-  // 每个收藏集的所有图片
+  // 遍历所有收藏集
   lotteryDetails.forEach(detail => {
+    // 收藏集图片
     detail.item_list
         .filter(i => i.card_info.card_img?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: [detail.name, '图片', cardInfo.card_name].join(sep()),
+            path: [detail.name, '卡池图片', cardInfo.card_name].join(sep()),
             url: cardInfo.card_img,
           })
         })
-  })
 
-  // 每个收藏集的所有视频
-  lotteryDetails.forEach(detail => {
+    // 收藏集视频
     detail.item_list
         .filter(i => i.card_info.video_list?.length ?? 0 > 0)
         .forEach(({ card_info: cardInfo }) => {
           downloadFileInfo.files.push({
-            path: [detail.name, '视频', cardInfo.card_name].join(sep()),
+            path: [detail.name, '卡池视频', cardInfo.card_name].join(sep()),
             url: cardInfo.video_list?.[0] ?? '',
           })
         })
+
+    const combinedRedeemInfo = detail.collect_list.collect_chain?.concat(detail.collect_list.collect_infos) ?? []
+
+    // 钻石头像背景、收藏集勋章、典藏卡、头像框
+    combinedRedeemInfo
+        .filter(i => [1000, 1001, 1, 3].includes(i.redeem_item_type))
+        .forEach(i => {
+          downloadFileInfo.files.push({
+            path: [detail.name, '其他', i.redeem_item_name].join(sep()),
+            url: i.redeem_item_image,
+          })
+          // 典藏卡视频
+          if (i.redeem_item_type === 1) {
+            downloadFileInfo.files.push({
+              path: [detail.name, '其他', i.redeem_item_name + '(视频)'].join(sep()),
+              url: i.card_item.card_type_info?.content.animation.animation_video_urls[0] ?? '',
+            })
+          }
+        })
+  })
+
+  // 每个收藏集的封面
+  lotteryInfo.value?.forEach(l => {
+    downloadFileInfo.files.push({
+      path: [l.lottery_name, '其他', '封面'].join(sep()),
+      url: l.lottery_image,
+    })
   })
 
   console.debug(downloadFileInfo)

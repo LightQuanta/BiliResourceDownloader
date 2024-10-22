@@ -20,7 +20,22 @@ const saleStartTime = ref(0)
 const saleEndTime = ref(0)
 
 const combinedRedeemInfo = computed<RedeemInfo[]>(() => lotteryDetail.value?.collect_list.collect_chain?.concat(lotteryDetail.value?.collect_list.collect_infos) ?? [])
+
+// 收藏集表情包信息
 const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2))
+
+// 钻石头像背景
+const diamondBackgrounds = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 1000))
+// 收藏集勋章
+const medals = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 1001))
+// 典藏卡
+const specialCards = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 1))
+// 头像框
+const pendants = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 3))
+
+// 装扮
+// TODO 这玩意怎么解析？
+// const suit = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 5))
 
 onMounted(async () => {
   loading.value = true
@@ -69,7 +84,7 @@ onMounted(async () => {
   loading.value = false
 })
 
-const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
+const previewImages = computed(() => cards.value.map(c => c.card_img))
 
 const router = useRouter()
 const resolveEmoji = () => {
@@ -143,16 +158,9 @@ const resolveEmoji = () => {
 
     <!-- 收藏集图片展示 -->
     <ElSpace
-      class="justify-center"
+      class="justify-center w-full"
       wrap
     >
-      <ImageVideoCard
-        v-if="!loading"
-        :download-name="`${name} - 封面`"
-        :image="coverURL"
-        :preview-images="previewImages"
-        title="收藏集封面"
-      />
       <ImageVideoCard
         v-for="(card, index) in cards"
         :key="card.card_type_id"
@@ -161,8 +169,55 @@ const resolveEmoji = () => {
         :download-name="`${name} - ${card.card_name}`"
         :image="card.card_img"
         :video="card.video_list?.[0]"
-        :index="index + 1"
+        :index="index"
         :preview-images="previewImages"
+      />
+    </ElSpace>
+
+    <ElDivider>其他内容</ElDivider>
+    <ElSpace
+      class="justify-center w-full"
+      wrap
+    >
+      <!-- 封面 -->
+      <ImageVideoCard
+        v-if="!loading"
+        :download-name="`${name} - 封面`"
+        :image="coverURL"
+        title="收藏集封面"
+      />
+      <!-- 典藏卡 -->
+      <ImageVideoCard
+        v-for="special in specialCards"
+        :key="special.redeem_item_name"
+        :title="special.redeem_item_name"
+        :download-name="`${name} - ${special.redeem_item_name}`"
+        :image="special.redeem_item_image"
+        :video="special.card_item.card_type_info?.content.animation.animation_video_urls[0] ?? ''"
+      />
+      <!-- 钻石头像背景 -->
+      <ImageVideoCard
+        v-for="diamond in diamondBackgrounds"
+        :key="diamond.redeem_item_name"
+        :title="diamond.redeem_item_name"
+        :download-name="`${name} - ${diamond.redeem_item_name}`"
+        :image="diamond.redeem_item_image"
+      />
+      <!-- 勋章 -->
+      <ImageVideoCard
+        v-for="medal in medals"
+        :key="medal.redeem_item_name"
+        :title="medal.redeem_item_name"
+        :download-name="`${name} - ${medal.redeem_item_name}`"
+        :image="medal.redeem_item_image"
+      />
+      <!-- 头像框 -->
+      <ImageVideoCard
+        v-for="pendant in pendants"
+        :key="pendant.redeem_item_name"
+        :title="pendant.redeem_item_name"
+        :download-name="`${name} - ${pendant.redeem_item_name}`"
+        :image="pendant.redeem_item_image"
       />
     </ElSpace>
   </div>
