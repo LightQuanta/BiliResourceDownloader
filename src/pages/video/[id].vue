@@ -16,7 +16,7 @@ const fetchData = async () => {
   const url = new URL('https://api.bilibili.com/x/web-interface/view')
 
   if (/^(av|AV)\d+$/.test(videoID)) {
-    url.searchParams.set('aid', videoID)
+    url.searchParams.set('aid', videoID.substring(2))
   } else if (/^(BV|bv)\w+/.test(videoID)) {
     url.searchParams.set('bvid', videoID)
   } else {
@@ -74,6 +74,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
       <ElDescriptionsItem
         label="标题"
         :span="4"
+        min-width="100px"
       >
         {{ videoInfo.title }}
       </ElDescriptionsItem>
