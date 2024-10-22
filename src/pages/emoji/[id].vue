@@ -25,14 +25,13 @@ const createTime = ref(-1)
 const isSuitAPI = ref(false)
 
 const isPureText = ref(false)
-const downloadTask = ref<BatchDownloadTask>()
 
 const generateDownloadTask = () => {
   let finalName = name.value
   if (!name.value.endsWith('表情包') && !name.value.endsWith('表情')) {
     finalName += '表情包'
   }
-  downloadTask.value = {
+  return {
     name: finalName,
     files: emojiInfo.value?.map(e => {
       return {
@@ -117,7 +116,6 @@ const fetchData = async () => {
     }
   }
 
-  generateDownloadTask()
   loading.value = false
 }
 
@@ -148,7 +146,7 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
         <DebugButton :names="['表情包信息']" />
         <BatchDownloadButton
           v-if="!isPureText"
-          :task="downloadTask"
+          :task="generateDownloadTask"
         />
       </template>
 

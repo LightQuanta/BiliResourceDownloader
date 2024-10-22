@@ -73,7 +73,7 @@ const fetchData = async () => {
     lotteryID.value = newLotteryID
     await router.replace({ query: { act_id: route.query.act_id, lottery_id: newLotteryID.toString() } })
   }
-  await generateDownloadTask()
+
   loading.value = false
 }
 
@@ -98,8 +98,6 @@ watch(selectedKey, () => {
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
 
-// 批量下载相关信息生成
-const batchDownloadInfo = ref<BatchDownloadTask>()
 const generateDownloadTask = async () => {
   const downloadFileInfo: BatchDownloadTask = {
     name: actInfo.value?.act_title ?? '',
@@ -179,7 +177,7 @@ const generateDownloadTask = async () => {
   })
 
   console.debug(downloadFileInfo)
-  batchDownloadInfo.value = downloadFileInfo
+  return downloadFileInfo
 }
 
 
@@ -207,7 +205,7 @@ const generateDownloadTask = async () => {
 
       <template #extra>
         <DebugButton :names="['收藏集组信息']" />
-        <BatchDownloadButton :task="batchDownloadInfo" />
+        <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
       <ElDescriptionsItem

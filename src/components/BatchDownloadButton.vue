@@ -7,7 +7,7 @@ import { TreeInstance } from "element-plus/lib/components";
 import { sep } from "@tauri-apps/api/path";
 
 const props = defineProps<{
-  task?: BatchDownloadTask
+  task: () => BatchDownloadTask
 
   // TODO 实现默认选择项
   defaultSelect?: string[]
@@ -15,6 +15,8 @@ const props = defineProps<{
 
 const showDialog = ref(false)
 const formRef = ref<FormInstance>()
+
+const downloadTask = ref<BatchDownloadTask>()
 
 const downloadConfig = reactive({
   path: '',
@@ -35,9 +37,11 @@ const extractExtensionName = (url: string) => {
 }
 
 // 生成文件选择数据
-const initData = () => {
+const initData = async () => {
+  downloadTask.value = await props.task()
+
   finalData.value = []
-  const files = props.task?.files ?? []
+  const files = downloadTask.value.files ?? []
 
   const newData: FilePathData[] = []
 
@@ -110,7 +114,7 @@ const submit = async () => {
 
     // 将所选文件转换为下载任务格式
     const selectedFiles = selected.map(selection => {
-      const url = props.task?.files.find(f => f.path === selection)?.url ?? ''
+      const url = downloadTask.value.files.find(f => f.path === selection)?.url ?? ''
       const extension = extractExtensionName(url)
       return {
         path: selection + extension,
@@ -120,7 +124,7 @@ const submit = async () => {
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {
-      name: props.task?.name ?? '',
+      name: downloadTask.value.name,
       path: downloadConfig.path,
       files: selectedFiles
     }
@@ -146,12 +150,17 @@ const selectSaveFolder = async () => {
   if (path === null) return
   downloadConfig.path = path
 }
+
+const openDialog = async () => {
+  await initData()
+  showDialog.value = true
+}
 </script>
 
 <template>
   <ElButton
     type="primary"
-    @click="showDialog = true"
+    @click="openDialog"
     class="ml-2"
   >
     批量下载

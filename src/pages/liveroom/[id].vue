@@ -25,9 +25,7 @@ const liveroomEmojis = ref<LiveroomEmojiListInfo[]>()
 const upEmoji = computed<LiveroomEmojiListInfo | undefined>(() => liveroomEmojis.value?.find(e => e.pkg_name === 'UP主大表情') ?? undefined)
 const roomEmoji = computed<LiveroomEmojiListInfo | undefined>(() => liveroomEmojis.value?.find(e => e.pkg_name === '房间专属表情') ?? undefined)
 
-const batchDownloadTask = ref<BatchDownloadTask>()
-
-const generateTask = () => {
+const generateDownloadTask = () => {
   const task: BatchDownloadTask = {
     name: `${roomID.value} 直播间图片`,
     files: []
@@ -59,7 +57,7 @@ const generateTask = () => {
     })
   })
 
-  batchDownloadTask.value = task
+  return task
 }
 
 const fetchData = async (paramID: string) => {
@@ -129,7 +127,6 @@ const fetchData = async (paramID: string) => {
     }
   }
 
-  generateTask()
   loading.value = false
 }
 watch(() => route.params.id, fetchData, { immediate: true })
@@ -162,7 +159,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
       <template #extra>
         <DebugButton :names="['直播间信息','直播间用户信息', '直播间表情信息']" />
 
-        <BatchDownloadButton :task="batchDownloadTask" />
+        <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
       <ElDescriptionsItem

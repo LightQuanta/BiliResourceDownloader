@@ -26,9 +26,7 @@ const responseText = ref('')
 const userInfo = ref<BasicUserInfo>()
 const chargeEmojiInfo = ref<ChargeEmojiInfo[]>([])
 
-const batchDownloadTask = ref<BatchDownloadTask>()
-
-const generateBatchDownloadTask = () => {
+const generateDownloadTask = () => {
   const userName = userInfo.value?.card.name
   const task: BatchDownloadTask = {
     name: userInfo.value?.card.name ?? '',
@@ -61,7 +59,7 @@ const generateBatchDownloadTask = () => {
     })))
   }
 
-  batchDownloadTask.value = task
+  return task
 }
 
 const fetchData = async () => {
@@ -135,7 +133,6 @@ const fetchData = async () => {
     }
   }
 
-  generateBatchDownloadTask()
   loading.value = false
 }
 onMounted(fetchData)
@@ -153,7 +150,6 @@ const jumpToPendant = async () => {
   try {
     const resp = await cachedAPIFetch<SuitDetail | null>(url)
     data = resp.data
-    setDebugInfo('用户空间信息', url, JSON.stringify(resp, null, 2))
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -200,7 +196,7 @@ const jumpToPendant = async () => {
 
       <template #extra>
         <DebugButton :names="['用户空间信息','用户直播间信息','用户充电信息']" />
-        <BatchDownloadButton :task="batchDownloadTask" />
+        <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
 
