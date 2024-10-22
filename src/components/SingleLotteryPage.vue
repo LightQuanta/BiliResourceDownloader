@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryProperties, RedeemInfo, } from '../types.ts'
+import { setDebugInfo } from "../utils/debug.ts";
 
 const props = defineProps<{
   lottery: GarbSearchResult<LotteryProperties>
@@ -18,7 +19,7 @@ const saleQuantity = ref(0)
 const saleStartTime = ref(0)
 const saleEndTime = ref(0)
 
-const combinedRedeemInfo = computed<RedeemInfo[]>(() => lotteryDetail.value?.collect_list.collect_chain.concat(lotteryDetail.value?.collect_list.collect_infos) ?? [])
+const combinedRedeemInfo = computed<RedeemInfo[]>(() => lotteryDetail.value?.collect_list.collect_chain?.concat(lotteryDetail.value?.collect_list.collect_infos) ?? [])
 const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2))
 
 onMounted(async () => {
@@ -39,6 +40,10 @@ onMounted(async () => {
 
   try {
     lotteryDetail.value = await cachedAPIFetch<LotteryDetail>(url).then(r => r.data)
+    setDebugInfo(`收藏集${lotteryID}详情`, url, JSON.stringify(lotteryDetail.value, null, 2), {
+      act_id: '收藏集组ID',
+      lottery_id: '收藏集ID'
+    })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -77,7 +82,7 @@ const resolveEmoji = () => {
 <template>
   <div
     v-loading="loading"
-    class="flex flex-col gap-4"
+    class="flex flex-col gap-4 p-2"
   >
     <!-- 收藏集详细信息 -->
     <ElDescriptions
@@ -88,6 +93,10 @@ const resolveEmoji = () => {
         <ElText size="large">
           {{ name }}
         </ElText>
+      </template>
+
+      <template #extra>
+        <DebugButton :names="[`收藏集${lottery.properties.dlc_lottery_id}详情`]" />
       </template>
 
       <!-- 收藏集名称 -->

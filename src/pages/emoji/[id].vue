@@ -3,6 +3,7 @@ import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { BatchDownloadTask, EmojiPackageDetail, SuitDetail } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
+import { setDebugInfo } from "../../utils/debug.ts";
 
 const route = useRoute<'/emoji/[id]'>()
 const loading = ref(false)
@@ -62,6 +63,7 @@ const fetchData = async () => {
         packages: EmojiPackageDetail[]
       }>(url)
 
+      setDebugInfo('表情包信息', url, JSON.stringify(resp, null, 2))
       const packageDetail = resp.data.packages[0] as EmojiPackageDetail
 
       name.value = packageDetail.text
@@ -92,6 +94,7 @@ const fetchData = async () => {
     try {
       const resp = await cachedAPIFetch<SuitDetail>(url)
 
+      setDebugInfo('表情包信息', url, JSON.stringify(resp, null, 2))
       const suitEmojiDetail = resp.data.suit_items.emoji ?? []
 
       name.value = resp.data.name
@@ -142,6 +145,7 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
       </template>
 
       <template #extra>
+        <DebugButton :names="['表情包信息']" />
         <BatchDownloadButton
           v-if="!isPureText"
           :task="downloadTask"

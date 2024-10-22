@@ -2,6 +2,7 @@
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import type { GarbSearchResult, LotteryProperties, SuitProperties } from "../../types.ts";
+import { setDebugInfo } from "../../utils/debug.ts";
 
 const params = useUrlSearchParams()
 
@@ -76,6 +77,8 @@ const load = async () => {
       total: number
     }>(url)
 
+    setDebugInfo('装扮/收藏集搜索结果', url, JSON.stringify(resp, null, 2), { key_word: '搜索关键词', pn: '页数' })
+
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return
@@ -119,17 +122,23 @@ const filteredCards = computed(() => {
       </template>
     </ElInput>
 
-    <ElRadioGroup v-model="displayMode">
-      <ElRadio value="all">
-        全部显示
-      </ElRadio>
-      <ElRadio value="lottery">
-        只显示收藏集
-      </ElRadio>
-      <ElRadio value="suit">
-        只显示装扮
-      </ElRadio>
-    </ElRadioGroup>
+    <div class="flex">
+      <ElRadioGroup
+        v-model="displayMode"
+        class="mr-auto"
+      >
+        <ElRadio value="all">
+          全部显示
+        </ElRadio>
+        <ElRadio value="lottery">
+          只显示收藏集
+        </ElRadio>
+        <ElRadio value="suit">
+          只显示装扮
+        </ElRadio>
+      </ElRadioGroup>
+      <DebugButton :names="['装扮/收藏集搜索结果']" />
+    </div>
 
     <div
       v-infinite-scroll="load"

@@ -3,6 +3,7 @@ import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
 import { userLoggedIn } from "../../loginManager.ts";
 import { sep } from "@tauri-apps/api/path";
+import { setDebugInfo } from "../../utils/debug.ts";
 
 const route = useRoute<'/liveroom/[id]'>()
 
@@ -17,9 +18,6 @@ const areaType = ref('')
 const roomID = ref('')
 const roomTags = ref<string[]>([])
 const uid = ref('')
-
-const apiUrl = ref('')
-const responseText = ref('')
 
 const liveroomUserInfo = ref<BasicLiveUserInfo>()
 
@@ -71,13 +69,11 @@ const fetchData = async (paramID: string) => {
   const url = new URL('https://api.live.bilibili.com/room/v1/Room/get_info')
   url.searchParams.set('room_id', roomID.value)
 
-  apiUrl.value = url.toString()
-
   let data: BasicRoomInfo
   try {
     const resp = await cachedAPIFetch<BasicRoomInfo>(url)
+    setDebugInfo('直播间信息', url, JSON.stringify(resp, null, 2), { room_id: '直播间ID' })
     data = resp.data
-    responseText.value = JSON.stringify(resp, null, 2)
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -106,11 +102,11 @@ const fetchData = async (paramID: string) => {
   try {
     const resp = await cachedAPIFetch<BasicLiveUserInfo>(url2)
     liveroomUserInfo.value = resp.data
-    // responseText.value = JSON.stringify(resp, null, 2)
+    setDebugInfo('直播间用户信息', url2, JSON.stringify(resp, null, 2), { uid: '用户UID' })
   } catch (e) {
     console.error(e)
     ElMessage({
-      message: `获取额外直播间信息出错：${JSON.stringify(e)}`,
+      message: `获取直播间用户信息出错：${JSON.stringify(e)}`,
       type: 'error',
     })
   }
@@ -122,6 +118,7 @@ const fetchData = async (paramID: string) => {
 
     try {
       const resp = await cachedAPIFetch<{ data: LiveroomEmojiListInfo[] }>(url3)
+      setDebugInfo('直播间表情信息', url3, JSON.stringify(resp, null, 2), { room_id: '直播间ID' })
       liveroomEmojis.value = resp.data.data
     } catch (e) {
       console.error(e)
@@ -145,10 +142,6 @@ const previewImages = computed(() => {
 
 const hasImages = computed(() => backgroundImage.value || coverImage.value || keyframeImage.value)
 
-const showDebugDrawer = ref(false)
-const showDebugInfo = () => {
-  showDebugDrawer.value = true
-}
 </script>
 
 <template>
@@ -167,46 +160,7 @@ const showDebugInfo = () => {
       </template>
 
       <template #extra>
-        <ElButton @click="showDebugInfo">
-          显示调试信息
-        </ElButton>
-        <!-- 调试信息 -->
-        <!-- TODO 多API链接支持 -->
-        <ElDrawer
-          v-model="showDebugDrawer"
-          size="60%"
-          title="调试信息"
-        >
-          <ElDescriptions
-            :column="1"
-            border
-          >
-            <ElDescriptionsItem label="API调用地址">
-              <ElLink
-                :href="apiUrl"
-                target="_blank"
-                type="primary"
-              >
-                {{ apiUrl }}
-              </ElLink>
-            </ElDescriptionsItem>
-            <ElDescriptionsItem label="直播间号">
-              {{ route.params.id }}
-            </ElDescriptionsItem>
-            <ElDescriptionsItem label="用户UID">
-              {{ uid }}
-            </ElDescriptionsItem>
-          </ElDescriptions>
-
-          <ElDivider>原始返回数据</ElDivider>
-          <ElInput
-            v-model="responseText"
-            aria-multiline="true"
-            autosize
-            readonly
-            type="textarea"
-          />
-        </ElDrawer>
+        <DebugButton :names="['直播间信息','直播间用户信息', '直播间表情信息']" />
 
         <BatchDownloadButton :task="batchDownloadTask" />
       </template>

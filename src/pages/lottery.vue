@@ -3,6 +3,7 @@ import { cachedAPIFetch } from "../cachedAPIFetch.ts";
 import type { ActInfo, BatchDownloadTask, GarbSearchResult, LotteryDetail, LotteryProperties, } from '../types.ts'
 import { sep } from "@tauri-apps/api/path";
 import { CarouselInstance } from "element-plus/lib/components";
+import { setDebugInfo } from "../utils/debug.ts";
 
 const loading = ref(true)
 
@@ -48,9 +49,11 @@ const fetchData = async () => {
     lotteryID.value = +lotteryIDStr
   }
 
-  let resp: ActInfo
   try {
-    resp = await cachedAPIFetch<ActInfo>(`https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=${actID.value}`).then(r => r.data)
+    const url = 'https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=' + actID.value
+    const resp = await cachedAPIFetch<ActInfo>(url)
+    actInfo.value = resp.data
+    setDebugInfo('收藏集组信息', url, JSON.stringify(resp, null, 2), { act_id: '收藏集组ID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -60,12 +63,11 @@ const fetchData = async () => {
     return
   }
 
-  actInfo.value = resp
 
   if (lotteryID.value !== -1) {
     selectedKey.value = lotteryID.value.toString()
   } else {
-    const newLotteryID = resp.lottery_list[0].lottery_id
+    const newLotteryID = actInfo.value.lottery_list[0].lottery_id
     selectedKey.value = newLotteryID.toString()
 
     lotteryID.value = newLotteryID
@@ -185,6 +187,7 @@ const generateDownloadTask = async () => {
       </template>
 
       <template #extra>
+        <DebugButton :names="['收藏集组信息']" />
         <BatchDownloadButton :task="batchDownloadInfo" />
       </template>
 

@@ -11,6 +11,8 @@ import {
 } from "../../types.ts";
 import { sep } from "@tauri-apps/api/path";
 import { autoJump } from "../../linkResolver.ts";
+import DebugButton from "../../components/DebugButton.vue";
+import { setDebugInfo } from "../../utils/debug.ts";
 
 const route = useRoute<'/space/[id]'>()
 const loading = ref(false)
@@ -70,9 +72,11 @@ const fetchData = async () => {
 
   apiUrl.value = url.toString()
 
-  let resp: BasicUserInfo
+  let basicUserInfo: BasicUserInfo
   try {
-    resp = await cachedAPIFetch<BasicUserInfo>(url).then(r => r.data)
+    const resp = await cachedAPIFetch<BasicUserInfo>(url)
+    basicUserInfo = resp.data
+    setDebugInfo('用户空间信息', url, JSON.stringify(resp, null, 2), { mid: '用户UID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -83,8 +87,8 @@ const fetchData = async () => {
     return
   }
 
-  responseText.value = JSON.stringify(resp, null, 2)
-  userInfo.value = resp
+  responseText.value = JSON.stringify(basicUserInfo, null, 2)
+  userInfo.value = basicUserInfo
 
   // 尝试获取直播间号
   const url2 = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
@@ -93,7 +97,7 @@ const fetchData = async () => {
   try {
     const resp = await cachedAPIFetch<BasicLiveUserInfo>(url2)
     roomID.value = resp.data.room_id.toString()
-    // responseText.value = JSON.stringify(resp, null, 2)
+    setDebugInfo('用户直播间信息', url2, JSON.stringify(resp, null, 2), { uid: '用户UID' })
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -107,8 +111,9 @@ const fetchData = async () => {
 
   let rightsData: PowerRights | undefined
   try {
-    const tempResp = await cachedAPIFetch<PowerRights | undefined>(url3)
-    rightsData = tempResp.data
+    const resp = await cachedAPIFetch<PowerRights | undefined>(url3)
+    rightsData = resp.data
+    setDebugInfo('用户充电信息', url3, JSON.stringify(resp, null, 2), { up_mid: '用户UID' })
   } catch (e) {
     // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
     if ((e as GeneralAPIResponse<unknown>).code !== 203010) {
@@ -136,11 +141,6 @@ const fetchData = async () => {
 onMounted(fetchData)
 watch(uid, fetchData)
 
-const showDebugDrawer = ref(false)
-const showDebugInfo = () => {
-  showDebugDrawer.value = true
-}
-
 const hasPendant = computed(() => userInfo.value?.card?.pendant.pid ?? 0 !== 0)
 
 const jumpToPendant = async () => {
@@ -151,7 +151,9 @@ const jumpToPendant = async () => {
 
   let data: SuitDetail | null
   try {
-    data = await cachedAPIFetch<SuitDetail | null>(url).then(r => r.data)
+    const resp = await cachedAPIFetch<SuitDetail | null>(url)
+    data = resp.data
+    setDebugInfo('用户空间信息', url, JSON.stringify(resp, null, 2))
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -197,43 +199,7 @@ const jumpToPendant = async () => {
       </template>
 
       <template #extra>
-        <ElButton @click="showDebugInfo">
-          显示调试信息
-        </ElButton>
-        <!-- 调试信息 -->
-        <ElDrawer
-          v-model="showDebugDrawer"
-          size="60%"
-          title="调试信息"
-        >
-          <ElDescriptions
-            :column="1"
-            border
-          >
-            <ElDescriptionsItem label="API调用地址">
-              <ElLink
-                :href="apiUrl"
-                target="_blank"
-                type="primary"
-              >
-                {{ apiUrl }}
-              </ElLink>
-            </ElDescriptionsItem>
-            <ElDescriptionsItem label="用户UID">
-              {{ uid }}
-            </ElDescriptionsItem>
-          </ElDescriptions>
-
-          <ElDivider>原始返回数据</ElDivider>
-          <ElInput
-            v-model="responseText"
-            aria-multiline="true"
-            autosize
-            readonly
-            type="textarea"
-          />
-        </ElDrawer>
-
+        <DebugButton :names="['用户空间信息','用户直播间信息','用户充电信息']" />
         <BatchDownloadButton :task="batchDownloadTask" />
       </template>
 

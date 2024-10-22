@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BatchDownloadButton: typeof import('./src/components/BatchDownloadButton.vue')['default']
+    DebugButton: typeof import('./src/components/DebugButton.vue')['default']
     DownloadManager: typeof import('./src/components/DownloadManager.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
