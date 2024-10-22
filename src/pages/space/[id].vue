@@ -74,7 +74,7 @@ const fetchData = async () => {
     const resp = await APIFetch<BasicUserInfo>(url, null, {
       debug: {
         name: '用户空间信息',
-        extra: { mid: '用户UID' },
+        extraParams: { mid: '用户UID' },
       },
     })
     basicUserInfo = resp.data
@@ -99,7 +99,7 @@ const fetchData = async () => {
     const resp = await APIFetch<BasicLiveUserInfo>(url2, null, {
       debug: {
         name: '用户直播间信息',
-        extra: { uid: '用户UID' },
+        extraParams: { uid: '用户UID' },
       },
     })
     roomID.value = resp.data.room_id.toString()
@@ -119,7 +119,7 @@ const fetchData = async () => {
     const resp = await APIFetch<PowerRights | undefined>(url3, null, {
       debug: {
         name: '用户充电信息',
-        extra: { up_mid: '用户UID' },
+        extraParams: { up_mid: '用户UID' },
       },
     })
     rightsData = resp.data

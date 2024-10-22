@@ -53,7 +53,7 @@ const fetchData = async () => {
     const resp = await APIFetch<ActInfo>(url, null, {
       debug: {
         name: '收藏集组信息',
-        extra: { act_id: '收藏集组ID' }
+        extraParams: { act_id: '收藏集组ID' }
       }
     })
     actInfo.value = resp.data

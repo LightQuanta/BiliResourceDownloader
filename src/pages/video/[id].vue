@@ -32,7 +32,7 @@ const fetchData = async () => {
     const resp = await APIFetch<BasicVideoInfo>(url, null, {
       debug: {
         name: '视频信息',
-        extra: { id: videoID },
+        extraParams: { id: videoID },
       }
     })
     videoInfo.value = resp.data

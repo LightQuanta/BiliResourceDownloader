@@ -77,7 +77,7 @@ const load = async () => {
     }>(url, null, {
       debug: {
         name: '装扮/收藏集搜索',
-        extra: { key_word: '搜索关键词', pn: '页数' },
+        extraParams: { key_word: '搜索关键词', pn: '页数' },
       }
     })
 

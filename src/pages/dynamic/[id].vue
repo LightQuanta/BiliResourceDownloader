@@ -31,7 +31,7 @@ const fetchData = async (paramID: string) => {
     const resp = await APIFetch<{ item: DynamicInfo }>(url, null, {
       debug: {
         name: '动态信息',
-        extra: { id: '动态ID' },
+        extraParams: { id: '动态ID' },
       }
     })
 
