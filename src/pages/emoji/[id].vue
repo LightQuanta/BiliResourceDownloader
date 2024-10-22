@@ -20,10 +20,10 @@ const downloadTask = ref<BatchDownloadTask>()
 
 const generateDownloadTask = () => {
   downloadTask.value = {
-    name: packageDetail.value?.text + ' - 表情包',
+    name: packageDetail.value?.text + '表情包',
     files: packageDetail.value?.emote?.map(e => {
       return {
-        path: packageDetail.value?.text + ' - 表情包' + sep() + (e.meta.alias ?? e.text),
+        path: packageDetail.value?.text + '表情包' + sep() + (e.meta.alias ?? e.text),
         url: e.url,
       }
     }) ?? [],
@@ -44,7 +44,7 @@ const fetchData = async () => {
     const resp = await cachedAPIFetch<{
       packages: EmojiPackageDetail[]
     }>(url)
-    
+
     packageDetail.value = resp.data.packages[0] as EmojiPackageDetail
     isPureText.value = packageDetail.value.type === 4
     responseJSON.value = JSON.stringify(packageDetail.value, null, 2)
@@ -57,7 +57,7 @@ const fetchData = async () => {
       })
     } else {
       ElMessage({
-        message: `获取表情信息出错：${e}`,
+        message: `获取表情包信息出错：${e}`,
         type: 'error',
       })
     }

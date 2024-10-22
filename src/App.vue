@@ -19,7 +19,7 @@ const showDownloadDrawer = ref(false)
         装扮/收藏集搜索
       </ElMenuItem>
       <ElMenuItem index="/search/emoji">
-        表情搜索
+        表情包搜索
       </ElMenuItem>
       <ElMenuItem @click="showDownloadDrawer = true">
         下载管理
@@ -61,7 +61,7 @@ const showDownloadDrawer = ref(false)
 
 <style scoped>
 .color-bg {
-  background: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%)
+  background: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
 }
 
 .el-menu-item {

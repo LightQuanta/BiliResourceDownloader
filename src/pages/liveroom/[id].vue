@@ -36,23 +36,29 @@ const generateTask = () => {
   }
 
   if (backgroundImage.value) {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname} - 直播间背景图`, url: backgroundImage.value })
+    task.files.push({ path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}背景图`, url: backgroundImage.value })
   }
 
   if (coverImage.value) {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname} - 直播间封面`, url: coverImage.value })
+    task.files.push({ path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}封面`, url: coverImage.value })
   }
 
   if (keyframeImage.value) {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname} - 直播间关键帧`, url: keyframeImage.value })
+    task.files.push({ path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}关键帧`, url: keyframeImage.value })
   }
 
   upEmoji.value?.emoticons.forEach(e => {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname} - UP主大表情${sep()}${e.emoji}`, url: e.url })
+    task.files.push({
+      path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}UP主大表情${sep()}${e.emoji}`,
+      url: e.url
+    })
   })
 
   roomEmoji.value?.emoticons.forEach(e => {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname} - 房间专属表情${sep()}${e.emoji}`, url: e.url })
+    task.files.push({
+      path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}房间专属表情${sep()}${e.emoji}`,
+      url: e.url
+    })
   })
 
   batchDownloadTask.value = task

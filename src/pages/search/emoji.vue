@@ -56,7 +56,7 @@ const load = async () => {
   } catch (e) {
     console.error(e)
     ElMessage({
-      message: `获取全部表情表信息出错：${e}`,
+      message: `获取全部表情包信息出错：${e}`,
       type: 'error',
     })
     return
@@ -113,7 +113,7 @@ const showMore = () => {
   <LoginRequired class="flex gap-4 flex-col">
     <ElInput
       v-model="keyword"
-      placeholder="输入要搜索的表情"
+      placeholder="输入要搜索的表情包"
       autofocus
       clearable
       @change="updateSearchAndQuery"
@@ -130,7 +130,7 @@ const showMore = () => {
     </ElInput>
     <ElSwitch
       v-model="onlyMyEmoji"
-      active-text="只看我拥有的表情"
+      active-text="只看我拥有的表情包"
       @change="updateSearchAndQuery"
     />
 
