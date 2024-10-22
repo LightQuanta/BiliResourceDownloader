@@ -154,15 +154,9 @@ const showDebugInfo = () => {
     >
       <template #title>
         <div class="flex gap-1">
-          <ElText>直播间</ElText>
-          <ElLink
-            :href="`https://live.bilibili.com/${roomID}`"
-            target="_blank"
-            type="primary"
-          >
-            {{ roomID }}
-          </ElLink>
-          <ElText>基础信息</ElText>
+          <ElText>
+            直播间 {{ roomID }} 基础信息
+          </ElText>
         </div>
       </template>
 
@@ -215,7 +209,13 @@ const showDebugInfo = () => {
         label="标题"
         min-width="80px"
       >
-        {{ liveroomTitle }}
+        <ElLink
+          :href="`https://live.bilibili.com/${roomID}`"
+          target="_blank"
+          type="primary"
+        >
+          {{ liveroomTitle }}
+        </ElLink>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         label="分区"
@@ -327,7 +327,7 @@ const showDebugInfo = () => {
       <div v-if="upEmoji !== undefined">
         <ElDivider>UP主大表情</ElDivider>
         <ElSpace
-          class="justify-center"
+          class="justify-center w-full"
           wrap
         >
           <ImageVideoCard
@@ -338,14 +338,14 @@ const showDebugInfo = () => {
             :preview-images="upEmoji.emoticons.map(e => e.url)"
             :title="emoji.emoji"
             :download-name="`${liveroomUserInfo?.info.uname}UP主大表情 - ${emoji.emoji}`"
-            :extra-title="emoji.unlock_show_text"
+            :subtitle="emoji.unlock_show_text"
           />
         </ElSpace>
       </div>
       <div v-if="roomEmoji !== undefined">
         <ElDivider>房间专属表情</ElDivider>
         <ElSpace
-          class="justify-center"
+          class="justify-center w-full"
           wrap
         >
           <ImageVideoCard
