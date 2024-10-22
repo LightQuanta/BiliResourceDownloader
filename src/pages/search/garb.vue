@@ -139,7 +139,7 @@ const filteredCards = computed(() => {
           只显示装扮
         </ElRadio>
       </ElRadioGroup>
-      <DebugButton :names="['装扮/收藏集搜索结果']" />
+      <DebugButton :names="['装扮/收藏集搜索']" />
     </div>
 
     <div
