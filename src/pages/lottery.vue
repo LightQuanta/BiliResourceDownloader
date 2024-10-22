@@ -123,7 +123,7 @@ const generateDownloadTask = async () => {
       message: `获取收藏集信息出错：${e}`,
       type: 'error',
     })
-    return
+    return downloadFileInfo
   }
 
   // 遍历所有收藏集

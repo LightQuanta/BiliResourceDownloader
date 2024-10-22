@@ -7,7 +7,7 @@ import { TreeInstance } from "element-plus/lib/components";
 import { sep } from "@tauri-apps/api/path";
 
 const props = defineProps<{
-  task: () => BatchDownloadTask
+  task: (() => BatchDownloadTask) | (() => Promise<BatchDownloadTask>)
 
   // TODO 实现默认选择项
   defaultSelect?: string[]
@@ -114,7 +114,7 @@ const submit = async () => {
 
     // 将所选文件转换为下载任务格式
     const selectedFiles = selected.map(selection => {
-      const url = downloadTask.value.files.find(f => f.path === selection)?.url ?? ''
+      const url = downloadTask.value?.files.find(f => f.path === selection)?.url ?? ''
       const extension = extractExtensionName(url)
       return {
         path: selection + extension,
@@ -124,7 +124,7 @@ const submit = async () => {
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {
-      name: downloadTask.value.name,
+      name: downloadTask.value?.name ?? '',
       path: downloadConfig.path,
       files: selectedFiles
     }
