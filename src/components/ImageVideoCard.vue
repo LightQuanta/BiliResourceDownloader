@@ -52,9 +52,35 @@ const downloadFile = async (url: string) => {
     type: 'success',
   })
 }
+
+
+const videoVisible = ref(false)
+const videoUrl = ref('')
+function showVideo(url: string) {
+  videoUrl.value = url
+  videoVisible.value = true
+}
+function closeVideo() {
+  videoVisible.value = false
+}
 </script>
 
 <template>
+  <ElDialog
+    v-if="video"
+    append-to-body
+    v-model="videoVisible"
+    title="视频预览"
+    :before-close="closeVideo"
+  >
+    <video
+      class="w-full min-h-[800px] h-auto"
+      :src="videoUrl"
+      controls
+      disable-picture-in-picture
+      no
+    />
+  </ElDialog>
   <ElCard class="max-w-80">
     <template
       v-if="title"
@@ -123,7 +149,7 @@ const downloadFile = async (url: string) => {
             </ElButton>
             <ElButton
               type="primary"
-              @click="downloadFile(video ?? '')"
+              @click="downloadFile(image ?? '')"
             >
               视频
               <ElIcon size="16">
@@ -133,7 +159,7 @@ const downloadFile = async (url: string) => {
           </ElButtonGroup>
 
           <ElLink
-            :href="video"
+            @click="() => showVideo(video ?? '')"
             class="ml-auto"
             target="_blank"
             type="primary"
