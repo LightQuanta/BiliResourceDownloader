@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
-import type { EmojiPackageInfo, EmojiPackages } from "../../types.ts";
+import { EmojiPackageInfo, EmojiPackages, GeneralAPIResponse } from "../../types.ts";
 import Fuse from "fuse.js";
 import { userLoggedIn } from "../../loginManager.ts";
 
@@ -55,10 +55,17 @@ const load = async () => {
     allEmojis.value = resp.data.all_packages
   } catch (e) {
     console.error(e)
-    ElMessage({
-      message: `获取全部表情包信息出错：${e}`,
-      type: 'error',
-    })
+    if ((e as GeneralAPIResponse<unknown>).code === -101) {
+      ElMessage({
+        message: '登录失效，请至登录界面重新进行登录',
+        type: 'error',
+      })
+    } else {
+      ElMessage({
+        message: `获取全部表情包信息出错：${e}`,
+        type: 'error',
+      })
+    }
     return
   }
 
@@ -107,6 +114,14 @@ const showMore = () => {
   updateSearch()
 }
 
+const jumpToEmoji = (emoji: EmojiPackageInfo) => {
+  if ((emoji.meta.item_id ?? -1) > 0) {
+    router.push(`/emoji/${emoji.meta.item_id}`)
+  } else {
+    router.push({ path: `/emoji/${emoji.id}`, query: { emote: 'true' } })
+  }
+}
+
 </script>
 
 <template>
@@ -141,11 +156,11 @@ const showMore = () => {
     >
       <TransitionGroup name="list">
         <!-- TODO 修改这个抽象UI -->
-        <RouterLink
+        <div
           v-for="emojiGroup in filteredEmojiGroups"
           :key="emojiGroup.id"
-          :to="`/emoji/${emojiGroup.id}`"
-          class="bg-white bg-opacity-60 rounded-xl flex items-center gap-2 p-4 w-72 transition-all shadow hover:shadow-2xl"
+          @click="jumpToEmoji(emojiGroup)"
+          class="bg-white bg-opacity-60 rounded-xl flex items-center gap-2 p-4 w-72 transition-all shadow hover:shadow-2xl cursor-pointer"
         >
           <ElImage
             :src="emojiGroup.url"
@@ -163,7 +178,7 @@ const showMore = () => {
               {{ new Date(emojiGroup.mtime * 1000).toLocaleString() }}
             </ElText>
           </div>
-        </RouterLink>
+        </div>
       </TransitionGroup>
     </div>
 

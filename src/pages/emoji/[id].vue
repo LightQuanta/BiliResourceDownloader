@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cachedAPIFetch } from "../../cachedAPIFetch.ts";
-import { BatchDownloadTask, EmojiPackageDetail, GeneralAPIResponse } from "../../types.ts";
+import { BatchDownloadTask, EmojiPackageDetail, SuitDetail } from "../../types.ts";
 import { autoJump, resolveText } from "../../linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
 
@@ -11,19 +11,29 @@ const id = ref('')
 const requestURL = ref('')
 const responseJSON = ref('')
 
-const packageDetail = ref<EmojiPackageDetail>()
-const emojis = computed(() => packageDetail.value?.emote ?? [])
+interface EmojiInfo {
+  name: string
+  url: string
+}
+
+const name = ref('')
+const emojiInfo = ref<EmojiInfo[]>([])
+const link = ref('')
+const createTime = ref(-1)
 
 const isPureText = ref(false)
-
 const downloadTask = ref<BatchDownloadTask>()
 
 const generateDownloadTask = () => {
+  let finalName = name.value
+  if (!name.value.endsWith('表情包') && !name.value.endsWith('表情')) {
+    finalName += '表情包'
+  }
   downloadTask.value = {
-    name: packageDetail.value?.text + '表情包',
-    files: packageDetail.value?.emote?.map(e => {
+    name: finalName,
+    files: emojiInfo.value?.map(e => {
       return {
-        path: packageDetail.value?.text + '表情包' + sep() + (e.meta.alias ?? e.text),
+        path: finalName + sep() + e.name,
         url: e.url,
       }
     }) ?? [],
@@ -34,28 +44,66 @@ const fetchData = async () => {
   loading.value = true
   id.value = route.params.id
 
-  const url = new URL('https://api.bilibili.com/x/emote/package')
-  url.searchParams.set('ids', id.value)
-  url.searchParams.set('business', 'reply')
+  const useEmoteAPI = ((route.query.emote as string) ?? '') === 'true'
 
-  requestURL.value = url.toString()
+  if (useEmoteAPI) {
+    // 使用表情包专属信息API，将ID视为表情包搜索界面ID
+    const url = new URL('https://api.bilibili.com/x/emote/package')
+    url.searchParams.set('ids', id.value)
+    url.searchParams.set('business', 'reply')
 
-  try {
-    const resp = await cachedAPIFetch<{
-      packages: EmojiPackageDetail[]
-    }>(url)
+    requestURL.value = url.toString()
 
-    packageDetail.value = resp.data.packages[0] as EmojiPackageDetail
-    isPureText.value = packageDetail.value.type === 4
-    responseJSON.value = JSON.stringify(packageDetail.value, null, 2)
-  } catch (e) {
-    console.error(e)
-    if ((e as GeneralAPIResponse<unknown>).code === -101) {
+    try {
+      const resp = await cachedAPIFetch<{
+        packages: EmojiPackageDetail[]
+      }>(url)
+
+      const packageDetail = resp.data.packages[0] as EmojiPackageDetail
+
+      name.value = packageDetail.text
+      emojiInfo.value = packageDetail.emote.map(e => {
+        return {
+          name: e.meta.alias ?? '',
+          url: e.url,
+        }
+      }) ?? []
+
+      createTime.value = packageDetail.mtime * 1000
+      link.value = packageDetail.meta.item_url ?? ''
+      isPureText.value = packageDetail.type === 4
+      responseJSON.value = JSON.stringify(packageDetail, null, 2)
+    } catch (e) {
+      console.error(e)
       ElMessage({
-        message: '登录失效，请至登录界面重新进行登录',
+        message: `获取表情包信息出错：${e}`,
         type: 'error',
       })
-    } else {
+    }
+  } else {
+    // 使用装扮信息API，将ID视为装扮信息
+    const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
+    url.searchParams.set('item_id', id.value)
+    url.searchParams.set('part', 'card')
+
+    try {
+      const resp = await cachedAPIFetch<SuitDetail>(url)
+
+      const suitEmojiDetail = resp.data.suit_items.emoji ?? []
+
+      name.value = resp.data.name
+      emojiInfo.value = suitEmojiDetail.map(e => {
+        return {
+          name: e.name.split('_')[1]?.slice(0, -1) ?? e.name,
+          url: e.properties.image,
+        }
+      }) ?? []
+
+      link.value = resp.data.buy_link
+      isPureText.value = false
+      responseJSON.value = JSON.stringify(suitEmojiDetail, null, 2)
+    } catch (e) {
+      console.error(e)
       ElMessage({
         message: `获取表情包信息出错：${e}`,
         type: 'error',
@@ -70,15 +118,14 @@ const fetchData = async () => {
 watch(() => route.params.id, fetchData, { immediate: true })
 
 const resolveLink = async () => {
-  const link = packageDetail.value?.meta.item_url ?? ''
-  if (resolveText(link) !== null) {
-    await autoJump(link, true)
+  if (resolveText(link.value) !== null) {
+    await autoJump(link.value, true)
   } else {
-    window.open(link)
+    window.open(link.value)
   }
 }
 
-const pictureLinks = computed(() => emojis.value.map(e => e.url))
+const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
 </script>
 
 <template>
@@ -99,21 +146,22 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
       </template>
 
       <ElDescriptionsItem label="名称">
-        {{ packageDetail?.text }}
+        {{ name }}
       </ElDescriptionsItem>
       <ElDescriptionsItem label="ID">
-        {{ packageDetail?.id }}
+        {{ route.params.id }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="创建时间"
+        v-if="createTime > 0"
       >
         {{
-          new Date((packageDetail?.mtime ?? 0) * 1000).toLocaleString()
+          new Date(createTime).toLocaleString()
         }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
-        v-if="packageDetail?.meta.item_url"
+        v-if="link"
         :span="2"
         label="相关链接"
       >
@@ -135,13 +183,12 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
       v-if="!isPureText"
     >
       <ImageVideoCard
-        v-for="(emoji, index) in emojis"
-        :key="emoji.id"
-        :download-name="emoji.meta.alias ?? emoji.text"
+        v-for="(emoji, index) in emojiInfo"
+        :key="emoji.name"
         :image="emoji.url"
         :index="index"
         :preview-images="pictureLinks"
-        :title="emoji.meta.alias ?? emoji.text"
+        :title="emoji.name"
       />
     </ElSpace>
     <div
@@ -151,10 +198,10 @@ const pictureLinks = computed(() => emojis.value.map(e => e.url))
       <ElText
         type="primary"
         size="large"
-        v-for="emoji in emojis"
-        :key="emoji.text"
+        v-for="emoji in emojiInfo"
+        :key="emoji.name"
       >
-        {{ emoji.text }}
+        {{ emoji.name }}
       </ElText>
     </div>
   </div>

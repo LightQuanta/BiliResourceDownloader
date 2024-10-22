@@ -73,6 +73,7 @@ interface SuitProperties {
 }
 
 interface SuitDetail {
+    name: string
     properties: SuitProperties
     suit_items: {
         card: {
@@ -117,6 +118,13 @@ interface SuitDetail {
                     sale_type: string
                 }
             }[]
+        }[]
+        emoji?: {
+            // [XXX_xx]格式
+            name: string
+            properties: {
+                image: string
+            }
         }[]
         loading: {
             name: string
@@ -215,12 +223,34 @@ interface RedeemInfo {
     start_time: number
     end_time: number
 
+    redeem_item_type: number
+    // 重要，可使用装扮API获取信息
+    redeem_item_id: string
+
     // 描述
     redeem_text: string
     // 名称
     redeem_item_name: string
     // 相关图片
     redeem_item_image: string
+
+    card_item: {
+        /** 典藏卡信息？
+         * redeem_item_type = 1
+         */
+        card_type_info?: {
+            id: number
+            name: string
+            // 图片链接
+            overview_image: string
+            content: {
+                animation: {
+                    // 视频链接（取[0]即可）
+                    animation_video_urls: string[]
+                }
+            }
+        }
+    }
 
     jump_url: string
 }
@@ -507,7 +537,7 @@ interface EmojiPackageInfo {
     meta: {
         size: 1 | 2
         // 购买ID
-        item_id: number
+        item_id?: number
         // 购买链接
         item_url?: string
     }
@@ -588,6 +618,7 @@ export type {
     GarbSearchResult,
     LotteryProperties,
     LotteryDetail,
+    RedeemInfo,
     LotteryCardInfo,
     ActInfo,
     LotteryInfo,

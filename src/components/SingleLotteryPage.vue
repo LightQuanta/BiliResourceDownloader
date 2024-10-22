@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { cachedAPIFetch } from "../cachedAPIFetch.ts";
-import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryProperties, } from '../types.ts'
+import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryProperties, RedeemInfo, } from '../types.ts'
+
+const props = defineProps<{
+  lottery: GarbSearchResult<LotteryProperties>
+}>()
 
 const name = ref('')
 const jumpLink = ref('')
@@ -14,10 +18,8 @@ const saleQuantity = ref(0)
 const saleStartTime = ref(0)
 const saleEndTime = ref(0)
 
-const props = defineProps<{
-  lottery: GarbSearchResult<LotteryProperties>
-}>()
-
+const combinedRedeemInfo = computed<RedeemInfo[]>(() => lotteryDetail.value?.collect_list.collect_chain.concat(lotteryDetail.value?.collect_list.collect_infos) ?? [])
+const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2))
 
 onMounted(async () => {
   loading.value = true
@@ -63,6 +65,14 @@ onMounted(async () => {
 })
 
 const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.card_img)])
+
+const router = useRouter()
+const resolveEmoji = () => {
+  if (emojiInfo.value.length === 0) return
+
+  const { redeem_item_id } = emojiInfo.value[0]
+  router.push(`/emoji/${redeem_item_id}`)
+}
 </script>
 <template>
   <div
@@ -80,6 +90,7 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
         </ElText>
       </template>
 
+      <!-- 收藏集名称 -->
       <ElDescriptionsItem
         label="名称"
         name="name"
@@ -92,14 +103,32 @@ const previewImages = computed(() => [coverURL.value, ...cards.value.map(c => c.
           {{ name }}
         </ElLink>
       </ElDescriptionsItem>
+
+      <!-- 销量 -->
       <ElDescriptionsItem label="销量">
         {{ saleQuantity }}
       </ElDescriptionsItem>
+
+      <!-- 销售时间 -->
       <ElDescriptionsItem
-        :span="2"
+        :span="1"
         label="销售时间"
       >
         {{ new Date(saleStartTime).toLocaleString() }} ~ {{ new Date(saleEndTime).toLocaleString() }}
+      </ElDescriptionsItem>
+
+      <!-- 收藏集表情包信息 -->
+      <ElDescriptionsItem
+        label="表情包"
+        :span="1"
+        v-if="emojiInfo.length > 0"
+      >
+        <ElLink
+          type="primary"
+          @click="resolveEmoji"
+        >
+          {{ name + emojiInfo[0].redeem_item_name }}
+        </ElLink>
       </ElDescriptionsItem>
     </ElDescriptions>
 
