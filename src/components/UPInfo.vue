@@ -7,12 +7,14 @@ type UPInfoType = 'face' | 'at'
 const props = withDefaults(defineProps<{
   mid: string
   name?: string
+  subtitle?: string
   face?: string
   openInBrowser?: boolean
   type?: UPInfoType
 }>(), {
   name: '',
   face: '',
+  subtitle: '',
   openInBrowser: false,
   type: 'face'
 })
@@ -69,6 +71,21 @@ watch(() => props.mid, fetchData)
       class="h-8 w-8 rounded-full"
       referrerpolicy="no-referrer"
     />
-    <span class="mx-1">{{ userName }}</span>
+    <div
+      v-if="subtitle"
+      class="mr-4 ml-2 flex flex-col"
+    >
+      <span>{{ userName }}</span>
+      <ElText
+        size="small"
+        class="mt--1"
+      >
+        {{ subtitle }}
+      </ElText>
+    </div>
+    <span
+      v-else
+      class="mx-1"
+    >{{ userName }}</span>
   </ElLink>
 </template>

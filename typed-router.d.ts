@@ -30,5 +30,6 @@ declare module 'vue-router/auto-routes' {
     '/settings': RouteRecordInfo<'/settings', '/settings', Record<never, never>, Record<never, never>>,
     '/space/[id]': RouteRecordInfo<'/space/[id]', '/space/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/suit/[id]': RouteRecordInfo<'/suit/[id]', '/suit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/video/[id]': RouteRecordInfo<'/video/[id]', '/video/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
   }
 }

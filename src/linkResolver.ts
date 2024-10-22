@@ -14,7 +14,7 @@ function resolveText(text?: string): Types | null {
             || /^https:\/\/(www\.)?bilibili\.com\/opus\/\d+(\?.+)?$/.test(text)
         ) {
             return 'dynamic'
-        } else if (/^https:\/\/(www\.)?bilibili\.com\/(video\/)?((av|AV)\d+|BV\w+)(\?.+)?$/.test(text)) {
+        } else if (/^https:\/\/(www\.)?bilibili\.com\/(video\/)?((av|AV)\d+|BV\w+)/.test(text)) {
             return 'video'
         } else if ('https://www.bilibili.com/blackboard/activity-Mz9T5bO5Q3.html' === text.split('?')[0]) {
             const id = url.searchParams.get('id')
@@ -104,10 +104,12 @@ function resolveAVBVID(text: string): string | null {
     }
 
     let id: string
-    if (/^https:\/\/(www\.)?bilibili\.com\/(video\/)?((av|AV)\d+|BV\w+)(\?.+)?$/.test(text)) {
+    if (/^https:\/\/(www\.)?bilibili\.com\/(video\/)?((av|AV)\d+|BV\w+)/.test(text)) {
         id = new URL(text).pathname.substring(1).split('?')[0]
         if (id.startsWith('video/')) {
             id = id.substring(6).replace('/', '')
+        } else {
+            id = id.replace('/', '')
         }
     } else {
         id = text
@@ -206,8 +208,7 @@ async function autoJump(input?: string, showMessage = false, typeOverride = ''):
             }
             return false
         }
-
-        // TODO 实现视频查看界面
+        await router.push({ path: `/video/${id}` })
         return true
     } else if (type === 'lottery') {
         const id = resolveActID(processedInput)

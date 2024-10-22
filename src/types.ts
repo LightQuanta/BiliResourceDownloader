@@ -612,6 +612,46 @@ interface LiveroomEmojiInfo {
     emoticon_unique: string
 }
 
+// https://api.bilibili.com/x/web-interface/view
+interface BasicVideoInfo {
+    bvid: string
+    aid: number
+    // 分区
+    tname: string
+    title: string
+    pic: string
+    // 发布时间
+    pubdate: number
+    // 投稿时间
+    ctime: number
+    // 简介
+    desc: string
+// UP信息
+    owner: {
+        mid: number
+        name: string
+        face: string
+    }
+    stat: {
+        view: number
+        danmaku: number
+        reply: number
+        favorite: number
+        coin: number
+        share: number
+        like: number
+    }
+    // 视频动态简介
+    dynamic: string
+
+    staff?: {
+        mid: number
+        name: string
+        title: string
+        face: string
+    }[]
+}
+
 export type {
     GeneralAPIResponse,
     BiliResourceDownloadEventEmitter,
@@ -644,4 +684,5 @@ export type {
     ChargeEmojiInfo,
     LiveroomEmojiListInfo,
     LiveroomEmojiInfo,
+    BasicVideoInfo,
 }
