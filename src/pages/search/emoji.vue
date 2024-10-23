@@ -145,6 +145,10 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
       @change="updateSearchAndQuery"
     />
 
+    <ElText class="self-start my-[-8px]">
+      * UP主大表情、房间专属表情和大部分充电表情无法在此搜索到，请至UP主/直播间解析界面进行查看
+    </ElText>
+
     <div
       v-infinite-scroll="showMore"
       class="flex flex-wrap gap-4 items-center justify-center"

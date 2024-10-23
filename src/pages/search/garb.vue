@@ -142,6 +142,10 @@ const filteredCards = computed(() => {
       <DebugButton :names="['装扮/收藏集搜索']" />
     </div>
 
+    <ElText class="self-start my-[-8px]">
+      * 仅可搜索在售收藏集
+    </ElText>
+
     <div
       v-infinite-scroll="load"
       class="flex flex-wrap gap-4 justify-center"
