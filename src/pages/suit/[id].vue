@@ -143,7 +143,7 @@ const generateDownloadTask = () => {
   // 粉丝牌背景
   cards.value.forEach(card => {
     task.files.push({
-      path: `${name.value}${sep()}${card.name}`,
+      path: `${name.value}${sep()}${card.name}粉丝牌`,
       url: card.properties.image,
     })
   })
@@ -151,7 +151,7 @@ const generateDownloadTask = () => {
   // 评论背景
   cardBgs.value.forEach(cardBg => {
     task.files.push({
-      path: `${name.value}${sep()}${cardBg.name}`,
+      path: `${name.value}${sep()}${cardBg.name}评论背景`,
       url: cardBg.properties.image,
     })
   })
@@ -159,12 +159,12 @@ const generateDownloadTask = () => {
   // 加载动画
   loadings.value.forEach(loading => {
     task.files.push({
-      path: `${name.value}${sep()}${loading.name}`,
+      path: `${name.value}${sep()}${loading.name}加载动画`,
       url: loading.properties.loading_url,
     })
 
     task.files.push({
-      path: `${name.value}${sep()}${loading.name}(序列帧)`,
+      path: `${name.value}${sep()}${loading.name}加载动画(序列帧)`,
       url: loading.properties.loading_frame_url,
     })
   })
@@ -209,14 +209,14 @@ const fetchData = async () => {
   name.value = data.name
   mid.value = data.properties.fan_mid
 
-  cards.value = data.suit_items.card
-  cardBgs.value = data.suit_items.card_bg
-  emojiPackages.value = data.suit_items.emoji_package as GeneralSuitItem<SuitEmojiPackageProperties>[]
-  loadings.value = data.suit_items.loading
-  playIcons.value = data.suit_items.play_icon
-  skins.value = data.suit_items.skin
-  spaceBgs.value = data.suit_items.space_bg
-  thumpUps.value = data.suit_items.thumbup
+  cards.value = data.suit_items.card ?? []
+  cardBgs.value = data.suit_items.card_bg ?? []
+  emojiPackages.value = data.suit_items.emoji_package as GeneralSuitItem<SuitEmojiPackageProperties>[] ?? []
+  loadings.value = data.suit_items.loading ?? []
+  playIcons.value = data.suit_items.play_icon ?? []
+  skins.value = data.suit_items.skin ?? []
+  spaceBgs.value = data.suit_items.space_bg ?? []
+  thumpUps.value = data.suit_items.thumbup ?? []
 }
 
 watch(() => route.params.id, fetchData, { immediate: true })
@@ -240,7 +240,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
     </ElDescriptions>
 
     <!-- 空间背景图 -->
-    <template v-if="spaceBgs.length > 0">
+    <template v-if="spaceBgs?.length ?? 0 > 0">
       <div
         v-for="spaceBg in spaceBgs"
         :key="spaceBg.item_id"
@@ -278,7 +278,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
     </template>
 
     <!-- 表情包 -->
-    <template v-if="emojiPackages.length > 0">
+    <template v-if="emojiPackages?.length ?? 0 > 0">
       <div
         v-for="emojiInfo in emojiPackages"
         :key="emojiInfo.item_id"
@@ -302,7 +302,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
     </template>
 
     <!-- 进度条 -->
-    <template v-if="playIcons.length > 0">
+    <template v-if="playIcons?.length ?? 0 > 0">
       <ElDivider>进度条 - {{ playIcons[0].name }}</ElDivider>
       <div
         v-for="icon in playIcons"
@@ -324,7 +324,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
     </template>
 
     <!-- 皮肤 -->
-    <template v-if="skins.length > 0">
+    <template v-if="skins?.length ?? 0 > 0">
       <div
         v-for="skin in skins"
         :key="skin.item_id"
@@ -348,7 +348,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
     </template>
 
     <!-- 杂项 -->
-    <template v-if="cardBgs.length > 0">
+    <template v-if="cardBgs?.length ?? 0 > 0">
       <ElDivider>杂项</ElDivider>
       <ElSpace
         class="w-full justify-center"
@@ -358,34 +358,34 @@ watch(() => route.params.id, fetchData, { immediate: true })
         <ImageVideoCard
           v-for="card in cards"
           :key="card.item_id"
-          :title="card.name"
+          :title="card.name + '粉丝牌'"
           :image="card.properties.image"
-          :download-name="`${name} - ${card.name}`"
+          :download-name="`${name} - ${card.name}粉丝牌`"
         />
 
         <!-- 评论背景 -->
         <ImageVideoCard
           v-for="card in cardBgs"
           :key="card.item_id"
-          :title="card.name"
+          :title="card.name + '评论背景'"
           :image="card.properties.image"
-          :download-name="`${name} - ${card.name}`"
+          :download-name="`${name} - ${card.name}评论背景`"
         />
 
         <!-- 加载动画 -->
         <ImageVideoCard
           v-for="loading in loadings"
           :key="loading.item_id"
-          :title="loading.name"
+          :title="loading.name + '加载动画'"
           :image="loading.properties.loading_url"
-          :download-name="`${name} - ${loading.name}`"
+          :download-name="`${name} - ${loading.name}加载动画`"
         />
         <ImageVideoCard
           v-for="loading in loadings"
           :key="loading.item_id"
-          :title="loading.name + '(序列帧)'"
+          :title="loading.name + '加载动画(序列帧)'"
           :image="loading.properties.loading_frame_url"
-          :download-name="`${name} - ${loading.name} + '(序列帧)'`"
+          :download-name="`${name} - ${loading.name}加载动画(序列帧)`"
         />
       </ElSpace>
     </template>
