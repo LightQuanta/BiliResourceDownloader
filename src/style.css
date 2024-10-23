@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --el-fill-color-blank: #ffffffcc;
+    --el-fill-color-light: #f7f7f766;
+    --el-bg-color: #fafafa;
+    --el-mask-color: #fcfcfc33;
+}

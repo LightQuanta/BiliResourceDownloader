@@ -20,8 +20,6 @@ const hideTooltip = () => {
     v-loading="!userLoggedIn"
     :element-loading-text="'由于B站API的限制，该功能需要用户登录后才能使用\n请转到登录界面进行扫码登录'"
     class="min-h-40"
-    element-loading-background="rgba(255, 255, 255, 0.3)"
-    element-loading-spinner="''"
     @mouseenter="displayTooltip"
     @mouseleave="hideTooltip"
   >
