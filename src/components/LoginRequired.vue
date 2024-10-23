@@ -42,4 +42,8 @@ const hideTooltip = () => {
   backdrop-filter: blur(3px);
   box-shadow: rgba(128, 128, 128, 0.3) 0 0 10px;
 }
+
+:deep(.el-loading-text) {
+  font-size: 1em;
+}
 </style>

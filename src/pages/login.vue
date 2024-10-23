@@ -163,10 +163,15 @@ const testLoginState = async () => {
     <ElButton @click="userLoggedIn = true">
       （调试） 模拟登录状态
     </ElButton>
-    <br>
-    <ElImage
+    <div
+      class="mt-4 flex flex-col"
       v-if="loggingIn"
-      :src="qrCodeData"
-    />
+    >
+      请使用app端进行扫码登录
+      <ElImage
+        :src="qrCodeData"
+        class="w-72 h-72"
+      />
+    </div>
   </div>
 </template>
