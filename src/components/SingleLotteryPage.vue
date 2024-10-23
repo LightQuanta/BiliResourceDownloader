@@ -18,7 +18,7 @@ const saleQuantity = ref(0)
 const saleStartTime = ref(0)
 const saleEndTime = ref(0)
 
-const combinedRedeemInfo = computed<RedeemInfo[]>(() => lotteryDetail.value?.collect_list.collect_chain?.concat(lotteryDetail.value?.collect_list.collect_infos) ?? [])
+const combinedRedeemInfo = computed<RedeemInfo[]>(() => [].concat(lotteryDetail.value?.collect_list.collect_chain ?? [], lotteryDetail.value?.collect_list.collect_infos ?? []))
 
 // 收藏集表情包信息
 const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2))
@@ -96,6 +96,31 @@ const resolveEmoji = () => {
   const { redeem_item_id } = emojiInfo.value[0]
   router.push(`/emoji/${redeem_item_id}?suit=true`)
 }
+
+const getProbability = (scarcity: number) => {
+  const count = cards.value.filter(c => c.card_scarcity === scarcity).length
+
+  // cards.value.
+
+  let totalProbability: number
+  if (scarcity === 40) {
+    // 大隐藏
+    totalProbability = 0.005
+  } else if (scarcity === 30) {
+    // 小隐藏
+    totalProbability = 0.045
+  } else if (scarcity === 20) {
+    totalProbability = 0.09
+  } else {
+    totalProbability = 0.86
+  }
+
+  return totalProbability / count
+}
+
+const getProbabilityText = (scarcity: number) => {
+  return `${getProbability(scarcity).toFixed(4) * 100}%`
+}
 </script>
 <template>
   <div
@@ -168,7 +193,7 @@ const resolveEmoji = () => {
         v-for="(card, index) in cards"
         :key="card.card_type_id"
         :title="card.card_name"
-        :subtitle="`稀有度：${card.card_scarcity}`"
+        :subtitle="`概率：${getProbabilityText(card.card_scarcity)}`"
         :download-name="`${name} - ${card.card_name}`"
         :image="card.card_img"
         :video="card.video_list?.[0]"
