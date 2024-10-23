@@ -239,7 +239,7 @@ const generateDownloadTask = async () => {
             url: i.redeem_item_image,
           })
           // 典藏卡视频
-          if (i.redeem_item_type === 1) {
+          if (i.redeem_item_type === 1 && i.card_item.card_type_info?.content.animation) {
             downloadFileInfo.files.push({
               path: [detail.name, '其他', i.redeem_item_name + '(视频)'].join(sep()),
               url: i.card_item.card_type_info?.content.animation?.animation_video_urls[0] ?? '',
