@@ -46,7 +46,7 @@ const fetchData = async () => {
     return
   }
 
-  avid.valeu = videoInfo.value.aid
+  avid.value = videoInfo.value.aid.toString()
   bvid.value = videoInfo.value.bvid
 
   loading.value = false
@@ -73,22 +73,29 @@ watch(() => route.params.id, fetchData, { immediate: true })
 
       <ElDescriptionsItem
         label="标题"
-        :span="4"
+        :span="3"
         min-width="100px"
       >
-        {{ videoInfo.title }}
+        <ElLink
+          type="primary"
+          :href="`https://www.bilibili.com/video/${bvid}`"
+          target="_blank"
+        >
+          {{ videoInfo.title }}
+        </ElLink>
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
         label="分区"
-        :span="2"
+        :span="3"
+        min-width="100px"
       >
         {{ videoInfo.tname }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
         label="UP主信息"
-        :span="4"
+        :span="6"
       >
         <template v-if="(videoInfo?.staff ?? []).length > 0">
           <UPInfo
@@ -110,16 +117,30 @@ watch(() => route.params.id, fetchData, { immediate: true })
 
       <ElDescriptionsItem
         label="发布时间"
-        :span="1"
+        :span="3"
       >
         {{ new Date(videoInfo.pubdate * 1000).toLocaleString() }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
         label="投稿时间"
-        :span="1"
+        :span="3"
       >
         {{ new Date(videoInfo.ctime * 1000).toLocaleString() }}
+      </ElDescriptionsItem>
+
+      <ElDescriptionsItem
+        label="AV号"
+        :span="3"
+      >
+        av{{ avid }}
+      </ElDescriptionsItem>
+
+      <ElDescriptionsItem
+        label="BV号"
+        :span="3"
+      >
+        {{ bvid }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
