@@ -19,6 +19,11 @@
     "store:default",
     "dialog:default",
     "upload:default",
-    "clipboard-manager:allow-read-text"
+    "clipboard-manager:allow-read-text",
+    "core:window:default",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
   ]
 }
