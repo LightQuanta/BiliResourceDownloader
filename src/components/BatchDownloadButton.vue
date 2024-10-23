@@ -229,6 +229,6 @@ const openDialog = async () => {
 
 <style>
 .el-select-dropdown__wrap:has(.download-treeselect) {
-  max-height: 500px;
+  max-height: calc(85vh - 200px);
 }
 </style>
