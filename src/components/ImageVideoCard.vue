@@ -72,13 +72,14 @@ function closeVideo() {
     append-to-body
     align-center
     v-model="videoVisible"
-    title="视频预览"
+    :title="title"
     :before-close="closeVideo"
   >
-    <div class="h-[calc(100vh-100px)]">
+    <div style="height: calc(100vh - 150px - var(--title-bar-height));">
       <video
         v-if="videoVisible"
-        class="w-full h-[calc(100vh-100px)]"
+        class="w-full"
+        style="height: calc(100vh - 150px - var(--title-bar-height));"
         :src="videoUrl"
         controls
         autoplay

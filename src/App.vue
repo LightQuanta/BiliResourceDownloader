@@ -12,7 +12,7 @@ const showDownloadDrawer = ref(false)
     <!-- 标题栏 -->
     <Teleport to="body">
       <div
-        class="fixed top-0 w-full h-8 bg-gray-100 flex gap-2 items-center pl-2 z-[1145141919810]"
+        class="fixed top-0 w-full h-[--title-bar-height] bg-gray-100 flex gap-2 items-center pl-2 z-[1145141919810] shadow select-none"
         data-tauri-drag-region
       >
         <ElImage
@@ -57,8 +57,8 @@ const showDownloadDrawer = ref(false)
       </div>
     </Teleport>
 
-    <!-- 菜单 -->
-    <div class="flex mt-8 w-full h-full items-stretch color-bg">
+    <div class="flex mt-[--title-bar-height] w-full h-full items-stretch color-bg select-none">
+      <!-- 菜单 -->
       <ElMenu
         :router="true"
         class="h-full w-32 m-0 shrink-0 router-mark"
@@ -100,7 +100,6 @@ const showDownloadDrawer = ref(false)
         </Transition>
       </RouterView>
     </div>
-
 
     <ElDrawer
       v-model="showDownloadDrawer"

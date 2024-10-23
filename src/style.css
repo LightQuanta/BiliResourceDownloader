@@ -7,4 +7,23 @@
     --el-fill-color-light: #f7f7f766;
     --el-bg-color: #fafafa;
     --el-mask-color: #fcfcfc33;
+
+    /* 自定义标题栏的高度 */
+    --title-bar-height: 2rem;
+}
+
+/* ElMessage基础高度 */
+.el-message {
+    margin-top: var(--title-bar-height) !important;
+}
+
+/* ElDrawer等组件的遮罩位置调整 */
+.el-overlay {
+    height: calc(100% - var(--title-bar-height)) !important;
+    top: var(--title-bar-height) !important;
+}
+
+/* ElMessageBox等组件的遮罩位置调整 */
+.el-overlay-dialog {
+    top: var(--title-bar-height) !important;
 }
