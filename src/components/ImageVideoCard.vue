@@ -153,7 +153,7 @@ function closeVideo() {
             </ElButton>
             <ElButton
               type="primary"
-              @click="downloadFile(image ?? '')"
+              @click="downloadFile(video ?? '')"
             >
               视频
               <ElIcon size="16">
