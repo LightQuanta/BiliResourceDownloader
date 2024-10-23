@@ -72,133 +72,145 @@ interface SuitProperties {
     type: "ip"
 }
 
+enum SuitPartType {
+
+    like = 3,
+    // 完整装扮信息
+    suit = 6,
+    loading = 10,
+    // 进度条
+    playIcon = 11,
+}
+
+interface GeneralSuitItem<T> {
+    item_id: number
+    name: string
+    properties: T
+}
+
+interface SuitCardProperties {
+    // 粉丝牌颜色？
+    fan_no_color: string
+    // 粉丝牌背景图
+    fans_image: string
+    // 粉丝牌背景图？
+    image: string
+    // 粉丝牌背景图（小）？
+    image_preview_small?: string
+}
+
+interface SuitCardBGProperties {
+    // 粉丝牌颜色？
+    fan_no_color: string
+    // 评论背景
+    image: string
+    // 评论背景预览
+    image_preview_small: string
+}
+
+interface SuitEmojiPackageProperties {
+    // 表情包代表图？
+    image: string
+    // 表情包列表（JSON，{ name: string, image: string }[]）
+    item_emoji_list: string
+}
+
+interface SuitLoadingProperties {
+    image_preview_small: string
+    // 逐帧加载动画
+    loading_frame_url: string
+    // 动图加载动画
+    loading_url: string
+}
+
+interface SuitPlayIconProperties {
+    drag_left_png: string
+    drag_right_png: string
+    middle_png: string
+    squared_image: string
+    static_icon_image: string
+}
+
+interface SuitSkinProperties {
+    // 这边的属性敢不敢更多点？
+    // 谁爱标谁标，反正我不愿意标
+
+    // head_bg: string
+    // // 背景视频
+    // head_myself_mp4_bg: string
+
+    // 皮肤压缩包md5
+    package_md5: string
+    // 皮肤压缩包链接
+    package_url: string
+
+    head_bg: string
+    head_myself_mp4_bg: string
+    head_myself_squared_bg: string
+    head_tab_bg: string
+    tail_bg: string
+    tail_icon_channel: string
+    tail_icon_dynamic: string
+    tail_icon_main: string
+    tail_icon_myself: string
+    tail_icon_pub_btn_bg: string
+    tail_icon_selected_channel: string
+    tail_icon_selected_dynamic: string
+    tail_icon_selected_main: string
+    tail_icon_selected_myself: string
+    tail_icon_selected_pub_btn_bg: string
+    tail_icon_selected_shop: string
+    tail_icon_shop: string
+}
+
+interface SuitSpaceBGProperties {
+    goods_type: 'suit'
+
+    /**
+     * cnm这怎么标注类型
+     *
+     *  空间背景图（完整）
+     *  image1_landscape: string
+     *  空间背景图（肖像）
+     *  image1_portrait: string
+     */
+    [K: string]: string
+}
+
+interface SuitThumbUpProperties {
+
+    // 这是个啥？？？
+    image_ani: string
+    // 这是个啥？？？？？
+    image_ani_cut: string
+    // 点赞动画预览图？
+    image_preview: string
+}
+
+// https://api.bilibili.com/x/garb/v2/user/suit/benefit?item_id=${SuitID}
 interface SuitDetail {
     name: string
+    part_id: SuitPartType
     properties: SuitProperties
     suit_items: {
-        card: {
-            name: string
-            properties: {
-                // 粉丝牌颜色？
-                fan_no_color: string
-                // 粉丝牌背景图
-                fans_image: string
-                // 粉丝牌背景图？
-                image: string
-                // 粉丝牌背景图（小）？
-                image_preview_small?: string
-            }
-        }[]
-        card_bg: {
-            name: string
-            properties: {
-                // 粉丝牌颜色？
-                fan_no_color: string
-                // 评论背景
-                image: string
-                // 评论背景预览
-                image_preview_small: string
-            }
-        }[]
-        emoji_package: {
-            name: string
-            properties: {
-                // 表情包代表图？
-                image: string
-                // 表情包列表（JSON，{ name: string, image: string }[]）
-                item_emoji_list: string
-            }
-            // 表情表列表（详细信息）
-            items: {
-                // 表情表名称（即评论区触发关键词，[xxx_xxx]）
-                name: string
-                properties: {
-                    // 表情包图片链接
-                    image: string
-                    sale_type: string
-                }
-            }[]
-        }[]
-        emoji?: {
-            // [XXX_xx]格式
-            name: string
-            properties: {
-                image: string
-            }
-        }[]
-        loading: {
-            name: string
-            properties: {
-                image_preview_small: string
-                // 逐帧加载动画
-                loading_frame_url: string
-                // 动图加载动画
-                loading_url: string
-            }
-        }[]
+        // 粉丝牌背景（动态右上角那个）
+        card: GeneralSuitItem<SuitCardProperties>[]
+        card_bg: GeneralSuitItem<SuitCardBGProperties>[]
+        // 为什么这b数据在直接请求装扮部分时可以是任何东西？
+        emoji_package: GeneralSuitItem<SuitEmojiPackageProperties | unknown>[]
+        // 获取收藏集表情信息时用
+        emoji?: GeneralSuitItem<{ image: string }>[]
+
+        // 加载动画
+        loading: GeneralSuitItem<SuitLoadingProperties>[]
         // 进度条
-        play_icon: {
-            name: string
-            properties: {
-                drag_left_png: string
-                drag_right_png: string
-                middle_png: string
-                squared_image: string
-                static_icon_image: string
-            }
-        }[]
-        skin: {
-            name: string
-            properties: {
-                // 这边的属性敢不敢更多点？
-                // 谁爱标谁标，反正我不愿意标
-
-                // head_bg: string
-                // // 背景视频
-                // head_myself_mp4_bg: string
-
-                // 皮肤压缩包md5
-                package_md5: string
-                // 皮肤压缩包链接
-                package_url: string
-
-                // 下略
-            }
-        }[]
-        space_bg: {
-            name: string
-            /**
-             * cnm这怎么标注类型
-             *
-             *  空间背景图（完整）
-             *  image1_landscape: string
-             *  空间背景图（肖像）
-             *  image1_portrait: string
-             */
-            properties: Record<string, string>
-
-        }
-        thumbup: {
-            name: string
-            properties: {
-                // 这是个啥？？？
-                image_ani: string
-                // 这是个啥？？？？？
-                image_ani_cut: string
-                // 点赞动画预览图？
-                image_preview: string
-            }
-        }[]
-
-        // 装扮拥有者信息
-        fan_user: {
-            // UID
-            mid: string
-            // 名称
-            nickname: string
-            // 头像
-            avatar: string
-        }
+        play_icon: GeneralSuitItem<SuitPlayIconProperties>[]
+        // 各种乱七八糟的皮肤图片
+        skin: GeneralSuitItem<SuitSkinProperties>[]
+        // 空间背景图
+        space_bg: GeneralSuitItem<SuitSpaceBGProperties>[]
+        // 点赞动画
+        thumbup: GeneralSuitItem<SuitThumbUpProperties>[]
     }
     buy_link: string
 }
@@ -683,6 +695,15 @@ export type {
     LotteryInfo,
     SuitProperties,
     SuitDetail,
+    GeneralSuitItem,
+    SuitSpaceBGProperties,
+    SuitThumbUpProperties,
+    SuitCardProperties,
+    SuitSkinProperties,
+    SuitPlayIconProperties,
+    SuitLoadingProperties,
+    SuitEmojiPackageProperties,
+    SuitCardBGProperties,
     BatchDownloadTask,
     DynamicInfo,
     DynamicTypes,
