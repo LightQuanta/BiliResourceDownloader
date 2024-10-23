@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 import { APIFetch } from "../APIFetch.ts";
-import type { ActInfo, BatchDownloadTask, GarbSearchResult, LotteryDetail, LotteryProperties, } from '../types.ts'
+import type {
+  ActInfo,
+  BatchDownloadTask,
+  GarbSearchResult,
+  LotteryDetail,
+  LotteryProperties,
+  RedeemInfo,
+} from '../types.ts'
 import { sep } from "@tauri-apps/api/path";
 import { CarouselInstance } from "element-plus/lib/components";
 
@@ -151,7 +158,7 @@ const generateDownloadTask = async () => {
           })
         })
 
-    const combinedRedeemInfo = detail.collect_list.collect_chain?.concat(detail.collect_list.collect_infos) ?? []
+    const combinedRedeemInfo: RedeemInfo[] = [].concat(detail.collect_list.collect_chain ?? [], detail.collect_list.collect_infos ?? [])
 
     // 钻石头像背景、收藏集勋章、典藏卡、头像框
     combinedRedeemInfo
