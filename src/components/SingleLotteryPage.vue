@@ -139,15 +139,9 @@ const resolveEmoji = () => {
 
       <!-- 销量 -->
       <ElDescriptionsItem label="总销量">
-        <div v-if="saleQuantity !== -1">
-          {{ saleQuantity }}
-        </div>
-        <ElText
-          type="danger"
-          v-else
-        >
-          未知
-        </ElText>
+        {{
+          saleQuantity !== -1 ? saleQuantity : extraCardsInfo.filter(i => cards.map(c => c.card_type_id).includes(i.card_type_id)).reduce((acc, curr) => acc + curr.total_cnt, 0)
+        }}
       </ElDescriptionsItem>
 
       <!-- 销售时间 -->
