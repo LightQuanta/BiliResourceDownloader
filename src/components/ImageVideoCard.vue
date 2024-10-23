@@ -107,7 +107,7 @@ function closeVideo() {
           v-if="subtitle?.length ?? 0 > 0"
           size="small"
           type="info"
-          class="text-center"
+          class="text-center whitespace-pre-wrap"
         >
           {{ subtitle }}
         </ElText>

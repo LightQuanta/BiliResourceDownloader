@@ -4,6 +4,12 @@ import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryPropertie
 
 const props = defineProps<{
   lottery: GarbSearchResult<LotteryProperties>
+  extraCardsInfo?: {
+    lottery_id: number
+    card_type_id: number
+    total_cnt: number
+    holding_rate: number
+  }[]
 }>()
 
 const name = ref('')
@@ -14,7 +20,7 @@ const loading = ref(false)
 
 const lotteryDetail = ref<LotteryDetail>()
 const coverURL = ref('')
-const saleQuantity = ref(0)
+const saleQuantity = ref(-1)
 const saleStartTime = ref(0)
 const saleEndTime = ref(0)
 
@@ -96,31 +102,6 @@ const resolveEmoji = () => {
   const { redeem_item_id } = emojiInfo.value[0]
   router.push(`/emoji/${redeem_item_id}?suit=true`)
 }
-
-const getProbability = (scarcity: number) => {
-  const count = cards.value.filter(c => c.card_scarcity === scarcity).length
-
-  // cards.value.
-
-  let totalProbability: number
-  if (scarcity === 40) {
-    // 大隐藏
-    totalProbability = 0.005
-  } else if (scarcity === 30) {
-    // 小隐藏
-    totalProbability = 0.045
-  } else if (scarcity === 20) {
-    totalProbability = 0.09
-  } else {
-    totalProbability = 0.86
-  }
-
-  return totalProbability / count
-}
-
-const getProbabilityText = (scarcity: number) => {
-  return `${getProbability(scarcity).toFixed(4) * 100}%`
-}
 </script>
 <template>
   <div
@@ -150,7 +131,7 @@ const getProbabilityText = (scarcity: number) => {
         <ElLink
           :href="jumpLink"
           target="_blank"
-          type="primary"
+          :type="saleQuantity === -1 ? 'danger' : 'primary'"
         >
           {{ name }}
         </ElLink>
@@ -158,7 +139,15 @@ const getProbabilityText = (scarcity: number) => {
 
       <!-- 销量 -->
       <ElDescriptionsItem label="销量">
-        {{ saleQuantity }}
+        <div v-if="saleQuantity !== -1">
+          {{ saleQuantity }}
+        </div>
+        <ElText
+          type="danger"
+          v-else
+        >
+          未知（收藏集已下架）
+        </ElText>
       </ElDescriptionsItem>
 
       <!-- 销售时间 -->
@@ -166,7 +155,15 @@ const getProbabilityText = (scarcity: number) => {
         :span="1"
         label="销售时间"
       >
-        {{ new Date(saleStartTime).toLocaleString() }} ~ {{ new Date(saleEndTime).toLocaleString() }}
+        <div v-if="saleStartTime > 0">
+          {{ new Date(saleStartTime).toLocaleString() }} ~ {{ new Date(saleEndTime).toLocaleString() }}
+        </div>
+        <ElText
+          type="danger"
+          v-else
+        >
+          未知（收藏集已下架）
+        </ElText>
       </ElDescriptionsItem>
 
       <!-- 收藏集表情包信息 -->
@@ -193,7 +190,7 @@ const getProbabilityText = (scarcity: number) => {
         v-for="(card, index) in cards"
         :key="card.card_type_id"
         :title="card.card_name"
-        :subtitle="`概率：${getProbabilityText(card.card_scarcity)}`"
+        :subtitle="`销量：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.total_cnt}     概率：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.holding_rate / 100}%`"
         :download-name="`${name} - ${card.card_name}`"
         :image="card.card_img"
         :video="card.video_list?.[0]"
@@ -209,7 +206,7 @@ const getProbabilityText = (scarcity: number) => {
     >
       <!-- 封面 -->
       <ImageVideoCard
-        v-if="!loading"
+        v-if="coverURL !== ''"
         :download-name="`${name} - 封面`"
         :image="coverURL"
         title="收藏集封面"

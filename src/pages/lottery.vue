@@ -4,6 +4,7 @@ import type {
   ActInfo,
   BatchDownloadTask,
   GarbSearchResult,
+  LotteryBagAssetsInfo,
   LotteryDetail,
   LotteryProperties,
   RedeemInfo,
@@ -13,15 +14,34 @@ import { CarouselInstance } from "element-plus/lib/components";
 
 const loading = ref(true)
 
+// 已选择收藏集
 const selectedKey = ref('')
 
 const actID = ref(-1)
 const lotteryID = ref(-1)
+// 收藏集组详细信息
 const actInfo = ref<ActInfo>()
 
+// 隐藏的收藏集信息（可能是已经下架的）
+const hiddenLotteryInfo = ref<{
+  lottery_id: number
+  lottery_name: string
+}[]>([])
+
+// 单个收藏集详细信息
 const lotteryInfo = computed(() => actInfo.value?.lottery_list)
+
+// 额外卡片信息（抽卡数量，概率）
+const extraCardsInfo = ref<{
+  card_type_id: number
+  total_cnt: number
+  holding_rate: number
+}[]>([])
+
+// 生成迫真收藏集搜索结果信息
 const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => {
-  return lotteryInfo.value?.map(l => {
+  // 普通收藏集信息
+  return [...lotteryInfo.value?.map(l => {
     return {
       item_id: 0,
       name: l.lottery_name,
@@ -37,11 +57,28 @@ const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => 
         type: "dlc_act",
       }
     } as GarbSearchResult<LotteryProperties>
-  }) ?? []
+  }) ?? [],
+    // 下架（？）收藏集信息
+    ...hiddenLotteryInfo.value.map(l => {
+      return {
+        item_id: 0,
+        name: l.lottery_name,
+        jump_link: ``,
+        sale_count_desc: '-1',
+        properties: {
+          dlc_act_id: actID.value,
+          dlc_lottery_id: l.lottery_id,
+          dlc_lottery_sale_quantity: -1,
+          image_cover: '',
+          dlc_sale_start_time: '-1',
+          dlc_sale_end_time: '-1',
+          type: "dlc_act",
+        }
+      }
+    })]
 })
 
 const route = useRoute()
-
 const fetchData = async () => {
   loading.value = true
 
@@ -56,6 +93,7 @@ const fetchData = async () => {
   }
 
   try {
+    // 收藏集组基础信息
     const url = 'https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=' + actID.value
     const resp = await APIFetch<ActInfo>(url, null, {
       debug: {
@@ -71,6 +109,37 @@ const fetchData = async () => {
       type: 'error',
     })
     return
+  }
+
+  try {
+    // 收藏集额外信息
+    const url = new URL('https://api.bilibili.com/x/vas/dlc_act/asset_bag')
+    url.searchParams.set('act_id', actID.value)
+
+    const resp = await APIFetch<LotteryBagAssetsInfo>(url, null, {
+      debug: {
+        name: '收藏集额外信息',
+        extraParams: { act_id: '收藏集组ID' }
+      }
+    })
+    const lotteryIDList = actInfo.value.lottery_list.map(l => l.lottery_id)
+    // 提取隐藏收藏集ID
+    hiddenLotteryInfo.value = resp.data.lottery_simple_list.filter(l => !lotteryIDList.includes(l.lottery_id) && l.lottery_id !== 0)
+
+    // 保存额外卡片信息
+    extraCardsInfo.value = resp.data.item_list.map(i => {
+      return {
+        card_type_id: i.card_item.card_type_id,
+        total_cnt: i.card_item.total_cnt,
+        holding_rate: i.card_item.holding_rate,
+      }
+    })
+  } catch (e) {
+    console.error(e)
+    ElMessage({
+      message: `获取收藏集额外信息出错：${e}`,
+      type: 'error',
+    })
   }
 
 
@@ -103,7 +172,7 @@ const carousel = ref<CarouselInstance>()
 
 watch(selectedKey, () => {
   carousel.value?.setActiveItem(selectedKey.value)
-  router.replace({ query: { act_id: actID.value, lottery_id: lotteryID.value } })
+  router.replace({ query: { act_id: actID.value, lottery_id: selectedKey.value } })
 })
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)
@@ -119,11 +188,12 @@ const generateDownloadTask = async () => {
 
   let lotteryDetails: LotteryDetail[]
   try {
+    const lotteryIDs = [...(lotteryInfo.value?.map(l => l.lottery_id) ?? []), ...hiddenLotteryInfo.value.map(l => l.lottery_id)]
     // 获取所有收藏集信息
-    lotteryDetails = await Promise.all(lotteryInfo.value?.map(l => {
+    lotteryDetails = await Promise.all(lotteryIDs.map(lotteryID => {
       const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
       url.searchParams.set('act_id', actID.value.toString())
-      url.searchParams.set('lottery_id', l.lottery_id.toString())
+      url.searchParams.set('lottery_id', lotteryID)
 
       return APIFetch(url).then(r => r.data) as Promise<LotteryDetail>
     }) ?? [])
@@ -214,7 +284,7 @@ const generateDownloadTask = async () => {
       </template>
 
       <template #extra>
-        <DebugButton :names="['收藏集组信息']" />
+        <DebugButton :names="['收藏集组信息','收藏集额外信息']" />
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
@@ -286,6 +356,7 @@ const generateDownloadTask = async () => {
         <KeepAlive>
           <SingleLotteryPage
             :lottery="lottery"
+            :extra-cards-info="extraCardsInfo"
             class="h-full"
           />
         </KeepAlive>

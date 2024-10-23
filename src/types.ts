@@ -268,6 +268,25 @@ interface LotteryCardInfo {
     video_list_download?: string[]
 }
 
+/** https://api.bilibili.com/x/vas/dlc_act/asset_bag?act_id=279
+ * 一个可以获得停售收藏集和抽卡概率信息的神秘API
+ */
+interface LotteryBagAssetsInfo {
+    item_list: {
+        item_type: 1
+        card_item: LotteryCardInfo & {
+            total_cnt: number
+            // 抽出概率（万分之一）
+            holding_rate: number
+        }
+    }[]
+    // 所有收藏集列表，可以获得已经停售的
+    lottery_simple_list: {
+        lottery_id: number
+        lottery_name: string
+    }[]
+}
+
 interface BatchDownloadTask {
     name: string
     path?: string
@@ -660,6 +679,7 @@ export type {
     LotteryDetail,
     RedeemInfo,
     LotteryCardInfo,
+    LotteryBagAssetsInfo,
     ActInfo,
     LotteryInfo,
     SuitProperties,
