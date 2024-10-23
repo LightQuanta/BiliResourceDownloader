@@ -6,9 +6,9 @@ import { handleHotUpdate, routes } from 'vue-router/auto-routes'
 import mitt from "mitt";
 import { getDownloadStore, startDownload } from "./downloadManager.ts";
 import { BiliResourceDownloadEventEmitter } from "./types.ts";
-import { startClipboardListening } from "./cliboardListener.ts";
 import { checkLoginState } from "./loginManager.ts";
 import { createPinia } from 'pinia'
+import './cliboardListener.ts'
 
 const pinia = createPinia()
 
@@ -52,7 +52,6 @@ getDownloadStore().then(async store => {
     }
 })
 
-startClipboardListening()
-checkLoginState();
+checkLoginState()
 
 export { emitter, router }
