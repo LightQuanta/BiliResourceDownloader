@@ -176,7 +176,7 @@ const resolveEmoji = () => {
           type="primary"
           @click="resolveEmoji"
         >
-          {{ name + emojiInfo[0].redeem_item_name }}
+          {{ emojiInfo[0].redeem_item_name }}
         </ElLink>
       </ElDescriptionsItem>
     </ElDescriptions>
