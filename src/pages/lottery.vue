@@ -242,7 +242,7 @@ const generateDownloadTask = async () => {
           if (i.redeem_item_type === 1) {
             downloadFileInfo.files.push({
               path: [detail.name, '其他', i.redeem_item_name + '(视频)'].join(sep()),
-              url: i.card_item.card_type_info?.content.animation.animation_video_urls[0] ?? '',
+              url: i.card_item.card_type_info?.content.animation?.animation_video_urls[0] ?? '',
             })
           }
         })

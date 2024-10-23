@@ -219,7 +219,7 @@ const resolveEmoji = () => {
         :subtitle="special.redeem_text"
         :download-name="`${name} - ${special.redeem_item_name}`"
         :image="special.redeem_item_image"
-        :video="special.card_item.card_type_info?.content.animation.animation_video_urls[0] ?? ''"
+        :video="special.card_item.card_type_info?.content.animation?.animation_video_urls[0] ?? ''"
       />
       <!-- 钻石头像背景 -->
       <ImageVideoCard
