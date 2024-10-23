@@ -59,7 +59,12 @@ const fetchData = async () => {
     try {
       const resp = await APIFetch<{
         packages: EmojiPackageDetail[]
-      }>(url, null, '表情包信息')
+      }>(url, null, {
+        debug: {
+          name: '表情包信息',
+          extraParams: { ids: '表情包ID' },
+        }
+      })
 
       const packageDetail = resp.data.packages[0] as EmojiPackageDetail
 
@@ -89,7 +94,12 @@ const fetchData = async () => {
     url.searchParams.set('part', 'card')
 
     try {
-      const resp = await APIFetch<SuitDetail>(url, null, '表情包信息')
+      const resp = await APIFetch<SuitDetail>(url, null, {
+        debug: {
+          name: '表情包信息',
+          extraParams: { item_id: '表情包ID' }
+        }
+      })
 
       const suitEmojiDetail = resp.data.suit_items.emoji ?? []
 
