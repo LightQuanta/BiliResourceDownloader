@@ -133,12 +133,12 @@ const resolveEmoji = () => {
           target="_blank"
           :type="saleQuantity === -1 ? 'danger' : 'primary'"
         >
-          {{ name }}
+          {{ name }}{{ saleQuantity === -1 ? '（收藏集已下架）' : '' }}
         </ElLink>
       </ElDescriptionsItem>
 
       <!-- 销量 -->
-      <ElDescriptionsItem label="销量">
+      <ElDescriptionsItem label="总销量">
         <div v-if="saleQuantity !== -1">
           {{ saleQuantity }}
         </div>
@@ -146,7 +146,7 @@ const resolveEmoji = () => {
           type="danger"
           v-else
         >
-          未知（收藏集已下架）
+          未知
         </ElText>
       </ElDescriptionsItem>
 
@@ -162,7 +162,7 @@ const resolveEmoji = () => {
           type="danger"
           v-else
         >
-          未知（收藏集已下架）
+          未知
         </ElText>
       </ElDescriptionsItem>
 
@@ -216,6 +216,7 @@ const resolveEmoji = () => {
         v-for="special in specialCards"
         :key="special.redeem_item_name"
         :title="special.redeem_item_name"
+        :subtitle="special.redeem_text"
         :download-name="`${name} - ${special.redeem_item_name}`"
         :image="special.redeem_item_image"
         :video="special.card_item.card_type_info?.content.animation.animation_video_urls[0] ?? ''"
@@ -225,6 +226,7 @@ const resolveEmoji = () => {
         v-for="diamond in diamondBackgrounds"
         :key="diamond.redeem_item_name"
         :title="diamond.redeem_item_name"
+        :subtitle="diamond.redeem_text"
         :download-name="`${name} - ${diamond.redeem_item_name}`"
         :image="diamond.redeem_item_image"
       />
@@ -233,6 +235,7 @@ const resolveEmoji = () => {
         v-for="medal in medals"
         :key="medal.redeem_item_name"
         :title="medal.redeem_item_name"
+        :subtitle="medal.redeem_text"
         :download-name="`${name} - ${medal.redeem_item_name}`"
         :image="medal.redeem_item_image"
       />
@@ -241,6 +244,7 @@ const resolveEmoji = () => {
         v-for="pendant in pendants"
         :key="pendant.redeem_item_name"
         :title="pendant.redeem_item_name"
+        :subtitle="pendant.redeem_text"
         :download-name="`${name} - ${pendant.redeem_item_name}`"
         :image="pendant.redeem_item_image"
       />

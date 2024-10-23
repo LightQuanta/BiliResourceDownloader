@@ -216,7 +216,6 @@ interface LotteryDetail {
     }
 }
 
-// TODO 这里会有表情包、头像框等信息，等个解析
 interface RedeemInfo {
     collect_id: number
 
