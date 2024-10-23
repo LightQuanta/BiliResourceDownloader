@@ -27,3 +27,8 @@
 .el-overlay-dialog {
     top: var(--title-bar-height) !important;
 }
+
+/* ElImage图片预览 */
+.el-image-viewer__wrapper {
+    top: var(--title-bar-height) !important;
+}
