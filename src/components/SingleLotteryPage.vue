@@ -140,7 +140,7 @@ const resolveEmoji = () => {
       <!-- 销量 -->
       <ElDescriptionsItem label="总销量">
         {{
-          saleQuantity !== -1 ? saleQuantity : extraCardsInfo.filter(i => cards.map(c => c.card_type_id).includes(i.card_type_id)).reduce((acc, curr) => acc + curr.total_cnt, 0)
+          saleQuantity !== -1 ? saleQuantity : extraCardsInfo.filter(i => cards.map(c => c.card_type_id).includes(i.card_type_id)).reduce((acc, curr) => acc + curr.total_cnt, 0) + '（销量可能不准确，根据每张卡牌销量总和计算得出）'
         }}
       </ElDescriptionsItem>
 
