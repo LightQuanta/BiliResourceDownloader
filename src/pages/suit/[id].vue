@@ -8,18 +8,23 @@ import {
   SuitDetail,
   SuitEmojiPackageProperties,
   SuitLoadingProperties,
+  SuitPartType,
   SuitPlayIconProperties,
   SuitSkinProperties,
   SuitSpaceBGProperties,
   SuitThumbUpProperties
 } from "../../types.ts";
 import { sep } from "@tauri-apps/api/path";
+import { autoJump, resolveText } from "../../linkResolver.ts";
 
 const route = useRoute<'/suit/[id]'>()
 
 const ids = ref<string[]>([])
 const name = ref('')
 const mid = ref('')
+const jumpLink = ref('')
+
+const debugRequestNames = ref<string[]>([])
 
 const cards = ref<GeneralSuitItem<SuitCardProperties>[]>([])
 const cardBgs = ref<GeneralSuitItem<SuitCardBGProperties>[]>([])
@@ -186,41 +191,74 @@ const generateDownloadTask = () => {
 const fetchData = async () => {
   ids.value = route.params.id.split(',')
 
+  let suitDetail: SuitDetail
   if (ids.value.length > 1) {
-    // TODO 收藏集多部分装扮解析
-    return
-  }
+    // 收藏集装扮解析
+    suitDetail = {
+      name: route.query.name as string ?? '未知',
+      part_id: 6,
+      suit_items: {},
+      buy_link: '',
+    }
 
-  const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
-  url.searchParams.set('item_id', ids.value[0])
-  url.searchParams.set('part', 'cards')
+    const results = (await Promise.all(ids.value.map(id => {
+      const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
+      url.searchParams.set('item_id', id)
+      url.searchParams.set('part', 'cards')
+      return APIFetch<SuitDetail>(url)
+    }))).map(r => r.data)
 
-  let data: SuitDetail
-  try {
-    const resp = await APIFetch<SuitDetail>(url, undefined, {
-      debug: {
-        name: '装扮信息',
-        extraParams: {
-          item_id: '装扮ID',
-        }
+    jumpLink.value = results[0].buy_link
+    suitDetail.buy_link = results[0].buy_link
+
+    results.forEach(r => {
+      switch (r.part_id) {
+        case SuitPartType.thumbUp:
+          suitDetail.suit_items.thumbup = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitThumbUpProperties>[]
+          break
+        case SuitPartType.loading:
+          suitDetail.suit_items.loading = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitLoadingProperties>[]
+          break
+        case SuitPartType.playIcon:
+          suitDetail.suit_items.play_icon = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitPlayIconProperties>[]
+          break
+        case SuitPartType.skin:
+          suitDetail.suit_items.skin = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitSkinProperties>[]
       }
     })
-    data = resp.data
-  } catch (e) {
-    console.error(e)
-    ElMessage({
-      message: `获取装扮信息出错：${e}`,
-      type: 'error',
-    })
-    return null
+
+  } else {
+    // 普通装扮解析
+    const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
+    url.searchParams.set('item_id', ids.value[0])
+    url.searchParams.set('part', 'cards')
+
+    try {
+      const resp = await APIFetch<SuitDetail>(url, undefined, {
+        debug: {
+          name: '装扮信息',
+          extraParams: {
+            item_id: '装扮ID',
+          }
+        }
+      })
+      suitDetail = resp.data
+    } catch (e) {
+      console.error(e)
+      ElMessage({
+        message: `获取装扮信息出错：${e}`,
+        type: 'error',
+      })
+      return null
+    }
   }
 
-  name.value = data.name
-  mid.value = data.properties.fan_mid
+  name.value = suitDetail.name
+  mid.value = suitDetail.properties?.fan_mid ?? ''
 
-  cards.value = data.suit_items.card ?? []
-  cardBgs.value = data.suit_items.card_bg ?? []
-  emojiPackages.value = data.suit_items.emoji_package as (GeneralSuitItem<SuitEmojiPackageProperties> & {
+  cards.value = suitDetail.suit_items.card ?? []
+  cardBgs.value = suitDetail.suit_items.card_bg ?? []
+  emojiPackages.value = suitDetail.suit_items.emoji_package as (GeneralSuitItem<SuitEmojiPackageProperties> & {
     items: {
       // [XXX_xxx]格式
       name: string
@@ -229,14 +267,22 @@ const fetchData = async () => {
       }
     }[]
   })[] ?? []
-  loadings.value = data.suit_items.loading ?? []
-  playIcons.value = data.suit_items.play_icon ?? []
-  skins.value = data.suit_items.skin ?? []
-  spaceBgs.value = data.suit_items.space_bg ?? []
-  thumpUps.value = data.suit_items.thumbup ?? []
+  loadings.value = suitDetail.suit_items.loading ?? []
+  playIcons.value = suitDetail.suit_items.play_icon ?? []
+  skins.value = suitDetail.suit_items.skin ?? []
+  spaceBgs.value = suitDetail.suit_items.space_bg ?? []
+  thumpUps.value = suitDetail.suit_items.thumbup ?? []
 }
 
 watch(() => route.params.id, fetchData, { immediate: true })
+
+const resolveLink = async () => {
+  if (resolveText(jumpLink.value) !== null) {
+    await autoJump(jumpLink.value, true)
+  } else {
+    window.open(jumpLink.value)
+  }
+}
 
 </script>
 
@@ -251,7 +297,26 @@ watch(() => route.params.id, fetchData, { immediate: true })
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
-      <ElDescriptionsItem label="相关UP信息">
+      <ElDescriptionsItem label="名称">
+        {{ name }}
+      </ElDescriptionsItem>
+
+      <ElDescriptionsItem
+        label="相关链接"
+        v-if="jumpLink.length > 0"
+      >
+        <ElLink
+          type="primary"
+          @click="resolveLink"
+        >
+          点击跳转
+        </ElLink>
+      </ElDescriptionsItem>
+
+      <ElDescriptionsItem
+        label="相关UP信息"
+        v-if="mid.length > 0"
+      >
         <UPInfo :mid="mid" />
       </ElDescriptionsItem>
     </ElDescriptions>
@@ -365,46 +430,44 @@ watch(() => route.params.id, fetchData, { immediate: true })
     </template>
 
     <!-- 杂项 -->
-    <template v-if="cardBgs?.length ?? 0 > 0">
-      <ElDivider>杂项</ElDivider>
-      <ElSpace
-        class="w-full justify-center"
-        wrap
-      >
-        <!-- 粉丝牌背景 -->
-        <ImageVideoCard
-          v-for="card in cards"
-          :key="card.item_id"
-          :title="card.name + '粉丝牌'"
-          :image="card.properties.image"
-          :download-name="`${name} - ${card.name}粉丝牌`"
-        />
+    <ElDivider>杂项</ElDivider>
+    <ElSpace
+      class="w-full justify-center"
+      wrap
+    >
+      <!-- 粉丝牌背景 -->
+      <ImageVideoCard
+        v-for="card in cards"
+        :key="card.item_id"
+        :title="card.name + '粉丝牌'"
+        :image="card.properties.image"
+        :download-name="`${name} - ${card.name}粉丝牌`"
+      />
 
-        <!-- 评论背景 -->
-        <ImageVideoCard
-          v-for="card in cardBgs"
-          :key="card.item_id"
-          :title="card.name + '评论背景'"
-          :image="card.properties.image"
-          :download-name="`${name} - ${card.name}评论背景`"
-        />
+      <!-- 评论背景 -->
+      <ImageVideoCard
+        v-for="card in cardBgs"
+        :key="card.item_id"
+        :title="card.name + '评论背景'"
+        :image="card.properties.image"
+        :download-name="`${name} - ${card.name}评论背景`"
+      />
 
-        <!-- 加载动画 -->
-        <ImageVideoCard
-          v-for="loading in loadings"
-          :key="loading.item_id"
-          :title="loading.name + '加载动画'"
-          :image="loading.properties.loading_url"
-          :download-name="`${name} - ${loading.name}加载动画`"
-        />
-        <ImageVideoCard
-          v-for="loading in loadings"
-          :key="loading.item_id"
-          :title="loading.name + '加载动画(序列帧)'"
-          :image="loading.properties.loading_frame_url"
-          :download-name="`${name} - ${loading.name}加载动画(序列帧)`"
-        />
-      </ElSpace>
-    </template>
+      <!-- 加载动画 -->
+      <ImageVideoCard
+        v-for="loading in loadings"
+        :key="loading.item_id"
+        :title="loading.name + '加载动画'"
+        :image="loading.properties.loading_url"
+        :download-name="`${name} - ${loading.name}加载动画`"
+      />
+      <ImageVideoCard
+        v-for="loading in loadings"
+        :key="loading.item_id"
+        :title="loading.name + '加载动画(序列帧)'"
+        :image="loading.properties.loading_frame_url"
+        :download-name="`${name} - ${loading.name}加载动画(序列帧)`"
+      />
+    </ElSpace>
   </div>
 </template>

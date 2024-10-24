@@ -38,8 +38,7 @@ const specialCards = computed(() => combinedRedeemInfo.value.filter(r => r.redee
 const pendants = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 3))
 
 // 装扮
-// TODO 这玩意怎么解析？
-// const suit = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 5))
+const suit = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 5))
 
 onMounted(async () => {
   loading.value = true
@@ -94,13 +93,6 @@ onMounted(async () => {
 
 const previewImages = computed(() => cards.value.map(c => c.card_img))
 
-const router = useRouter()
-const resolveEmoji = () => {
-  if (emojiInfo.value.length === 0) return
-
-  const { redeem_item_id } = emojiInfo.value[0]
-  router.push(`/emoji/${redeem_item_id}?suit=true`)
-}
 </script>
 <template>
   <div
@@ -165,12 +157,32 @@ const resolveEmoji = () => {
         :span="1"
         v-if="emojiInfo.length > 0"
       >
-        <ElLink
-          type="primary"
-          @click="resolveEmoji"
+        <RouterLink
+          v-for="info in emojiInfo"
+          :key="info.redeem_item_id"
+          :to="`/emoji/${info.redeem_item_id}?suit=true`"
         >
-          {{ emojiInfo[0].redeem_item_name }}
-        </ElLink>
+          <ElLink type="primary">
+            {{ info.redeem_item_name }}
+          </ElLink>
+        </RouterLink>
+      </ElDescriptionsItem>
+
+      <!-- 收藏集装扮 -->
+      <ElDescriptionsItem
+        label="收藏集装扮"
+        :span="2"
+        v-if="suit.length > 0"
+      >
+        <RouterLink
+          v-for="info in suit"
+          :key="info.redeem_item_id"
+          :to="`/suit/${info.redeem_item_id.replaceAll('&', ',')}?name=${name}`"
+        >
+          <ElLink type="primary">
+            {{ info.redeem_item_name }}
+          </ElLink>
+        </RouterLink>
       </ElDescriptionsItem>
     </ElDescriptions>
 

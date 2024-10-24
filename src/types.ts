@@ -74,9 +74,11 @@ interface SuitProperties {
 
 enum SuitPartType {
 
-    like = 3,
+    thumbUp = 3,
     // 完整装扮信息
     suit = 6,
+    // 主题
+    skin = 9,
     loading = 10,
     // 进度条
     playIcon = 11,
@@ -191,13 +193,13 @@ interface SuitThumbUpProperties {
 interface SuitDetail {
     name: string
     part_id: SuitPartType
-    properties: SuitProperties
+    properties?: SuitProperties
     suit_items: {
         // 粉丝牌背景（动态右上角那个）
-        card: GeneralSuitItem<SuitCardProperties>[]
-        card_bg: GeneralSuitItem<SuitCardBGProperties>[]
+        card?: GeneralSuitItem<SuitCardProperties>[]
+        card_bg?: GeneralSuitItem<SuitCardBGProperties>[]
         // 为什么这b数据在直接请求装扮部分时可以是任何东西？
-        emoji_package: (GeneralSuitItem<SuitEmojiPackageProperties | unknown> & {
+        emoji_package?: (GeneralSuitItem<SuitEmojiPackageProperties | unknown> & {
             items: {
                 // [XXX_xxx]格式
                 name: string
@@ -210,15 +212,15 @@ interface SuitDetail {
         emoji?: GeneralSuitItem<{ image: string }>[]
 
         // 加载动画
-        loading: GeneralSuitItem<SuitLoadingProperties>[]
+        loading?: GeneralSuitItem<SuitLoadingProperties>[]
         // 进度条
-        play_icon: GeneralSuitItem<SuitPlayIconProperties>[]
+        play_icon?: GeneralSuitItem<SuitPlayIconProperties>[]
         // 各种乱七八糟的皮肤图片
-        skin: GeneralSuitItem<SuitSkinProperties>[]
+        skin?: GeneralSuitItem<SuitSkinProperties>[]
         // 空间背景图
-        space_bg: GeneralSuitItem<SuitSpaceBGProperties>[]
+        space_bg?: GeneralSuitItem<SuitSpaceBGProperties>[]
         // 点赞动画
-        thumbup: GeneralSuitItem<SuitThumbUpProperties>[]
+        thumbup?: GeneralSuitItem<SuitThumbUpProperties>[]
     }
     buy_link: string
 }
@@ -689,6 +691,8 @@ interface BasicVideoInfo {
         face: string
     }[]
 }
+
+export { SuitPartType }
 
 export type {
     GeneralAPIResponse,
