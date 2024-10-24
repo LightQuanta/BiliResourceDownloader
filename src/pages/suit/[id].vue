@@ -184,7 +184,7 @@ const generateDownloadTask = () => {
     })
 
     task.files.push({
-      path: `${name.value}${sep()}${withSuffix(loading.name, '加载动画(序列帧)')}`,
+      path: `${name.value}${sep()}${withSuffix(loading.name, '加载动画')}(序列帧)`,
       url: loading.properties.loading_frame_url,
     })
   })
