@@ -197,7 +197,7 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
         v-for="(card, index) in cards"
         :key="card.card_type_id"
         :title="card.card_name"
-        :subtitle="`销量：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.total_cnt}     概率：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.holding_rate ?? 0 / 100}%`"
+        :subtitle="`销量：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.total_cnt}     概率：${(extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.holding_rate ?? 0) / 100}%`"
         :download-name="`${name} - ${card.card_name}`"
         :image="card.card_img"
         :video="card.video_list?.[0]"
