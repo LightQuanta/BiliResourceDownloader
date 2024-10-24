@@ -100,13 +100,13 @@ const generateDownloadTask = () => {
     const [landscapes, portraits] = getSpaceBgImages(spaceBg.properties)
     task.files.push(...landscapes.map((l, index) => {
       return {
-        path: `${name.value}${sep()}${spaceBg.name}空间背景图${sep()}背景${index + 1}`,
+        path: `${name.value}${sep()}${spaceBg.name}${sep()}背景${index + 1}`,
         url: l,
       }
     }))
     task.files.push(...portraits.map((p, index) => {
       return {
-        path: `${name.value}${sep()}${spaceBg.name}空间背景图${sep()}肖像${index + 1}`,
+        path: `${name.value}${sep()}${spaceBg.name}${sep()}肖像${index + 1}`,
         url: p,
       }
     }))
@@ -140,14 +140,14 @@ const generateDownloadTask = () => {
   skins.value.forEach(skin => {
     task.files.push(...skinProps.map(([prop, desc]) => {
       return {
-        path: `${name.value}${sep()}${skin.name}皮肤${sep()}${desc ?? prop}`,
+        path: `${name.value}${sep()}${skin.name}${sep()}${desc ?? prop}`,
         url: skin.properties[prop as keyof typeof skin.properties] ?? '',
       }
     }))
 
     if (skin.properties.head_myself_mp4_bg) {
       task.files.push({
-        path: `${name.value}${sep()}${skin.name}皮肤${sep()}head_myself_mp4_bg`,
+        path: `${name.value}${sep()}${skin.name}${sep()}head_myself_mp4_bg`,
         url: skin.properties.head_myself_mp4_bg,
       })
     }
@@ -157,7 +157,7 @@ const generateDownloadTask = () => {
   // 粉丝牌背景
   cards.value.forEach(card => {
     task.files.push({
-      path: `${name.value}${sep()}${card.name}粉丝牌`,
+      path: `${name.value}${sep()}${card.name}`,
       url: card.properties.image,
     })
   })
@@ -165,7 +165,7 @@ const generateDownloadTask = () => {
   // 评论背景
   cardBgs.value.forEach(cardBg => {
     task.files.push({
-      path: `${name.value}${sep()}${cardBg.name}评论背景`,
+      path: `${name.value}${sep()}${cardBg.name}`,
       url: cardBg.properties.image,
     })
   })
@@ -173,12 +173,12 @@ const generateDownloadTask = () => {
   // 加载动画
   loadings.value.forEach(loading => {
     task.files.push({
-      path: `${name.value}${sep()}${loading.name}加载动画`,
+      path: `${name.value}${sep()}${loading.name}`,
       url: loading.properties.loading_url,
     })
 
     task.files.push({
-      path: `${name.value}${sep()}${loading.name}加载动画(序列帧)`,
+      path: `${name.value}${sep()}${loading.name}(序列帧)`,
       url: loading.properties.loading_frame_url,
     })
   })
@@ -205,7 +205,16 @@ const fetchData = async () => {
       const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
       url.searchParams.set('item_id', id)
       url.searchParams.set('part', 'cards')
-      return APIFetch<SuitDetail>(url)
+      debugRequestNames.value.push(`部分装扮信息${id}`)
+
+      return APIFetch<SuitDetail>(url, undefined, {
+        debug: {
+          name: `部分装扮信息${id}`,
+          extraParams: {
+            item_id: '装扮ID'
+          }
+        }
+      })
     }))).map(r => r.data)
 
     jumpLink.value = results[0].buy_link
@@ -234,6 +243,7 @@ const fetchData = async () => {
     url.searchParams.set('part', 'cards')
 
     try {
+      debugRequestNames.value.push('装扮信息')
       const resp = await APIFetch<SuitDetail>(url, undefined, {
         debug: {
           name: '装扮信息',
@@ -293,7 +303,7 @@ const resolveLink = async () => {
         装扮相关信息
       </template>
       <template #extra>
-        <DebugButton :names="['装扮信息']" />
+        <DebugButton :names="debugRequestNames" />
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
@@ -439,34 +449,34 @@ const resolveLink = async () => {
       <ImageVideoCard
         v-for="card in cards"
         :key="card.item_id"
-        :title="card.name + '粉丝牌'"
+        :title="card.name + ' - 粉丝牌'"
         :image="card.properties.image"
-        :download-name="`${name} - ${card.name}粉丝牌`"
+        :download-name="`${name} - ${card.name} - 粉丝牌`"
       />
 
       <!-- 评论背景 -->
       <ImageVideoCard
         v-for="card in cardBgs"
         :key="card.item_id"
-        :title="card.name + '评论背景'"
+        :title="card.name + ' - 评论背景'"
         :image="card.properties.image"
-        :download-name="`${name} - ${card.name}评论背景`"
+        :download-name="`${name} - ${card.name} - 评论背景`"
       />
 
       <!-- 加载动画 -->
       <ImageVideoCard
         v-for="loading in loadings"
         :key="loading.item_id"
-        :title="loading.name + '加载动画'"
+        :title="loading.name + ' - 加载动画'"
         :image="loading.properties.loading_url"
-        :download-name="`${name} - ${loading.name}加载动画`"
+        :download-name="`${name} - ${loading.name} - 加载动画`"
       />
       <ImageVideoCard
         v-for="loading in loadings"
         :key="loading.item_id"
-        :title="loading.name + '加载动画(序列帧)'"
+        :title="loading.name + ' - 加载动画(序列帧)'"
         :image="loading.properties.loading_frame_url"
-        :download-name="`${name} - ${loading.name}加载动画(序列帧)`"
+        :download-name="`${name} - ${loading.name} - 加载动画(序列帧)`"
       />
     </ElSpace>
   </div>
