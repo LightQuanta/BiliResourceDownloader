@@ -89,6 +89,8 @@ const skinProps = [
   ['tail_icon_shop'],
 ]
 
+const withSuffix = (source: string, suffix: string) => source.endsWith(suffix) ? source : `${source}${suffix}`
+
 const generateDownloadTask = () => {
   let task: BatchDownloadTask = {
     name: name.value,
@@ -116,7 +118,7 @@ const generateDownloadTask = () => {
   emojiPackages.value.forEach(emojiPackage => {
     const emojiInfo = emojiPackage.items
     task.files.push(...emojiInfo.map(emoji => {
-      const emojiPackageName = emojiPackage.name.endsWith('表情包') ? emojiPackage.name : `${emojiPackage.name}表情包`
+      const emojiPackageName = withSuffix(emojiPackage.name, '表情包')
       const emojiName = emoji.name.split('_')[1]?.slice(0, -1) ?? emoji.name
       return {
         path: `${name.value}${sep()}${emojiPackageName}${sep()}${emojiName}`,
@@ -127,7 +129,7 @@ const generateDownloadTask = () => {
 
   // 进度条
   playIcons.value.forEach(playIcon => {
-    const playIconName = playIcon.name.endsWith('进度条') ? playIcon.name : `${playIcon.name}进度条`
+    const playIconName = withSuffix(playIcon.name, '进度条')
     task.files.push(...playIconProps.map(([prop, desc]) => {
       return {
         path: `${name.value}${sep()}${playIconName}${sep()}${desc}`,
@@ -138,9 +140,10 @@ const generateDownloadTask = () => {
 
   // 皮肤
   skins.value.forEach(skin => {
+    const skinName = withSuffix(skin.name, '皮肤')
     task.files.push(...skinProps.map(([prop, desc]) => {
       return {
-        path: `${name.value}${sep()}${skin.name}${sep()}${desc ?? prop}`,
+        path: `${name.value}${sep()}${skinName}${sep()}${desc ?? prop}`,
         url: skin.properties[prop as keyof typeof skin.properties] ?? '',
       }
     }))
@@ -157,7 +160,7 @@ const generateDownloadTask = () => {
   // 粉丝牌背景
   cards.value.forEach(card => {
     task.files.push({
-      path: `${name.value}${sep()}${card.name}`,
+      path: `${name.value}${sep()}${withSuffix(card.name, '粉丝牌背景')}`,
       url: card.properties.image,
     })
   })
@@ -165,7 +168,7 @@ const generateDownloadTask = () => {
   // 评论背景
   cardBgs.value.forEach(cardBg => {
     task.files.push({
-      path: `${name.value}${sep()}${cardBg.name}`,
+      path: `${name.value}${sep()}${withSuffix(cardBg.name, '评论背景')}`,
       url: cardBg.properties.image,
     })
   })
@@ -173,12 +176,12 @@ const generateDownloadTask = () => {
   // 加载动画
   loadings.value.forEach(loading => {
     task.files.push({
-      path: `${name.value}${sep()}${loading.name}`,
+      path: `${name.value}${sep()}${withSuffix(loading.name, '加载动画')}`,
       url: loading.properties.loading_url,
     })
 
     task.files.push({
-      path: `${name.value}${sep()}${loading.name}(序列帧)`,
+      path: `${name.value}${sep()}${withSuffix(loading.name, '加载动画(序列帧)')}`,
       url: loading.properties.loading_frame_url,
     })
   })
