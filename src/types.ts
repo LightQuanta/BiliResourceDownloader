@@ -197,7 +197,15 @@ interface SuitDetail {
         card: GeneralSuitItem<SuitCardProperties>[]
         card_bg: GeneralSuitItem<SuitCardBGProperties>[]
         // 为什么这b数据在直接请求装扮部分时可以是任何东西？
-        emoji_package: GeneralSuitItem<SuitEmojiPackageProperties | unknown>[]
+        emoji_package: (GeneralSuitItem<SuitEmojiPackageProperties | unknown> & {
+            items: {
+                // [XXX_xxx]格式
+                name: string
+                properties: {
+                    image: string
+                }
+            }[]
+        })[]
         // 获取收藏集表情信息时用
         emoji?: GeneralSuitItem<{ image: string }>[]
 

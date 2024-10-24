@@ -23,7 +23,15 @@ const mid = ref('')
 
 const cards = ref<GeneralSuitItem<SuitCardProperties>[]>([])
 const cardBgs = ref<GeneralSuitItem<SuitCardBGProperties>[]>([])
-const emojiPackages = ref<GeneralSuitItem<SuitEmojiPackageProperties>[]>([])
+const emojiPackages = ref<(GeneralSuitItem<SuitEmojiPackageProperties> & {
+  items: {
+    // [XXX_xxx]格式
+    name: string
+    properties: {
+      image: string
+    }
+  }[]
+})[]>([])
 const loadings = ref<GeneralSuitItem<SuitLoadingProperties>[]>([])
 const playIcons = ref<GeneralSuitItem<SuitPlayIconProperties>[]>([])
 const skins = ref<GeneralSuitItem<SuitSkinProperties>[]>([])
@@ -101,12 +109,13 @@ const generateDownloadTask = () => {
 
   // 表情包
   emojiPackages.value.forEach(emojiPackage => {
-    const emojiInfo = JSON.parse(emojiPackage.properties.item_emoji_list) as { name: string, image: string }[]
+    const emojiInfo = emojiPackage.items
     task.files.push(...emojiInfo.map(emoji => {
-      const emojiName = emojiPackage.name.endsWith('表情包') ? emojiPackage.name : `${emojiPackage.name}表情包`
+      const emojiPackageName = emojiPackage.name.endsWith('表情包') ? emojiPackage.name : `${emojiPackage.name}表情包`
+      const emojiName = emoji.name.split('_')[1]?.slice(0, -1) ?? emoji.name
       return {
-        path: `${name.value}${sep()}${emojiName}${sep()}${emoji.name}`,
-        url: emoji.image,
+        path: `${name.value}${sep()}${emojiPackageName}${sep()}${emojiName}`,
+        url: emoji.properties.image,
       }
     }))
   })
@@ -211,7 +220,15 @@ const fetchData = async () => {
 
   cards.value = data.suit_items.card ?? []
   cardBgs.value = data.suit_items.card_bg ?? []
-  emojiPackages.value = data.suit_items.emoji_package as GeneralSuitItem<SuitEmojiPackageProperties>[] ?? []
+  emojiPackages.value = data.suit_items.emoji_package as (GeneralSuitItem<SuitEmojiPackageProperties> & {
+    items: {
+      // [XXX_xxx]格式
+      name: string
+      properties: {
+        image: string
+      }
+    }[]
+  })[] ?? []
   loadings.value = data.suit_items.loading ?? []
   playIcons.value = data.suit_items.play_icon ?? []
   skins.value = data.suit_items.skin ?? []
@@ -289,12 +306,12 @@ watch(() => route.params.id, fetchData, { immediate: true })
           wrap
         >
           <ImageVideoCard
-            v-for="(emoji, index) in (JSON.parse(emojiInfo.properties.item_emoji_list) as ({ name: string, image: string }[]))"
+            v-for="(emoji, index) in emojiInfo.items"
             :key="emoji.name"
-            :title="emoji.name"
-            :image="emoji.image"
-            :download-name="`${name} - ${emojiInfo.name} - ${emoji.name}`"
-            :preview-images="(JSON.parse(emojiInfo.properties.item_emoji_list) as { name: string, image: string }[]).map(e => e.image)"
+            :title="emoji.name.split('_')[1].slice(0, -1) ?? emoji.name"
+            :image="emoji.properties.image"
+            :download-name="`${name} - ${emojiInfo.name} - ${emoji.name.split('_')[1].slice(0, -1) ?? emoji.name}`"
+            :preview-images="emojiInfo.items.map(e => e.properties.image)"
             :index="index"
           />
         </ElSpace>
