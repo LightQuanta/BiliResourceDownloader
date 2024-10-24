@@ -7,7 +7,7 @@ const userLoggedIn = ref(false)
 
 async function getLoginStore() {
     if (internalStore === null) {
-        internalStore = await createStore('login.bin')
+        internalStore = await createStore('login.json')
     }
     return internalStore
 }
