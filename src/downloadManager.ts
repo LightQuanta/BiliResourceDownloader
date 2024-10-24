@@ -121,6 +121,13 @@ async function startDownload() {
                         emitter.emit('downloadFinish', { name })
                     }
                 })
+                .catch(e => {
+                    console.error(e)
+                    ElMessage({
+                        message: `下载${file?.url}出错：${e}`,
+                        type: 'error',
+                    })
+                })
             // 主动触发视图更新，不能放到 download then 里头，会触发错误的下载状态
             await store.set('tasks', tasks)
         }
