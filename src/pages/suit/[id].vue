@@ -435,6 +435,12 @@ const resolveLink = async () => {
             :preview-images="skinProps.filter(([p]) => (skin.properties[p]?.length ?? 0) > 0).map(p => skin.properties[p])"
             :index="index"
           />
+
+          <ImageVideoCard
+            :video="skin.properties.head_myself_mp4_bg"
+            title="head_myself_mp4_bg"
+            :download-name="`${name} - ${skin.name} - head_myself_mp4_bg`"
+          />
         </ElSpace>
       </div>
     </template>

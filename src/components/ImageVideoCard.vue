@@ -115,7 +115,9 @@ function closeVideo() {
       </div>
     </template>
 
+    <!-- 优先展示图片 -->
     <ElImage
+      v-if="image?.length ?? 0 > 0"
       :alt="title"
       :hide-on-click-modal="true"
       :initial-index="index ?? 0"
@@ -125,15 +127,37 @@ function closeVideo() {
       fit="contain"
       preview-teleported
       referrerpolicy="no-referrer"
+    >
+      <template #error>
+        <ElText type="danger">
+          加载图片/视频出错
+        </ElText>
+      </template>
+    </ElImage>
+
+    <!-- 仅在无图片时展示视频 -->
+    <video
+      v-else-if="video?.length ?? 0 > 0"
+      :src="video"
+      controls
+      autoplay
+      loop
     />
+
+    <ElText
+      type="danger"
+      v-else
+    >
+      加载图片/视频出错
+    </ElText>
 
     <template #footer>
       <div class="flex h-4 items-center justify-center">
-        <!-- 仅图片 -->
+        <!-- 仅图片或视频 -->
         <ElButton
-          v-if="(video?.length ?? 0) ===0"
+          v-if="(video?.length ?? 0) === 0 || (image?.length ?? 0) === 0"
           type="primary"
-          @click="downloadFile(image ?? '')"
+          @click="downloadFile(image ?? video ?? '')"
         >
           <ElIcon size="20">
             <i-ep-download />
