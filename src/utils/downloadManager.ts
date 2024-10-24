@@ -1,7 +1,7 @@
-import { BatchDownloadTask } from "./types.ts";
+import { BatchDownloadTask } from "../types.ts";
 import { createStore, Store } from '@tauri-apps/plugin-store';
 import { download } from "@tauri-apps/plugin-upload";
-import { emitter } from "./main.ts";
+import { emitter } from "../main.ts";
 import { sep } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api/core";
 

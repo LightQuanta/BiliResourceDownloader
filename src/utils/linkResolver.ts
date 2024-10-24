@@ -1,4 +1,4 @@
-import { router } from "./main.ts";
+import { router } from "../main.ts";
 
 type Types = 'liveroom' | 'user' | 'dynamic' | 'video' | 'suit' | 'lottery'
 

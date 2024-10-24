@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BatchDownloadTask } from "../types.ts";
-import { clearDownload, getAllDownloadTasks, pauseDownload, startDownload } from "../downloadManager.ts";
+import { clearDownload, getAllDownloadTasks, pauseDownload, startDownload } from "../utils/downloadManager.ts";
 import { emitter } from "../main.ts";
 import { ElMessage } from "element-plus";
 

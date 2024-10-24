@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, FormInstance } from "element-plus";
 import type { BatchDownloadTask } from "../types.ts";
-import { pushNewTask } from "../downloadManager.ts";
+import { pushNewTask } from "../utils/downloadManager.ts";
 import { open } from "@tauri-apps/plugin-dialog";
 import { TreeInstance } from "element-plus/lib/components";
 import { sep } from "@tauri-apps/api/path";

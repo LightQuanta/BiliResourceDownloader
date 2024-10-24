@@ -3,7 +3,7 @@ import { APIFetch } from "../../APIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import { EmojiPackageInfo, EmojiPackages, GeneralAPIResponse } from "../../types.ts";
 import Fuse from "fuse.js";
-import { userLoggedIn } from "../../loginManager.ts";
+import { userLoggedIn } from "../../utils/loginManager.ts";
 
 // 默认首页展示的表情数
 const DEFAULT_SHOW_COUNT = 50

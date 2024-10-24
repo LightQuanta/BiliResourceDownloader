@@ -15,7 +15,7 @@ import {
   SuitThumbUpProperties
 } from "../../types.ts";
 import { sep } from "@tauri-apps/api/path";
-import { autoJump, resolveText } from "../../linkResolver.ts";
+import { autoJump, resolveText } from "../../utils/linkResolver.ts";
 
 const route = useRoute<'/suit/[id]'>()
 

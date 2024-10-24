@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { autoJump, resolveText } from "../linkResolver.ts";
+import { autoJump, resolveText } from "../utils/linkResolver.ts";
 
 const inputText = ref('')
 const processedInputText = computed<string>(() => {

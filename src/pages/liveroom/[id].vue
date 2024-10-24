@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { APIFetch } from "../../APIFetch.ts";
 import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
-import { userLoggedIn } from "../../loginManager.ts";
+import { userLoggedIn } from "../../utils/loginManager.ts";
 import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/liveroom/[id]'>()

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toDataURL } from 'qrcode'
 import { ElMessage } from "element-plus";
-import { checkLoginState, clearLoginCookie, saveLoginCookie, userLoggedIn } from "../loginManager.ts";
+import { checkLoginState, clearLoginCookie, saveLoginCookie, userLoggedIn } from "../utils/loginManager.ts";
 import { APIFetch } from "../APIFetch.ts";
 import { GeneralAPIResponse } from "../types.ts";
 

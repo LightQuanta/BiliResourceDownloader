@@ -10,7 +10,7 @@ import {
   SuitDetail
 } from "../../types.ts";
 import { sep } from "@tauri-apps/api/path";
-import { autoJump } from "../../linkResolver.ts";
+import { autoJump } from "../../utils/linkResolver.ts";
 import DebugButton from "../../components/DebugButton.vue";
 
 const route = useRoute<'/space/[id]'>()

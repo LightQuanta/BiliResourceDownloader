@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { APIFetch } from "../../APIFetch.ts";
 import { BatchDownloadTask, EmojiPackageDetail, SuitDetail } from "../../types.ts";
-import { autoJump, resolveText } from "../../linkResolver.ts";
+import { autoJump, resolveText } from "../../utils/linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/emoji/[id]'>()

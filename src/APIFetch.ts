@@ -1,5 +1,5 @@
 import { createStore, Store } from '@tauri-apps/plugin-store';
-import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./loginManager.ts";
+import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./utils/loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
 import { encWbiWithFetch } from "./utils/wbi.ts";
 import { useWbiStore } from "./store/useWbiStore";
@@ -58,7 +58,7 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
         const cacheData = (await store.get(getURLStr())) as CachedJSONResponse<T>
         if (cacheData.cachedTime > Date.now()) {
             console.debug(`using cached ${getURLStr()}`)
-            
+
             if (debugInfo) {
                 setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(cacheData.response, null, 2), debugInfo.extraParams)
             }

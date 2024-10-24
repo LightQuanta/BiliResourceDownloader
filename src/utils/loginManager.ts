@@ -1,5 +1,5 @@
 import { createStore, Store } from "@tauri-apps/plugin-store";
-import { clearAPICache } from "./APIFetch.ts";
+import { clearAPICache } from "../APIFetch.ts";
 
 let internalStore: Store | null = null
 

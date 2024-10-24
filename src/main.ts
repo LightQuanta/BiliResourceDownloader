@@ -4,11 +4,11 @@ import "./style.css";
 import { createRouter, createWebHistory } from 'vue-router'
 import { handleHotUpdate, routes } from 'vue-router/auto-routes'
 import mitt from "mitt";
-import { getDownloadStore, startDownload } from "./downloadManager.ts";
+import { getDownloadStore, startDownload } from "./utils/downloadManager.ts";
 import { BiliResourceDownloadEventEmitter } from "./types.ts";
-import { checkLoginState } from "./loginManager.ts";
+import { checkLoginState } from "./utils/loginManager.ts";
 import { createPinia } from 'pinia'
-import './cliboardListener.ts'
+import './utils/cliboardListener.ts'
 
 const pinia = createPinia()
 

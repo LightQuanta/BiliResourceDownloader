@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { userLoggedIn } from "../loginManager.ts";
+import { userLoggedIn } from "../utils/loginManager.ts";
 
 const showTooltip = ref(false)
 
