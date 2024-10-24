@@ -141,16 +141,19 @@ const generateDownloadTask = () => {
   // 皮肤
   skins.value.forEach(skin => {
     const skinName = withSuffix(skin.name, '皮肤')
-    task.files.push(...skinProps.map(([prop, desc]) => {
-      return {
-        path: `${name.value}${sep()}${skinName}${sep()}${desc ?? prop}`,
-        url: skin.properties[prop as keyof typeof skin.properties] ?? '',
-      }
-    }))
+    task.files.push(...skinProps
+        .filter(([p]) => (skin.properties[p as keyof typeof skin.properties]?.length ?? 0) > 0)
+        .map(([prop, desc]) => {
+          return {
+            path: `${name.value}${sep()}${skinName}${sep()}${desc ?? prop}`,
+            url: skin.properties[prop as keyof typeof skin.properties] ?? '',
+          }
+        })
+    )
 
     if (skin.properties.head_myself_mp4_bg) {
       task.files.push({
-        path: `${name.value}${sep()}${skin.name}${sep()}head_myself_mp4_bg`,
+        path: `${name.value}${sep()}${skinName}${sep()}head_myself_mp4_bg`,
         url: skin.properties.head_myself_mp4_bg,
       })
     }
