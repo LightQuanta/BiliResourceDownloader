@@ -161,6 +161,7 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
           v-for="info in emojiInfo"
           :key="info.redeem_item_id"
           :to="`/emoji/${info.redeem_item_id}?suit=true`"
+          class="mr-2"
         >
           <ElLink type="primary">
             {{ info.redeem_item_name }}
@@ -178,6 +179,7 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
           v-for="info in suit"
           :key="info.redeem_item_id"
           :to="`/suit/${info.redeem_item_id.replaceAll('&', ',')}?name=${name}`"
+          class="mr-2"
         >
           <ElLink type="primary">
             {{ info.redeem_item_name }}
