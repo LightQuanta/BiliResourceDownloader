@@ -96,7 +96,10 @@ const showDownloadDrawer = ref(false)
           mode="out-in"
           name="fade"
         >
-          <Component :is="Component" />
+          <Component
+            :is="Component"
+            class="pb-10"
+          />
         </Transition>
       </RouterView>
     </div>
