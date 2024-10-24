@@ -440,6 +440,7 @@ const resolveLink = async () => {
           />
 
           <ImageVideoCard
+            v-if="skin.properties.head_myself_mp4_bg"
             :video="skin.properties.head_myself_mp4_bg"
             title="head_myself_mp4_bg"
             :download-name="`${name} - ${skin.name} - head_myself_mp4_bg`"
