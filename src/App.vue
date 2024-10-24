@@ -57,11 +57,11 @@ const showDownloadDrawer = ref(false)
       </div>
     </Teleport>
 
-    <div class="flex mt-[--title-bar-height] w-full h-full items-stretch color-bg select-none">
+    <div class="flex mt-[--title-bar-height] w-full h-full items-stretch color-bg">
       <!-- 菜单 -->
       <ElMenu
         :router="true"
-        class="h-full w-32 m-0 shrink-0 router-mark"
+        class="h-full w-32 m-0 shrink-0 router-mark select-none"
         default-active="test"
       >
         <ElMenuItem index="/">
