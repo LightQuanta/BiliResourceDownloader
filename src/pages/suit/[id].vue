@@ -70,23 +70,23 @@ const playIconProps = [
 ]
 
 const skinProps = [
-  ['head_bg'],
-  // ['head_myself_mp4_bg'],
-  ['head_myself_squared_bg'],
-  ['head_tab_bg'],
-  ['tail_bg'],
-  ['tail_icon_channel'],
-  ['tail_icon_dynamic'],
-  ['tail_icon_main'],
-  ['tail_icon_myself'],
-  ['tail_icon_pub_btn_bg'],
-  ['tail_icon_selected_channel'],
-  ['tail_icon_selected_dynamic'],
-  ['tail_icon_selected_main'],
-  ['tail_icon_selected_myself'],
-  ['tail_icon_selected_pub_btn_bg'],
-  ['tail_icon_selected_shop'],
-  ['tail_icon_shop'],
+  ['head_bg', '顶部背景图'],
+  // ['head_myself_mp4_bg', '“我的”界面背景视频'],
+  ['head_myself_squared_bg', '“我的”界面背景图'],
+  ['head_tab_bg', '首页顶部标签页背景（存疑）'],
+  ['tail_bg', '底部背景图'],
+  ['tail_icon_channel', '频道按钮图标'],
+  ['tail_icon_dynamic', '动态按钮图标'],
+  ['tail_icon_main', '首页按钮图标'],
+  ['tail_icon_myself', '“我的”按钮图标'],
+  ['tail_icon_pub_btn_bg', '发布按钮图标'],
+  ['tail_icon_selected_channel', '频道按钮选中图标'],
+  ['tail_icon_selected_dynamic', '动态按钮选中图标'],
+  ['tail_icon_selected_main', '首页按钮选中图标'],
+  ['tail_icon_selected_myself', '“我的”按钮选中图标'],
+  ['tail_icon_selected_pub_btn_bg', '发布按钮选中图标'],
+  ['tail_icon_selected_shop', '会员购按钮选中图标'],
+  ['tail_icon_shop', '会员购按钮图标'],
 ]
 
 const withSuffix = (source: string, suffix: string) => source.endsWith(suffix) ? source : `${source}${suffix}`
@@ -153,7 +153,7 @@ const generateDownloadTask = () => {
 
     if (skin.properties.head_myself_mp4_bg) {
       task.files.push({
-        path: `${name.value}${sep()}${skinName}${sep()}head_myself_mp4_bg`,
+        path: `${name.value}${sep()}${skinName}${sep()}“我的”界面背景视频`,
         url: skin.properties.head_myself_mp4_bg,
       })
     }
@@ -438,15 +438,15 @@ const resolveLink = async () => {
             :title="desc ?? prop"
             :image="skin.properties[prop]"
             :download-name="`${name} - ${skin.name} - ${desc ?? prop}`"
-            :preview-images="skinProps.filter(([p]) => (skin.properties[p]?.length ?? 0) > 0).map(p => skin.properties[p])"
+            :preview-images="skinProps.filter(([p]) => (skin.properties[p]?.length ?? 0) > 0).map(([p]) => skin.properties[p])"
             :index="index"
           />
 
           <ImageVideoCard
             v-if="skin.properties.head_myself_mp4_bg"
             :video="skin.properties.head_myself_mp4_bg"
-            title="head_myself_mp4_bg"
-            :download-name="`${name} - ${skin.name} - head_myself_mp4_bg`"
+            title="“我的”界面背景视频"
+            :download-name="`${name} - ${skin.name} - “我的”界面背景视频`"
           />
         </ElSpace>
       </div>
