@@ -30,7 +30,7 @@ const fetchData = async () => {
 
   try {
     const extraParams = /^(av|AV)\d+$/.test(videoID) ? { aid: 'AV号' } : { bvid: 'BV号' }
-    const resp = await APIFetch<BasicVideoInfo>(url, null, {
+    const resp = await APIFetch<BasicVideoInfo>(url, undefined, {
       debug: {
         name: '视频信息',
         extraParams,

@@ -68,7 +68,7 @@ const fetchData = async (paramID: string) => {
 
   let data: BasicRoomInfo
   try {
-    const resp = await APIFetch<BasicRoomInfo>(url, null, {
+    const resp = await APIFetch<BasicRoomInfo>(url, undefined, {
       debug: {
         name: '直播间信息',
         extraParams: { room_id: '直播间ID' },

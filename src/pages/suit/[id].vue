@@ -85,13 +85,13 @@ const generateDownloadTask = () => {
   // 空间背景图
   spaceBgs.value.forEach(spaceBg => {
     const [landscapes, portraits] = getSpaceBgImages(spaceBg.properties)
-    task.files.push(landscapes.map((l, index) => {
+    task.files.push(...landscapes.map((l, index) => {
       return {
         path: `${name.value}${sep()}${spaceBg.name}空间背景图${sep()}背景${index + 1}`,
         url: l,
       }
     }))
-    task.files.push(portraits.map((p, index) => {
+    task.files.push(...portraits.map((p, index) => {
       return {
         path: `${name.value}${sep()}${spaceBg.name}空间背景图${sep()}肖像${index + 1}`,
         url: p,
@@ -102,7 +102,7 @@ const generateDownloadTask = () => {
   // 表情包
   emojiPackages.value.forEach(emojiPackage => {
     const emojiInfo = JSON.parse(emojiPackage.properties.item_emoji_list) as { name: string, image: string }[]
-    task.files.push(emojiInfo.map(emoji => {
+    task.files.push(...emojiInfo.map(emoji => {
       const emojiName = emojiPackage.name.endsWith('表情包') ? emojiPackage.name : `${emojiPackage.name}表情包`
       return {
         path: `${name.value}${sep()}${emojiName}${sep()}${emoji.name}`,
@@ -114,20 +114,20 @@ const generateDownloadTask = () => {
   // 进度条
   playIcons.value.forEach(playIcon => {
     const playIconName = playIcon.name.endsWith('进度条') ? playIcon.name : `${playIcon.name}进度条`
-    task.files.push(playIconProps.map(([prop, desc]) => {
+    task.files.push(...playIconProps.map(([prop, desc]) => {
       return {
         path: `${name.value}${sep()}${playIconName}${sep()}${desc}`,
-        url: playIcon.properties[prop],
+        url: playIcon.properties[prop as keyof typeof playIcon.properties] as string ?? '',
       }
     }))
   })
 
   // 皮肤
   skins.value.forEach(skin => {
-    task.files.push(skinProps.map(([prop, desc]) => {
+    task.files.push(...skinProps.map(([prop, desc]) => {
       return {
         path: `${name.value}${sep()}${skin.name}皮肤${sep()}${desc ?? prop}`,
-        url: skin.properties[prop],
+        url: skin.properties[prop as keyof typeof skin.properties] ?? '',
       }
     }))
 
@@ -183,12 +183,12 @@ const fetchData = async () => {
   }
 
   const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
-  url.searchParams.set('item_id', ids.value)
+  url.searchParams.set('item_id', ids.value[0])
   url.searchParams.set('part', 'cards')
 
   let data: SuitDetail
   try {
-    const resp = await APIFetch<SuitDetail>(url, null, {
+    const resp = await APIFetch<SuitDetail>(url, undefined, {
       debug: {
         name: '装扮信息',
         extraParams: {
@@ -255,7 +255,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
             :key="image"
             :title="`肖像${index + 1}`"
             :image="image"
-            :download-name="`${name.value} - ${spaceBg.name} - 肖像${index + 1}`"
+            :download-name="`${name} - ${spaceBg.name} - 肖像${index + 1}`"
             :preview-images="getSpaceBgImages(spaceBg.properties)[0]"
             :index="index"
           />
@@ -269,7 +269,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
             :key="image"
             :title="`大图${index + 1}`"
             :image="image"
-            :download-name="`${name.value} - ${spaceBg.name} - 大图${index + 1}`"
+            :download-name="`${name} - ${spaceBg.name} - 大图${index + 1}`"
             :preview-images="getSpaceBgImages(spaceBg.properties)[1]"
             :index="index"
           />
@@ -289,7 +289,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
           wrap
         >
           <ImageVideoCard
-            v-for="(emoji, index) in (JSON.parse(emojiInfo.properties.item_emoji_list) as { name: string, image: string }[])"
+            v-for="(emoji, index) in (JSON.parse(emojiInfo.properties.item_emoji_list) as ({ name: string, image: string }[]))"
             :key="emoji.name"
             :title="emoji.name"
             :image="emoji.image"

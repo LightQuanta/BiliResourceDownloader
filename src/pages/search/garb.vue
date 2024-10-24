@@ -74,7 +74,7 @@ const load = async () => {
     const resp = await APIFetch<{
       list: GarbSearchResult<LotteryProperties | SuitProperties>[]
       total: number
-    }>(url, null, {
+    }>(url, undefined, {
       debug: {
         name: '装扮/收藏集搜索',
         extraParams: { key_word: '搜索关键词', pn: '页数' },

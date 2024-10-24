@@ -75,7 +75,8 @@ const parsedLotteryInfo = computed<GarbSearchResult<LotteryProperties>[]>(() => 
           type: "dlc_act",
         }
       }
-    })]
+    })
+  ] as GarbSearchResult<LotteryProperties>[]
 })
 
 const route = useRoute()
@@ -95,7 +96,7 @@ const fetchData = async () => {
   try {
     // 收藏集组基础信息
     const url = 'https://api.bilibili.com/x/vas/dlc_act/act/basic?act_id=' + actID.value
-    const resp = await APIFetch<ActInfo>(url, null, {
+    const resp = await APIFetch<ActInfo>(url, undefined, {
       debug: {
         name: '收藏集组信息',
         extraParams: { act_id: '收藏集组ID' }
@@ -114,9 +115,9 @@ const fetchData = async () => {
   try {
     // 收藏集额外信息
     const url = new URL('https://api.bilibili.com/x/vas/dlc_act/asset_bag')
-    url.searchParams.set('act_id', actID.value)
+    url.searchParams.set('act_id', actID.value.toString())
 
-    const resp = await APIFetch<LotteryBagAssetsInfo>(url, null, {
+    const resp = await APIFetch<LotteryBagAssetsInfo>(url, undefined, {
       debug: {
         name: '收藏集额外信息',
         extraParams: { act_id: '收藏集组ID' }
@@ -193,7 +194,7 @@ const generateDownloadTask = async () => {
     lotteryDetails = await Promise.all(lotteryIDs.map(lotteryID => {
       const url = new URL('https://api.bilibili.com/x/vas/dlc_act/lottery_home_detail')
       url.searchParams.set('act_id', actID.value.toString())
-      url.searchParams.set('lottery_id', lotteryID)
+      url.searchParams.set('lottery_id', lotteryID.toString())
 
       return APIFetch(url).then(r => r.data) as Promise<LotteryDetail>
     }) ?? [])
@@ -228,7 +229,7 @@ const generateDownloadTask = async () => {
           })
         })
 
-    const combinedRedeemInfo: RedeemInfo[] = [].concat(detail.collect_list.collect_chain ?? [], detail.collect_list.collect_infos ?? [])
+    const combinedRedeemInfo: RedeemInfo[] = ([] as RedeemInfo[]).concat(detail.collect_list.collect_chain ?? [], detail.collect_list.collect_infos ?? [])
 
     // 钻石头像背景、收藏集勋章、典藏卡、头像框
     combinedRedeemInfo

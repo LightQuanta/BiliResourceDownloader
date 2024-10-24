@@ -5,7 +5,6 @@ import type { GarbSearchResult, LotteryCardInfo, LotteryDetail, LotteryPropertie
 const props = defineProps<{
   lottery: GarbSearchResult<LotteryProperties>
   extraCardsInfo?: {
-    lottery_id: number
     card_type_id: number
     total_cnt: number
     holding_rate: number
@@ -24,7 +23,7 @@ const saleQuantity = ref(-1)
 const saleStartTime = ref(0)
 const saleEndTime = ref(0)
 
-const combinedRedeemInfo = computed<RedeemInfo[]>(() => [].concat(lotteryDetail.value?.collect_list.collect_chain ?? [], lotteryDetail.value?.collect_list.collect_infos ?? []))
+const combinedRedeemInfo = computed<RedeemInfo[]>(() => ([] as RedeemInfo[]).concat(lotteryDetail.value?.collect_list.collect_chain ?? [], lotteryDetail.value?.collect_list.collect_infos ?? []))
 
 // 收藏集表情包信息
 const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2))
@@ -59,7 +58,7 @@ onMounted(async () => {
   url.searchParams.set('lottery_id', String(lotteryID))
 
   try {
-    lotteryDetail.value = await APIFetch<LotteryDetail>(url, null, {
+    lotteryDetail.value = await APIFetch<LotteryDetail>(url, undefined, {
       debug: {
         name: `收藏集${lotteryID}详情`,
         extraParams: {
@@ -140,7 +139,7 @@ const resolveEmoji = () => {
       <!-- 销量 -->
       <ElDescriptionsItem label="总销量">
         {{
-          saleQuantity !== -1 ? saleQuantity : extraCardsInfo.filter(i => cards.map(c => c.card_type_id).includes(i.card_type_id)).reduce((acc, curr) => acc + curr.total_cnt, 0) + '（销量可能不准确，根据每张卡牌销量总和计算得出）'
+          saleQuantity !== -1 ? saleQuantity : extraCardsInfo?.filter(i => cards.map(c => c.card_type_id).includes(i.card_type_id)).reduce((acc, curr) => acc + curr.total_cnt, 0) + '（销量可能不准确，根据每张卡牌销量总和计算得出）'
         }}
       </ElDescriptionsItem>
 
@@ -184,7 +183,7 @@ const resolveEmoji = () => {
         v-for="(card, index) in cards"
         :key="card.card_type_id"
         :title="card.card_name"
-        :subtitle="`销量：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.total_cnt}     概率：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.holding_rate / 100}%`"
+        :subtitle="`销量：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.total_cnt}     概率：${extraCardsInfo?.filter(i => i.card_type_id === card.card_type_id)[0]?.holding_rate ?? 0 / 100}%`"
         :download-name="`${name} - ${card.card_name}`"
         :image="card.card_img"
         :video="card.video_list?.[0]"

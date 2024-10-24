@@ -71,7 +71,7 @@ const fetchData = async () => {
 
   let basicUserInfo: BasicUserInfo
   try {
-    const resp = await APIFetch<BasicUserInfo>(url, null, {
+    const resp = await APIFetch<BasicUserInfo>(url, undefined, {
       debug: {
         name: '用户空间信息',
         extraParams: { mid: '用户UID' },
@@ -96,7 +96,7 @@ const fetchData = async () => {
   url2.searchParams.set('uid', uid.value)
 
   try {
-    const resp = await APIFetch<BasicLiveUserInfo>(url2, null, {
+    const resp = await APIFetch<BasicLiveUserInfo>(url2, undefined, {
       debug: {
         name: '用户直播间信息',
         extraParams: { uid: '用户UID' },
@@ -116,7 +116,7 @@ const fetchData = async () => {
 
   let rightsData: PowerRights | undefined
   try {
-    const resp = await APIFetch<PowerRights | undefined>(url3, null, {
+    const resp = await APIFetch<PowerRights | undefined>(url3, undefined, {
       debug: {
         name: '用户充电信息',
         extraParams: { up_mid: '用户UID' },
