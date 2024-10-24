@@ -43,7 +43,6 @@ declare module 'vue' {
     GarbSearchCard: typeof import('./src/components/GarbSearchCard.vue')['default']
     IEpClose: typeof import('~icons/ep/close')['default']
     IEpDownload: typeof import('~icons/ep/download')['default']
-    IEpFullscreen: typeof import('~icons/ep/fullscreen')['default']
     IEpFullScreen: typeof import('~icons/ep/full-screen')['default']
     IEpMinus: typeof import('~icons/ep/minus')['default']
     ImageVideoCard: typeof import('./src/components/ImageVideoCard.vue')['default']
@@ -51,6 +50,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SingleLotteryPage: typeof import('./src/components/SingleLotteryPage.vue')['default']
+    SVGACard: typeof import('./src/components/SVGACard.vue')['default']
     UPInfo: typeof import('./src/components/UPInfo.vue')['default']
   }
   export interface ComponentCustomProperties {

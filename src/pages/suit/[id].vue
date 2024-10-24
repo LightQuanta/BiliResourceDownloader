@@ -42,7 +42,6 @@ const playIcons = ref<GeneralSuitItem<SuitPlayIconProperties>[]>([])
 const skins = ref<GeneralSuitItem<SuitSkinProperties>[]>([])
 const spaceBgs = ref<GeneralSuitItem<SuitSpaceBGProperties>[]>([])
 
-// TODO 解析点赞动画的SVGA文件
 const thumpUps = ref<GeneralSuitItem<SuitThumbUpProperties>[]>([])
 
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
@@ -188,6 +187,8 @@ const generateDownloadTask = () => {
       url: loading.properties.loading_frame_url,
     })
   })
+
+  // TODO 点赞动画下载
 
   task.files = task.files.flat()
 
@@ -490,6 +491,13 @@ const resolveLink = async () => {
         :title="loading.name + ' - 加载动画(序列帧)'"
         :image="loading.properties.loading_frame_url"
         :download-name="`${name} - ${loading.name} - 加载动画(序列帧)`"
+      />
+
+      <SVGACard
+        v-for="thumpUp in thumpUps"
+        :key="thumpUp.item_id"
+        :title="thumpUp.name + ' - 点赞动画'"
+        :url="thumpUp.properties.image_ani"
       />
     </ElSpace>
   </div>
