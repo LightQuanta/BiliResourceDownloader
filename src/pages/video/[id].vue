@@ -82,7 +82,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
           :href="`https://www.bilibili.com/video/${bvid}`"
           target="_blank"
         >
-          {{ videoInfo.title }}
+          {{ videoInfo?.title }}
         </ElLink>
       </ElDescriptionsItem>
 
@@ -91,7 +91,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
         :span="3"
         min-width="100px"
       >
-        {{ videoInfo.tname }}
+        {{ videoInfo?.tname }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
@@ -110,9 +110,9 @@ watch(() => route.params.id, fetchData, { immediate: true })
         </template>
         <UPInfo
           v-else
-          :mid="videoInfo.owner.mid.toString()"
-          :name="videoInfo.owner.name"
-          :face="videoInfo.owner.face"
+          :mid="videoInfo?.owner.mid.toString()"
+          :name="videoInfo?.owner.name"
+          :face="videoInfo?.owner.face"
         />
       </ElDescriptionsItem>
 
@@ -120,14 +120,14 @@ watch(() => route.params.id, fetchData, { immediate: true })
         label="发布时间"
         :span="3"
       >
-        {{ new Date(videoInfo.pubdate * 1000).toLocaleString() }}
+        {{ new Date(videoInfo?.pubdate * 1000).toLocaleString() }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
         label="投稿时间"
         :span="3"
       >
-        {{ new Date(videoInfo.ctime * 1000).toLocaleString() }}
+        {{ new Date(videoInfo?.ctime * 1000).toLocaleString() }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
@@ -148,7 +148,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
         label="播放"
         :span="1"
       >
-        {{ videoInfo.stat.view }}
+        {{ videoInfo?.stat.view }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
@@ -162,7 +162,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
         label="评论"
         :span="1"
       >
-        {{ videoInfo.stat.reply }}
+        {{ videoInfo?.stat.reply }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
@@ -176,14 +176,14 @@ watch(() => route.params.id, fetchData, { immediate: true })
         label="收藏"
         :span="1"
       >
-        {{ videoInfo.stat.favorite }}
+        {{ videoInfo?.stat.favorite }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
         label="分享"
         :span="1"
       >
-        {{ videoInfo.stat.share }}
+        {{ videoInfo?.stat.share }}
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
@@ -191,7 +191,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
         :span="6"
       >
         <span class="whitespace-pre-wrap">
-          {{ videoInfo.desc }}
+          {{ videoInfo?.desc }}
         </span>
       </ElDescriptionsItem>
 
@@ -200,14 +200,12 @@ watch(() => route.params.id, fetchData, { immediate: true })
         :span="6"
       >
         <span class="whitespace-pre-wrap">
-          {{ videoInfo.dynamic }}
+          {{ videoInfo?.dynamic }}
         </span>
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider v-if="12">
-      视频图片
-    </ElDivider>
+    <ElDivider>视频图片</ElDivider>
     <ElSpace
       class="w-full justify-center"
       wrap

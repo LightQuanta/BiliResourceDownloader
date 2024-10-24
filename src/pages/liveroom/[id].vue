@@ -101,7 +101,7 @@ const fetchData = async (paramID: string) => {
   url2.searchParams.set('uid', uid.value)
 
   try {
-    const resp = await APIFetch<BasicLiveUserInfo>(url2, null, {
+    const resp = await APIFetch<BasicLiveUserInfo>(url2, undefined, {
       debug: {
         name: '直播间用户信息',
         extraParams: { uid: '用户UID' },
@@ -122,7 +122,7 @@ const fetchData = async (paramID: string) => {
     url3.searchParams.set('room_id', roomID.value)
 
     try {
-      const resp = await APIFetch<{ data: LiveroomEmojiListInfo[] }>(url3, null, {
+      const resp = await APIFetch<{ data: LiveroomEmojiListInfo[] }>(url3, undefined, {
         debug: {
           name: '直播间表情信息',
           extraParams: { room_id: '直播间ID' },
