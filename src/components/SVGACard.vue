@@ -127,7 +127,7 @@ const saveFile = (name: string, extension: string) => {
 }
 
 const downloadSequenceImages = async () => {
-  const name = props.downloadName ?? props.title + '帧序列'
+  const name = props.downloadName ?? props.title + '序列帧'
 
   const path = await open({
     defaultPath: name,
@@ -158,7 +158,7 @@ const downloadSequenceImages = async () => {
 }
 
 const downloadSequence = async () => {
-  const name = props.downloadName ?? props.title + ' - 帧序列'
+  const name = props.downloadName ?? props.title + ' - 序列帧'
   const path = await saveFile(name, 'png')
   if (path === null) return
 
@@ -268,7 +268,7 @@ const downloadSVGA = async () => {
             type="primary"
             @click="downloadSequence"
           >
-            帧序列图
+            序列帧图
             <ElIcon size="20">
               <i-ep-download />
             </ElIcon>
