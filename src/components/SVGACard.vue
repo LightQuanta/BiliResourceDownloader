@@ -236,7 +236,10 @@ const downloadSVGA = async () => {
     />
 
     <template #footer>
-      <div class="flex h-4 items-center justify-center">
+      <div class="flex flex-col gap-2 items-center justify-center">
+        <ElText size="small">
+          共计{{ totalFrames }}帧
+        </ElText>
         <ElButtonGroup>
           <ElButton
             type="primary"
