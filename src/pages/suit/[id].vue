@@ -357,7 +357,13 @@ const resolveLink = async () => {
       </template>
 
       <ElDescriptionsItem label="名称">
-        {{ name }}
+        <ElLink
+          type="primary"
+          target="_blank"
+          :href="jumpLink.length > 0 ? jumpLink : `https://www.bilibili.com/h5/mall/suit/detail?id=${ids[0]}`"
+        >
+          {{ name }}
+        </ElLink>
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
