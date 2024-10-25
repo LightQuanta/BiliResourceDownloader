@@ -43,6 +43,17 @@ interface ActInfo {
         nickname: string
         avatar: string
     }>
+    // JSON存储的收藏集不同等级头像框信息
+    collector_medal_info: string
+}
+
+interface MedalInfo {
+    level: number
+    score: number
+    image: string
+    num_color: string
+    card_count: number
+    scene_image: Record<string, string>
 }
 
 interface LotteryInfo {
@@ -788,6 +799,7 @@ export type {
     LotteryCardInfo,
     LotteryBagAssetsInfo,
     ActInfo,
+    MedalInfo,
     LotteryInfo,
     SuitProperties,
     SuitDetail,

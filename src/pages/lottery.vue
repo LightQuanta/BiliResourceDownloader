@@ -7,6 +7,7 @@ import type {
   LotteryBagAssetsInfo,
   LotteryDetail,
   LotteryProperties,
+  MedalInfo,
   RedeemInfo,
 } from '../types.ts'
 import { sep } from "@tauri-apps/api/path";
@@ -27,6 +28,10 @@ const hiddenLotteryInfo = ref<{
   lottery_id: number
   lottery_name: string
 }[]>([])
+
+// TODO 实现对应勋章的预览
+// 不同等级的收藏集勋章
+const medals = computed(() => JSON.parse(actInfo.value?.collector_medal_info ?? '[]') as MedalInfo[])
 
 // 单个收藏集详细信息
 const lotteryInfo = computed(() => actInfo.value?.lottery_list)
@@ -205,6 +210,21 @@ const generateDownloadTask = async () => {
       type: 'error',
     })
     return downloadFileInfo
+  }
+
+  // 不同等级的收藏集勋章
+  if (actInfo.value?.collector_medal_info) {
+    const keys = [1, 2, 4, 6]
+    medals.value.forEach(medal => {
+      const level = medal.level + '级'
+      downloadFileInfo.files.push(...keys.map(k => {
+        return {
+          path: [downloadFileInfo.name, '收藏集勋章', k, level].join(sep()),
+          url: medal.scene_image[k],
+        }
+      }))
+    })
+
   }
 
   // 遍历所有收藏集
