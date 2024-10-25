@@ -561,7 +561,7 @@ interface ExtremelyDetailedUserInfo {
         // 似乎是收藏集等背景图
         collection_top_simple: {
             top: {
-                result: {
+                result?: {
                     title: {
                         title: string
                         // 编号？

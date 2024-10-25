@@ -152,12 +152,12 @@ const fetchData = async () => {
     appImage.value = data.images.imgUrl
     appNightImage.value = data.images.night_imgurl
 
-    lotteryCards.value = data.images.collection_top_simple.top.result.map(r => {
+    lotteryCards.value = data.images?.collection_top_simple?.top?.result?.map(r => {
       return {
         title: r.title.title + ' ' + r.title.sub_title,
         jumpLink: r.extra.detail_jump_url,
       }
-    })
+    }) ?? []
 
     roomID.value = data.live.roomid
     roomTitle.value = data.live.title
