@@ -240,7 +240,7 @@ const downloadSVGA = async () => {
             type="primary"
             @click="downloadSVGA"
           >
-            SVGA图片
+            SVGA动画
             <ElIcon size="20">
               <i-ep-download />
             </ElIcon>
@@ -258,7 +258,7 @@ const downloadSVGA = async () => {
             type="primary"
             @click="downloadSequence"
           >
-            帧序列
+            帧序列图
             <ElIcon size="20">
               <i-ep-download />
             </ElIcon>

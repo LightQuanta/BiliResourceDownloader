@@ -453,6 +453,22 @@ const resolveLink = async () => {
       </div>
     </template>
 
+    <!-- 点赞动画 -->
+    <template v-if="thumpUps.length > 0">
+      <ElDivider>点赞动画</ElDivider>
+      <ElSpace
+        class="w-full justify-center"
+        wrap
+      >
+        <SVGACard
+          v-for="thumpUp in thumpUps"
+          :key="thumpUp.item_id"
+          :title="thumpUp.name + ' - 点赞动画'"
+          :url="thumpUp.properties.image_ani"
+        />
+      </ElSpace>
+    </template>
+
     <!-- 杂项 -->
     <ElDivider>杂项</ElDivider>
     <ElSpace
@@ -491,13 +507,6 @@ const resolveLink = async () => {
         :title="loading.name + ' - 加载动画(序列帧)'"
         :image="loading.properties.loading_frame_url"
         :download-name="`${name} - ${loading.name} - 加载动画(序列帧)`"
-      />
-
-      <SVGACard
-        v-for="thumpUp in thumpUps"
-        :key="thumpUp.item_id"
-        :title="thumpUp.name + ' - 点赞动画'"
-        :url="thumpUp.properties.image_ani"
       />
     </ElSpace>
   </div>
