@@ -106,6 +106,9 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
                 await clearLoginCookie()
             }
 
+            if (debugInfo) {
+                setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(json, null, 2), debugInfo.extraParams)
+            }
             throw json
         }
         break
