@@ -137,7 +137,7 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
 
       <!-- 销售时间 -->
       <ElDescriptionsItem
-        :span="1"
+        :span="2"
         label="销售时间"
       >
         <div v-if="saleStartTime > 0">
