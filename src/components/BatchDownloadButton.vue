@@ -114,13 +114,14 @@ const submit = async () => {
 
     // 将所选文件转换为下载任务格式
     const selectedFiles = selected.map(selection => {
-      const url = downloadTask.value?.files.find(f => f.path === selection)?.url ?? ''
-      const extension = extractExtensionName(url)
+      const selectedFile = downloadTask.value?.files.find(f => f.path === selection)
+      const url = selectedFile?.url ?? ''
+      const extension = selectedFile?.extension ?? extractExtensionName(url)
       return {
         path: selection + extension,
         url,
       }
-    })
+    }).filter(f => f.url.length > 0)
 
     // 合成最终下载任务
     const finalTask: BatchDownloadTask = {

@@ -314,6 +314,8 @@ interface BatchDownloadTask {
     files: {
         path: string
         url: string
+        // 文件后缀，留空则从URL中自动推断
+        extension?: string
         percentage?: number
         total?: number
     }[]

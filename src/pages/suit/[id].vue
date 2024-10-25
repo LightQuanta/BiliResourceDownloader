@@ -188,10 +188,15 @@ const generateDownloadTask = () => {
     })
   })
 
-  // TODO 点赞动画下载
+  thumpUps.value.forEach(thumpUp => {
+    task.files.push({
+      path: `${name.value}${sep()}${withSuffix(thumpUp.name, '点赞动画')}`,
+      url: thumpUp.properties.image_ani,
+      extension: '.svga',
+    })
+  })
 
   task.files = task.files.flat()
-
   return task
 }
 
