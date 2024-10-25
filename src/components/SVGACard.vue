@@ -22,8 +22,9 @@ let playerCtx: CanvasRenderingContext2D | undefined
 const renderCanvasRef = ref<HTMLCanvasElement>()
 let player: Player
 let renderedFrames: (ImageData | undefined)[]
-let renderedFramesCount = 0
-let totalFrames = 0
+const renderedFramesCount = ref(0)
+const totalFrames = ref(0)
+const fps = ref(0)
 
 // 渲染序列帧图片
 const renderSequence = async () => {
@@ -34,12 +35,12 @@ const renderSequence = async () => {
   const { width, height } = SVGAVideo.size
 
   renderCanvas.height = height
-  renderCanvas.width = width * totalFrames
+  renderCanvas.width = width * totalFrames.value
 
   const renderCtx = renderCanvas.getContext('2d') as CanvasRenderingContext2D
   renderCtx.reset()
 
-  for (let i = 0; i < totalFrames; i++) {
+  for (let i = 0; i < totalFrames.value; i++) {
     const data = renderedFrames[i] as ImageData
     renderCtx.putImageData(data, i * width, 0)
   }
@@ -60,7 +61,7 @@ const renderSequenceImages = async () => {
   renderCtx.reset()
 
   const images: string[] = []
-  for (let i = 0; i < totalFrames; i++) {
+  for (let i = 0; i < totalFrames.value; i++) {
     const data = renderedFrames[i] as ImageData
     renderCtx.putImageData(data, 0, 0)
     images.push(renderCanvas.toDataURL())
@@ -72,7 +73,7 @@ const renderSequenceImages = async () => {
 const renderFramesData = async () => {
   return new Promise<void>(resolve => {
     player.onProcess = () => {
-      if (renderedFramesCount === totalFrames) {
+      if (renderedFramesCount.value === totalFrames.value) {
         player.onProcess = undefined
         resolve()
       }
@@ -81,7 +82,7 @@ const renderFramesData = async () => {
 
       if (!renderedFrames?.[index]) {
         renderedFrames[index] = playerCtx?.getImageData(0, 0, playerCanvasRef.value?.width ?? 0, playerCanvasRef.value?.height ?? 0)
-        renderedFramesCount++
+        renderedFramesCount.value++
       }
     }
   })
@@ -104,9 +105,10 @@ const init = async () => {
 
   playerCtx = playerCanvasRef.value?.getContext('2d', { willReadFrequently: true }) ?? undefined
 
-  totalFrames = SVGAVideo.frames - 1
-  renderedFrames = Array<ImageData | undefined>(totalFrames)
-  renderedFramesCount = 0
+  fps.value = SVGAVideo.fps
+  totalFrames.value = SVGAVideo.frames - 1
+  renderedFrames = Array<ImageData | undefined>(totalFrames.value)
+  renderedFramesCount.value = 0
 }
 
 onMounted(init)
@@ -237,8 +239,11 @@ const downloadSVGA = async () => {
 
     <template #footer>
       <div class="flex flex-col gap-2 items-center justify-center">
-        <ElText size="small">
-          共计{{ totalFrames }}帧
+        <ElText
+          size="small"
+          class="whitespace-pre-wrap"
+        >
+          FPS: {{ fps }}，共计{{ totalFrames }}帧
         </ElText>
         <ElButtonGroup>
           <ElButton
