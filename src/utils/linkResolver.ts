@@ -31,7 +31,7 @@ function resolveText(text?: string): Types | null {
             if (/^\d+$/.test(actId ?? '')) {
                 return 'lottery'
             }
-        } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/equity-link/collect-home') {
+        } else if (['https://www.bilibili.com/h5/mall/equity-link/collect-home', 'https://www.bilibili.com/h5/mall/equity-link/home'].includes(text.split('?')[0])) {
             const itemId = url.searchParams.get('item_id')
 
             if (/^\d+$/.test(itemId ?? '')) {
