@@ -350,12 +350,12 @@ const resolveLink = async () => {
           wrap
         >
           <ImageVideoCard
-            v-for="(image, index) in getSpaceBgImages(spaceBg.properties)[0]"
+            v-for="(image, index) in getSpaceBgImages(spaceBg.properties)[1]"
             :key="image"
-            :title="`肖像${index + 1}`"
+            :title="`背景${index + 1}`"
             :image="image"
-            :download-name="`${name} - ${spaceBg.name} - 肖像${index + 1}`"
-            :preview-images="getSpaceBgImages(spaceBg.properties)[0]"
+            :download-name="`${name} - ${spaceBg.name} - 背景${index + 1}`"
+            :preview-images="getSpaceBgImages(spaceBg.properties)[1]"
             :index="index"
           />
         </ElSpace>
@@ -364,12 +364,12 @@ const resolveLink = async () => {
           wrap
         >
           <ImageVideoCard
-            v-for="(image, index) in getSpaceBgImages(spaceBg.properties)[1]"
+            v-for="(image, index) in getSpaceBgImages(spaceBg.properties)[0]"
             :key="image"
-            :title="`大图${index + 1}`"
+            :title="`肖像${index + 1}`"
             :image="image"
-            :download-name="`${name} - ${spaceBg.name} - 大图${index + 1}`"
-            :preview-images="getSpaceBgImages(spaceBg.properties)[1]"
+            :download-name="`${name} - ${spaceBg.name} - 肖像${index + 1}`"
+            :preview-images="getSpaceBgImages(spaceBg.properties)[0]"
             :index="index"
           />
         </ElSpace>
