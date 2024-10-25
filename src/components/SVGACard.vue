@@ -224,8 +224,10 @@ const downloadSVGA = async () => {
       </div>
     </template>
 
-    <!-- SVGA播放器 -->
-    <canvas ref="playerCanvasRef" />
+    <div class="flex justify-center">
+      <!-- SVGA播放器 -->
+      <canvas ref="playerCanvasRef" />
+    </div>
 
     <!-- 渲染序列帧用canvas -->
     <canvas
