@@ -64,7 +64,7 @@ const skinProps = [
   ['head_bg', '顶部背景图'],
   ['head_myself_squared_bg', '“我的”界面背景图'],
   // ['head_myself_mp4_bg', '“我的”界面背景视频'],
-  ['head_tab_bg', '首页顶部标签页背景（存疑）'],
+  ['head_tab_bg', '首页顶部标签页背景'],
   ['tail_bg', '底部背景图'],
   ['tail_icon_main', '首页按钮图标'],
   ['tail_icon_channel', '频道按钮图标'],
