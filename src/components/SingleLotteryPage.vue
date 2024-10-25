@@ -151,7 +151,25 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
         </ElText>
       </ElDescriptionsItem>
 
-      <!-- 收藏集表情包信息 -->
+      <!-- 收藏集装扮 -->
+      <ElDescriptionsItem
+        label="收藏集装扮"
+        :span="1"
+        v-if="suit.length > 0"
+      >
+        <RouterLink
+          v-for="info in suit"
+          :key="info.redeem_item_id"
+          :to="`/suit/${info.redeem_item_id.replaceAll('&', ',')}?name=${name}`"
+          class="mr-2"
+        >
+          <ElLink type="primary">
+            {{ info.redeem_item_name }}
+          </ElLink>
+        </RouterLink>
+      </ElDescriptionsItem>
+
+      <!-- 收藏集表情包 -->
       <ElDescriptionsItem
         label="表情包"
         :span="1"
@@ -161,24 +179,6 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
           v-for="info in emojiInfo"
           :key="info.redeem_item_id"
           :to="`/emoji/${info.redeem_item_id}?suit=true`"
-          class="mr-2"
-        >
-          <ElLink type="primary">
-            {{ info.redeem_item_name }}
-          </ElLink>
-        </RouterLink>
-      </ElDescriptionsItem>
-
-      <!-- 收藏集装扮 -->
-      <ElDescriptionsItem
-        label="收藏集装扮"
-        :span="2"
-        v-if="suit.length > 0"
-      >
-        <RouterLink
-          v-for="info in suit"
-          :key="info.redeem_item_id"
-          :to="`/suit/${info.redeem_item_id.replaceAll('&', ',')}?name=${name}`"
           class="mr-2"
         >
           <ElLink type="primary">
