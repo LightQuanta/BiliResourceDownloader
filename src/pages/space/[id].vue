@@ -83,6 +83,20 @@ const generateDownloadTask = () => {
     })
   }
 
+  if (appImage.value) {
+    task.files.push({
+      path: `${userName.value}空间${sep()}App端空间背景图`,
+      url: appImage.value,
+    })
+  }
+
+  if (appNightImage.value) {
+    task.files.push({
+      path: `${userName.value}空间${sep()}App端空间背景图（夜间模式）`,
+      url: appNightImage.value,
+    })
+  }
+
   if (userInfo.value?.space.l_img) {
     task.files.push({
       path: `${userName.value}空间${sep()}网页端空间背景图`,
