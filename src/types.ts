@@ -505,6 +505,81 @@ interface BasicUserInfo {
     }
 }
 
+/**
+ * https://app.bilibili.com/x/v2/space
+ * 需要app签名
+ */
+interface ExtremelyDetailedUserInfo {
+    card: {
+        mid: string
+        name: string
+        face: string
+        sign: string
+
+        fans: number
+        attention: number
+
+        pendant: PendantInfo
+        pendant_url: string
+
+        // 获赞
+        likes: {
+            like_num: number
+        }
+
+        // 佩戴粉丝牌信息
+        live_fans_wearing: {
+            level: number
+            medal_name: string
+            medal_jump_url: string
+        }
+
+        space_tag: {
+            type: string
+            title: string
+        }[]
+    }
+
+    // app端各种主页背景图
+    images: {
+        // app端主页背景图
+        imgUrl: string
+        // 可能是夜间模式背景图？
+        night_imgurl: string
+
+        // 似乎是收藏集等背景图
+        collection_top_simple: {
+            top: {
+                result: {
+                    title: {
+                        title: string
+                        // 编号？
+                        sub_title: string
+                    }
+                    extra: {
+                        detail_jump_url: string
+                    }
+                }[]
+            }
+        }
+    }
+
+    live: {
+        roomid: number
+        title: string
+    }
+
+    // 投稿
+    archive: {
+        item: {
+            title: string
+            cover: string
+            // av号，纯数字格式
+            param: string
+        }[]
+    }
+}
+
 
 // 头像框信息
 interface PendantInfo {
@@ -734,7 +809,9 @@ export type {
     EmojiTextNode,
     VideoTextNode,
     AtTextNode,
+    PendantInfo,
     BasicUserInfo,
+    ExtremelyDetailedUserInfo,
     BasicLiveUserInfo,
     BasicRoomInfo,
     EmojiPackages,

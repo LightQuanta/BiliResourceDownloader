@@ -4,6 +4,7 @@ import { GeneralAPIResponse } from "./types.ts";
 import { encWbiWithFetch } from "./utils/wbi.ts";
 import { useWbiStore } from "./store/useWbiStore";
 import { setDebugInfo } from "./utils/debug.ts";
+import md5 from "md5";
 
 let internalStore: Store | null = null
 
@@ -24,6 +25,7 @@ async function getStore() {
 
 interface ExtraAPIFetchOptions {
     wbiSign?: boolean
+    appSign?: boolean
     useCache?: boolean
     useCookie?: boolean
     debug?: {
@@ -32,14 +34,27 @@ interface ExtraAPIFetchOptions {
     }
 }
 
+// 对URL搜索参数进行app签名，原地更新搜索参数
+function paramsAppSign(params: URLSearchParams) {
+    params.set('build', '8160400')
+    params.set('ts', Math.floor(Date.now() / 1000).toString())
+    params.set('appkey', '1d8b6e7d45233436')
+
+    const appSec = '560c52ccd288fed045859ed18bffd973'
+    params.sort()
+
+    params.set('sign', md5(params.toString() + appSec))
+}
+
 async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<T>> {
     const parsedURL = new URL(url)
     const getURLStr = () => parsedURL.toString()
     const store = await getStore()
 
-    const { useCache, wbiSign, useCookie, debug: debugInfo } = {
+    const { useCache, wbiSign, appSign, useCookie, debug: debugInfo } = {
         useCache: true,
         wbiSign: false,
+        appSign: false,
         useCookie: true,
         ...extraOptions
     }
@@ -52,6 +67,11 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
         }
         parsedURL.search = await encWbiWithFetch(params)
         console.debug(`wbi signed url: ${getURLStr()}`)
+    }
+
+    // app签名参数
+    if (appSign) {
+        paramsAppSign(parsedURL.searchParams)
     }
 
     if (useCache && await store.has(getURLStr())) {

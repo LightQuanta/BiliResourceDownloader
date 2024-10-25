@@ -26,7 +26,7 @@ function resolveText(text?: string): Types | null {
                     return 'lottery'
                 }
             }
-        } else if (text.split('?')[0] === 'https://www.bilibili.com/h5/mall/digital-card/home') {
+        } else if (['https://www.bilibili.com/h5/mall/equity-link/digital-card', 'https://www.bilibili.com/h5/mall/digital-card/home'].includes(text.split('?')[0])) {
             const actId = url.searchParams.get('act_id')
             if (/^\d+$/.test(actId ?? '')) {
                 return 'lottery'
