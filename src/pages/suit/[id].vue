@@ -70,22 +70,22 @@ const playIconProps = [
 
 const skinProps = [
   ['head_bg', '顶部背景图'],
-  // ['head_myself_mp4_bg', '“我的”界面背景视频'],
   ['head_myself_squared_bg', '“我的”界面背景图'],
+  // ['head_myself_mp4_bg', '“我的”界面背景视频'],
   ['head_tab_bg', '首页顶部标签页背景（存疑）'],
   ['tail_bg', '底部背景图'],
+  ['tail_icon_main', '首页按钮图标'],
   ['tail_icon_channel', '频道按钮图标'],
   ['tail_icon_dynamic', '动态按钮图标'],
-  ['tail_icon_main', '首页按钮图标'],
-  ['tail_icon_myself', '“我的”按钮图标'],
   ['tail_icon_pub_btn_bg', '发布按钮图标'],
+  ['tail_icon_shop', '会员购按钮图标'],
+  ['tail_icon_myself', '“我的”按钮图标'],
+  ['tail_icon_selected_main', '首页按钮选中图标'],
   ['tail_icon_selected_channel', '频道按钮选中图标'],
   ['tail_icon_selected_dynamic', '动态按钮选中图标'],
-  ['tail_icon_selected_main', '首页按钮选中图标'],
-  ['tail_icon_selected_myself', '“我的”按钮选中图标'],
   ['tail_icon_selected_pub_btn_bg', '发布按钮选中图标'],
   ['tail_icon_selected_shop', '会员购按钮选中图标'],
-  ['tail_icon_shop', '会员购按钮图标'],
+  ['tail_icon_selected_myself', '“我的”按钮选中图标'],
 ]
 
 const withSuffix = (source: string, suffix: string) => source.endsWith(suffix) ? source : `${source}${suffix}`
@@ -228,18 +228,55 @@ const fetchData = async () => {
     suitDetail.buy_link = results[0].buy_link
 
     results.forEach(r => {
+      let skinProperties: SuitSkinProperties
       switch (r.part_id) {
         case SuitPartType.thumbUp:
-          suitDetail.suit_items.thumbup = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitThumbUpProperties>[]
+          if (suitDetail.suit_items.thumbup === undefined) {
+            suitDetail.suit_items.thumbup = []
+          }
+          suitDetail.suit_items.thumbup.push({
+            name: suitDetail.name,
+            item_id: r.part_id,
+            properties: r.properties as unknown as SuitThumbUpProperties,
+          })
           break
         case SuitPartType.loading:
-          suitDetail.suit_items.loading = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitLoadingProperties>[]
+          if (suitDetail.suit_items.loading === undefined) {
+            suitDetail.suit_items.loading = []
+          }
+          suitDetail.suit_items.loading.push({
+            name: suitDetail.name,
+            item_id: r.part_id,
+            properties: r.properties as unknown as SuitLoadingProperties,
+          })
           break
         case SuitPartType.playIcon:
-          suitDetail.suit_items.play_icon = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitPlayIconProperties>[]
+          if (suitDetail.suit_items.play_icon === undefined) {
+            suitDetail.suit_items.play_icon = []
+          }
+          suitDetail.suit_items.play_icon.push({
+            name: suitDetail.name,
+            item_id: r.part_id,
+            properties: r.properties as unknown as SuitPlayIconProperties,
+          })
           break
         case SuitPartType.skin:
-          suitDetail.suit_items.skin = r.suit_items.emoji_package as unknown as GeneralSuitItem<SuitSkinProperties>[]
+          if (suitDetail.suit_items.skin === undefined) {
+            suitDetail.suit_items.skin = []
+          }
+
+          skinProperties = r.properties as unknown as SuitSkinProperties
+          // “我的”界面背景视频需要特殊处理
+          if (!skinProperties.head_myself_mp4_bg.startsWith('https')) {
+            skinProperties.head_myself_mp4_bg = (r.suit_items.emoji_package?.[0] as GeneralSuitItem<SuitSkinProperties>).properties.head_myself_mp4_bg
+          }
+
+          suitDetail.suit_items.skin.push({
+            name: suitDetail.name,
+            item_id: r.part_id,
+            properties: skinProperties,
+          })
+          break
       }
     })
 
