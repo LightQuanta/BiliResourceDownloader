@@ -198,6 +198,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
       <ElDescriptionsItem
         label="动态简介"
         :span="6"
+        v-if="videoInfo?.dynamic.length ?? 0 > 0"
       >
         <span class="whitespace-pre-wrap">
           {{ videoInfo?.dynamic }}
