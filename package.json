@@ -23,6 +23,7 @@
     "eslint": "^9.13.0",
     "eslint-plugin-vue": "^9.29.1",
     "fuse.js": "^7.0.0",
+    "lottie-web": "^5.12.2",
     "md5": "^2.3.0",
     "mitt": "^3.0.1",
     "pinia": "^2.2.4",

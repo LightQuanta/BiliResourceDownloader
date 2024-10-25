@@ -60,14 +60,6 @@ const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   return [landscapes, portraits]
 }
 
-const playIconProps = [
-  ['drag_left_png', '进度条左滑'],
-  ['drag_right_png', '进度条右滑'],
-  ['middle_png', '进度条指示'],
-  ['squared_image', '方形演示图'],
-  ['static_icon_image', '图标'],
-]
-
 const skinProps = [
   ['head_bg', '顶部背景图'],
   ['head_myself_squared_bg', '“我的”界面背景图'],
@@ -129,12 +121,45 @@ const generateDownloadTask = () => {
   // 进度条
   playIcons.value.forEach(playIcon => {
     const playIconName = withSuffix(playIcon.name, '进度条')
-    task.files.push(...playIconProps.map(([prop, desc]) => {
-      return {
-        path: `${name.value}${sep()}${playIconName}${sep()}${desc}`,
-        url: playIcon.properties[prop as keyof typeof playIcon.properties] as string ?? '',
-      }
-    }))
+    if (playIcon.properties.drag_icon) {
+      // Lottie动画进度条
+      task.files.push(...[
+        {
+          path: `${name.value}${sep()}${playIconName}${sep()}进度条拖动动画`,
+          url: playIcon.properties.drag_icon ?? '',
+        },
+        {
+          path: `${name.value}${sep()}${playIconName}${sep()}进度条松手动画`,
+          url: playIcon.properties.icon ?? '',
+        },
+      ])
+    } else {
+      // 图片进度条
+      task.files.push(...[
+        {
+          path: `${name.value}${sep()}${playIconName}${sep()}进度条左划`,
+          url: playIcon.properties.drag_left_png ?? '',
+        },
+        {
+          path: `${name.value}${sep()}${playIconName}${sep()}进度条右划`,
+          url: playIcon.properties.drag_right_png ?? '',
+        },
+        {
+          path: `${name.value}${sep()}${playIconName}${sep()}指示`,
+          url: playIcon.properties.middle_png ?? '',
+        },
+      ])
+    }
+
+    task.files.push(...[
+      {
+        path: `${name.value}${sep()}${playIconName}${sep()}方形演示图`,
+        url: playIcon.properties.squared_image ?? '',
+      }, {
+        path: `${name.value}${sep()}${playIconName}${sep()}图标`,
+        url: playIcon.properties.static_icon_image ?? '',
+      },
+    ])
   })
 
   // 皮肤
@@ -459,12 +484,48 @@ const resolveLink = async () => {
           class="w-full justify-center"
           wrap
         >
+          <template v-if="icon.properties.drag_icon">
+            <!-- 动画进度条 -->
+            <LottieAnimationCard
+              :url="icon.properties.drag_icon"
+              title="进度条拖动动画"
+              :download-name="`${name} - ${icon.name} - 进度条拖动动画`"
+            />
+            <LottieAnimationCard
+              :url="icon.properties.icon"
+              title="进度条松手动画"
+              :download-name="`${name} - ${icon.name} - 进度条松手动画`"
+            />
+          </template>
+          <template v-else>
+            <!-- 图片进度条 -->
+            <ImageVideoCard
+              title="进度条左滑"
+              :image="icon.properties.drag_left_png"
+              :download-name="`${name} - ${icon.name} - 进度条左滑`"
+            />
+            <ImageVideoCard
+              title="进度条右滑"
+              :image="icon.properties.drag_right_png"
+              :download-name="`${name} - ${icon.name} - 进度条右滑`"
+            />
+            <ImageVideoCard
+              title="进度条指示"
+              :image="icon.properties.middle_png"
+              :download-name="`${name} - ${icon.name} - 进度条指示`"
+            />
+          </template>
+
+          <!-- 其他内容 -->
           <ImageVideoCard
-            v-for="[prop, desc] in playIconProps"
-            :key="prop"
-            :title="desc"
-            :image="icon.properties[prop]"
-            :download-name="`${name} - ${icon.name} - ${desc}`"
+            title="方形演示图"
+            :image="icon.properties.squared_image"
+            :download-name="`${name} - ${icon.name} - 方形演示图`"
+          />
+          <ImageVideoCard
+            title="图标"
+            :image="icon.properties.static_icon_image"
+            :download-name="`${name} - ${icon.name} - 图标`"
           />
         </ElSpace>
       </div>

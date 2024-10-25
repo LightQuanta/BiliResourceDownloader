@@ -126,9 +126,16 @@ interface SuitLoadingProperties {
 }
 
 interface SuitPlayIconProperties {
-    drag_left_png: string
-    drag_right_png: string
-    middle_png: string
+    // 拖动动画，lottie的JSON格式文本
+    drag_icon?: string
+    // 抬起动画，lottie的JSON格式文本（似乎没用）
+    icon?: string
+
+    // 这三个图非动画进度条才有
+    drag_left_png?: string
+    drag_right_png?: string
+    middle_png?: string
+
     squared_image: string
     static_icon_image: string
 }
