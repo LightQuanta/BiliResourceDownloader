@@ -61,18 +61,36 @@ const showDownloadDrawer = ref(false)
       <!-- 菜单 -->
       <ElMenu
         :router="true"
-        class="h-full w-32 m-0 shrink-0 router-mark select-none"
+        class="h-full w-40 m-0 shrink-0 router-mark select-none"
         default-active="test"
       >
         <ElMenuItem index="/">
-          主页
+          <span class="text-center">
+            主页
+          </span>
         </ElMenuItem>
-        <ElMenuItem index="/search/garb">
-          装扮/收藏集搜索
-        </ElMenuItem>
-        <ElMenuItem index="/search/emoji">
-          表情包搜索
-        </ElMenuItem>
+
+        <ElSubMenu index="search">
+          <template #title>
+            搜索
+          </template>
+          <ElMenuItem index="/search/garb">
+            装扮/收藏集搜索
+          </ElMenuItem>
+          <ElMenuItem index="/search/emoji">
+            表情包搜索
+          </ElMenuItem>
+        </ElSubMenu>
+
+        <ElSubMenu index="tool">
+          <template #title>
+            工具
+          </template>
+          <ElMenuItem index="/tool/svga">
+            SVGA动画解析
+          </ElMenuItem>
+        </ElSubMenu>
+
         <ElMenuItem @click="showDownloadDrawer = true">
           下载管理
         </ElMenuItem>
@@ -120,10 +138,6 @@ const showDownloadDrawer = ref(false)
 <style scoped>
 .color-bg {
   background: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
-}
-
-.el-menu-item {
-  justify-content: center;
 }
 
 .fade-enter-active,

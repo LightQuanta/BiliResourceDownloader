@@ -8,6 +8,7 @@ import { sep } from "@tauri-apps/api/path";
 
 const props = defineProps<{
   url?: string
+  dataURL?: string
   title?: string
   subtitle?: string
 
@@ -20,7 +21,7 @@ const playerCanvasRef = ref<HTMLCanvasElement>()
 let playerCtx: CanvasRenderingContext2D | undefined
 
 const renderCanvasRef = ref<HTMLCanvasElement>()
-let player: Player
+let player: Player | undefined
 let renderedFrames: (ImageData | undefined)[]
 const renderedFramesCount = ref(0)
 const totalFrames = ref(0)
@@ -71,8 +72,17 @@ const renderSequenceImages = async () => {
 
 // 通过playerCanvas渲染动画每帧数据
 const renderFramesData = async () => {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve, reject) => {
+    if (player === undefined) {
+      reject('SVGA播放器未初始化！')
+      return
+    }
     player.onProcess = () => {
+      if (player === undefined) {
+        reject('SVGA播放器未初始化！')
+        return
+      }
+
       if (renderedFramesCount.value === totalFrames.value) {
         player.onProcess = undefined
         resolve()
@@ -90,14 +100,29 @@ const renderFramesData = async () => {
 
 
 const init = async () => {
-  const url = props.url
-  if (!url) return
+  if (player !== undefined) {
+    player.destroy()
+  }
 
-  const blob = await fetch(url).then(r => r.blob())
+  let dataURL: string
 
-  const dataUrl = URL.createObjectURL(blob)
+  if (props.url) {
+    const url = props.url
+    const blob = await fetch(url).then(r => r.blob())
+    dataURL = URL.createObjectURL(blob)
+  } else if (props.dataURL) {
+    dataURL = props.dataURL
+  } else {
+    ElMessage({
+      message: '未正确为SVGA卡片提供图片来源参数！',
+      type: 'error',
+    })
+    return
+  }
+
   const parser = new Parser()
-  SVGAVideo = await parser.load(dataUrl)
+  SVGAVideo = await parser.load(dataURL)
+
 
   player = new Player(playerCanvasRef.value as HTMLCanvasElement)
   await player.mount(SVGAVideo)
@@ -113,6 +138,7 @@ const init = async () => {
 
 onMounted(init)
 watch(() => props.url, init)
+watch(() => props.dataURL, init)
 
 const saveFile = (name: string, extension: string) => {
   return save({
@@ -247,6 +273,7 @@ const downloadSVGA = async () => {
         </ElText>
         <ElButtonGroup>
           <ElButton
+            v-if="!dataURL"
             type="primary"
             @click="downloadSVGA"
           >
