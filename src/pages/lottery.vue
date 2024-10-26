@@ -153,10 +153,12 @@ const fetchData = async () => {
     selectedKey.value = lotteryID.value.toString()
   } else {
     const newLotteryID = actInfo.value.lottery_list[0].lottery_id
+    updatingSelectedKey = true
     selectedKey.value = newLotteryID.toString()
 
     lotteryID.value = newLotteryID
     await router.replace({ query: { act_id: route.query.act_id, lottery_id: newLotteryID.toString() } })
+    updatingSelectedKey = false
   }
 
   loading.value = false
