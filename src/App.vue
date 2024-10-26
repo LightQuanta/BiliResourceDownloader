@@ -89,6 +89,9 @@ const showDownloadDrawer = ref(false)
           <ElMenuItem index="/tool/svga">
             SVGA动画解析
           </ElMenuItem>
+          <ElMenuItem index="/tool/lottie">
+            Lottie动画解析
+          </ElMenuItem>
         </ElSubMenu>
 
         <ElMenuItem @click="showDownloadDrawer = true">

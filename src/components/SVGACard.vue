@@ -107,14 +107,13 @@ const init = async () => {
   let dataURL: string
 
   if (props.url) {
-    const url = props.url
-    const blob = await fetch(url).then(r => r.blob())
+    const blob = await fetch(props.url).then(r => r.blob())
     dataURL = URL.createObjectURL(blob)
   } else if (props.dataURL) {
     dataURL = props.dataURL
   } else {
     ElMessage({
-      message: '未正确为SVGA卡片提供图片来源参数！',
+      message: '未正确为SVGA卡片提供数据来源参数！',
       type: 'error',
     })
     return
@@ -273,7 +272,7 @@ const downloadSVGA = async () => {
         </ElText>
         <ElButtonGroup>
           <ElButton
-            v-if="!dataURL"
+            v-if="url"
             type="primary"
             @click="downloadSVGA"
           >

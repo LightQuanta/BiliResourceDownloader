@@ -7,6 +7,7 @@ import { sep } from "@tauri-apps/api/path";
 
 const props = defineProps<{
   url?: string
+  json?: unknown
   title?: string
   subtitle?: string
 
@@ -23,14 +24,27 @@ const totalFrames = ref(0)
 
 
 const init = async () => {
-  const url = props.url
-  if (!url) return
+  if (animationInfo.value) {
+    animationInfo.value.destroy()
+  }
 
-  const text = await fetch(url).then(r => r.json())
+  let json: unknown
+
+  if (props.url) {
+    json = await fetch(props.url).then(r => r.json())
+  } else if (props.json) {
+    json = props.json
+  } else {
+    ElMessage({
+      message: '未正确向Lottie卡片提供u数据来源参数！',
+      type: 'error',
+    })
+    return
+  }
 
   animationInfo.value = Lottie.loadAnimation({
     container: player.value as Element,
-    animationData: text,
+    animationData: json,
     renderer: 'canvas',
     loop: true,
   })
@@ -61,6 +75,7 @@ watch(playing, () => {
 
 onMounted(init)
 watch(() => props.url, init)
+watch(() => props.json, init)
 
 const saveFile = (name: string, extension: string) => {
   return save({
@@ -230,6 +245,7 @@ const downloadCurrentFrame = async () => {
         <!-- 下载按钮 -->
         <div class="flex flex-row w-full">
           <ElButton
+            v-if="url"
             type="primary"
             @click="downloadLottie"
           >

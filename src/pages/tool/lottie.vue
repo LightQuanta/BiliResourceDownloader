@@ -4,15 +4,15 @@ import { UploadInstance, UploadProps, UploadRawFile } from "element-plus/lib/com
 
 const upload = ref<UploadInstance>()
 const fileList = ref<UploadUserFile[]>([])
-const dataURL = ref('')
+const JSONObject = ref()
 const name = ref('')
 
-function fileToDataURL(file: File) {
+function readText(file: File) {
   return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);  // 读取完成后返回dataURL
-    reader.onerror = error => reject(error);
-    reader.readAsDataURL(file);  // 以dataURL形式读取
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = error => reject(error)
+    reader.readAsText(file)
   });
 }
 
@@ -26,18 +26,18 @@ const handleExceed: UploadProps['onExceed'] = (files) => {
 }
 
 const handleRemove: UploadProps['onRemove'] = () => {
-  dataURL.value = ''
+  JSONObject.value = ''
   name.value = ''
 }
 
 const process: UploadProps['onChange'] = async (file) => {
   try {
     name.value = file.name
-    dataURL.value = await fileToDataURL(file.raw as File)
-    // console.log(dataURL.value)
+    JSONObject.value = JSON.parse(await readText(file.raw as File))
+    // console.log(JSONObject.value)
   } catch (e) {
     ElMessage({
-      message: `解析SVGA文件出错：${e}`,
+      message: `解析Lottie动画出错：${e}`,
       type: 'error',
     })
   }
@@ -51,7 +51,7 @@ const process: UploadProps['onChange'] = async (file) => {
     <ElUpload
       ref="upload"
       drag
-      accept=".svga"
+      accept=".json"
       show-file-list
       v-model="fileList"
       :auto-upload="false"
@@ -64,12 +64,12 @@ const process: UploadProps['onChange'] = async (file) => {
         <i-ep-upload-filled />
       </ElIcon>
       <div>
-        选择SVGA动画文件
+        选择Lottie动画文件
       </div>
     </ElUpload>
-    <SVGACard
-      v-if="dataURL.length > 0"
-      :data-u-r-l="dataURL"
+    <LottieAnimationCard
+      v-if="JSONObject"
+      :json="JSONObject"
       :title="name.split('.').slice(0, -1).join('.')"
     />
   </div>
