@@ -214,12 +214,12 @@ const generateDownloadTask = async () => {
 
   // 不同等级的收藏集勋章
   if (actInfo.value?.collector_medal_info) {
-    const keys = [1, 2, 4, 6]
+    const keys = [1, 2, 3, 4, 6]
     medals.value.forEach(medal => {
       const level = medal.level + '级'
       downloadFileInfo.files.push(...keys.map(k => {
         return {
-          path: [downloadFileInfo.name, '收藏集勋章', k, level].join(sep()),
+          path: [downloadFileInfo.name, '收藏集勋章', `类型${k}`, level].join(sep()),
           url: medal.scene_image[k],
         }
       }))
@@ -380,7 +380,34 @@ const generateDownloadTask = async () => {
             :extra-cards-info="extraCardsInfo"
           />
         </KeepAlive>
-        <!-- todo!: 勋章填充位置 -->
+
+        <!-- 收藏集勋章展示 -->
+        <template v-if="medals.length > 0">
+          <ElDivider>收藏集勋章</ElDivider>
+          <ElTabs
+            class="h-[512px]"
+            stretch
+          >
+            <ElTabPane
+              v-for="type in [1, 2, 3, 4, 6]"
+              :key="type"
+              :label="`类型${type}`"
+            >
+              <ElSpace
+                class="justify-center w-full"
+                wrap
+              >
+                <ImageVideoCard
+                  v-for="medal in medals.map(m => {return {level: m.level, image: m.scene_image[type]}})"
+                  :key="medal.level"
+                  :title="`等级${medal.level}`"
+                  :image="medal.image"
+                  :download-name="(actInfo?.act_title ?? '') + ` - 收藏集勋章（类型${type}，等级${medal.level}）` "
+                />
+              </ElSpace>
+            </ElTabPane>
+          </ElTabs>
+        </template>
       </ElCarouselItem>
     </ElCarousel>
   </div>
