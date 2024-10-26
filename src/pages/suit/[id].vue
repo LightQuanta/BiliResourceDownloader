@@ -9,6 +9,7 @@ import {
   SuitEmojiPackageProperties,
   SuitLoadingProperties,
   SuitPartType,
+  SuitPendantProperties,
   SuitPlayIconProperties,
   SuitSkinProperties,
   SuitSpaceBGProperties,
@@ -41,8 +42,8 @@ const loadings = ref<GeneralSuitItem<SuitLoadingProperties>[]>([])
 const playIcons = ref<GeneralSuitItem<SuitPlayIconProperties>[]>([])
 const skins = ref<GeneralSuitItem<SuitSkinProperties>[]>([])
 const spaceBgs = ref<GeneralSuitItem<SuitSpaceBGProperties>[]>([])
-
 const thumpUps = ref<GeneralSuitItem<SuitThumbUpProperties>[]>([])
+const pendants = ref<GeneralSuitItem<SuitPendantProperties>[]>([])
 
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   const landscapes: string[] = []
@@ -92,14 +93,16 @@ const generateDownloadTask = () => {
   spaceBgs.value.forEach(spaceBg => {
     const [landscapes, portraits] = getSpaceBgImages(spaceBg.properties)
     task.files.push(...landscapes.map((l, index) => {
+      const spaceBgName = withSuffix(spaceBg.name, '背景')
       return {
-        path: `${name.value}${sep()}${spaceBg.name}${sep()}背景${index + 1}`,
+        path: `${name.value}${sep()}${spaceBgName}${sep()}背景${index + 1}`,
         url: l,
       }
     }))
     task.files.push(...portraits.map((p, index) => {
+      const spaceBgName = withSuffix(spaceBg.name, '肖像')
       return {
-        path: `${name.value}${sep()}${spaceBg.name}${sep()}肖像${index + 1}`,
+        path: `${name.value}${sep()}${spaceBgName}${sep()}肖像${index + 1}`,
         url: p,
       }
     }))
@@ -183,6 +186,14 @@ const generateDownloadTask = () => {
     }
   })
 
+  // 头像框
+  pendants.value.forEach(pendant => {
+    task.files.push({
+      path: `${name.value}${sep()}${name.value}头像框${sep()}${pendant.name}`,
+      url: pendant.properties.image,
+    })
+  })
+
 
   // 粉丝牌背景
   cards.value.forEach(card => {
@@ -213,6 +224,7 @@ const generateDownloadTask = () => {
     })
   })
 
+  // 点赞动画
   thumpUps.value.forEach(thumpUp => {
     task.files.push({
       path: `${name.value}${sep()}${withSuffix(thumpUp.name, '点赞动画')}`,
@@ -229,113 +241,102 @@ const fetchData = async () => {
   ids.value = route.params.id.split(',')
 
   let suitDetail: SuitDetail
-  if (ids.value.length > 1) {
-    // 收藏集装扮解析
-    suitDetail = {
-      name: route.query.name as string ?? '未知',
-      part_id: 6,
-      suit_items: {},
-      buy_link: '',
-    }
 
-    const results = (await Promise.all(ids.value.map(id => {
-      const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
-      url.searchParams.set('item_id', id)
-      url.searchParams.set('part', 'cards')
-      debugRequestNames.value.push(`部分装扮信息${id}`)
+  suitDetail = {
+    name: route.query.name as string ?? '未知',
+    part_id: 6,
+    suit_items: {},
+    buy_link: '',
+  }
 
-      return APIFetch<SuitDetail>(url, undefined, {
-        debug: {
-          name: `部分装扮信息${id}`,
-          extraParams: {
-            item_id: '装扮ID'
-          }
+  // 批量获取装扮所有部分的信息
+  const results = (await Promise.all(ids.value.map(id => {
+    const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
+    url.searchParams.set('item_id', id)
+    url.searchParams.set('part', 'cards')
+    debugRequestNames.value.push(`部分装扮信息${id}`)
+
+    return APIFetch<SuitDetail>(url, undefined, {
+      debug: {
+        name: `部分装扮信息${id}`,
+        extraParams: {
+          item_id: '装扮ID'
         }
-      })
-    }))).map(r => r.data)
-
-    jumpLink.value = results[0].buy_link
-    suitDetail.buy_link = results[0].buy_link
-
-    results.forEach(r => {
-      let skinProperties: SuitSkinProperties
-      switch (r.part_id) {
-        case SuitPartType.thumbUp:
-          if (suitDetail.suit_items.thumbup === undefined) {
-            suitDetail.suit_items.thumbup = []
-          }
-          suitDetail.suit_items.thumbup.push({
-            name: suitDetail.name,
-            item_id: r.part_id,
-            properties: r.properties as unknown as SuitThumbUpProperties,
-          })
-          break
-        case SuitPartType.loading:
-          if (suitDetail.suit_items.loading === undefined) {
-            suitDetail.suit_items.loading = []
-          }
-          suitDetail.suit_items.loading.push({
-            name: suitDetail.name,
-            item_id: r.part_id,
-            properties: r.properties as unknown as SuitLoadingProperties,
-          })
-          break
-        case SuitPartType.playIcon:
-          if (suitDetail.suit_items.play_icon === undefined) {
-            suitDetail.suit_items.play_icon = []
-          }
-          suitDetail.suit_items.play_icon.push({
-            name: suitDetail.name,
-            item_id: r.part_id,
-            properties: r.properties as unknown as SuitPlayIconProperties,
-          })
-          break
-        case SuitPartType.skin:
-          if (suitDetail.suit_items.skin === undefined) {
-            suitDetail.suit_items.skin = []
-          }
-
-          skinProperties = r.properties as unknown as SuitSkinProperties
-          // “我的”界面背景视频需要特殊处理
-          if (!skinProperties.head_myself_mp4_bg.startsWith('https')) {
-            skinProperties.head_myself_mp4_bg = (r.suit_items.emoji_package?.[0] as GeneralSuitItem<SuitSkinProperties>).properties.head_myself_mp4_bg
-          }
-
-          suitDetail.suit_items.skin.push({
-            name: suitDetail.name,
-            item_id: r.part_id,
-            properties: skinProperties,
-          })
-          break
       }
     })
+  }))).map(r => r.data)
 
-  } else {
-    // 普通装扮解析
-    const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
-    url.searchParams.set('item_id', ids.value[0])
-    url.searchParams.set('part', 'cards')
+  jumpLink.value = results[0].buy_link
+  suitDetail.buy_link = results[0].buy_link
+  suitDetail.name = suitDetail.name === '未知' ? results[0].name : suitDetail.name
 
-    try {
-      debugRequestNames.value.push('装扮信息')
-      const resp = await APIFetch<SuitDetail>(url, undefined, {
-        debug: {
-          name: '装扮信息',
-          extraParams: {
-            item_id: '装扮ID',
-          }
+  // 处理所有返回结果，合并多种类装扮信息
+  results.forEach(r => {
+    let skinProperties: SuitSkinProperties
+    switch (r.part_id) {
+      case SuitPartType.suit:
+        // 如果是完整装扮信息，直接返回
+        suitDetail = r
+        break
+      case SuitPartType.thumbUp:
+        if (suitDetail.suit_items.thumbup === undefined) {
+          suitDetail.suit_items.thumbup = []
         }
-      })
-      suitDetail = resp.data
-    } catch (e) {
-      console.error(e)
-      ElMessage({
-        message: `获取装扮信息出错：${e}`,
-        type: 'error',
-      })
-      return null
+        suitDetail.suit_items.thumbup.push({
+          name: suitDetail.name,
+          item_id: r.part_id,
+          properties: r.properties as unknown as SuitThumbUpProperties,
+        })
+        break
+      case SuitPartType.loading:
+        if (suitDetail.suit_items.loading === undefined) {
+          suitDetail.suit_items.loading = []
+        }
+        suitDetail.suit_items.loading.push({
+          name: suitDetail.name,
+          item_id: r.part_id,
+          properties: r.properties as unknown as SuitLoadingProperties,
+        })
+        break
+      case SuitPartType.playIcon:
+        if (suitDetail.suit_items.play_icon === undefined) {
+          suitDetail.suit_items.play_icon = []
+        }
+        suitDetail.suit_items.play_icon.push({
+          name: suitDetail.name,
+          item_id: r.part_id,
+          properties: r.properties as unknown as SuitPlayIconProperties,
+        })
+        break
+      case SuitPartType.skin:
+        if (suitDetail.suit_items.skin === undefined) {
+          suitDetail.suit_items.skin = []
+        }
+
+        skinProperties = r.properties as unknown as SuitSkinProperties
+        // “我的”界面背景视频需要特殊处理
+        if (!skinProperties.head_myself_mp4_bg.startsWith('https')) {
+          skinProperties.head_myself_mp4_bg = (r.suit_items.emoji_package?.[0] as GeneralSuitItem<SuitSkinProperties>).properties.head_myself_mp4_bg
+        }
+
+        suitDetail.suit_items.skin.push({
+          name: suitDetail.name,
+          item_id: r.part_id,
+          properties: skinProperties,
+        })
+        break
+      case SuitPartType.pendant:
+        if (suitDetail.suit_items.pendant === undefined) {
+          suitDetail.suit_items.pendant = []
+        }
+        suitDetail.suit_items.pendant.push({
+          name: suitDetail.name,
+          item_id: r.part_id,
+          properties: r.properties as unknown as SuitPendantProperties,
+        })
+        break
     }
-  }
+  })
 
   name.value = suitDetail.name
   mid.value = suitDetail.properties?.fan_mid ?? ''
@@ -356,6 +357,7 @@ const fetchData = async () => {
   skins.value = suitDetail.suit_items.skin ?? []
   spaceBgs.value = suitDetail.suit_items.space_bg ?? []
   thumpUps.value = suitDetail.suit_items.thumbup ?? []
+  pendants.value = suitDetail.suit_items.pendant ?? []
 }
 
 watch(() => route.params.id, fetchData, { immediate: true })
@@ -590,6 +592,15 @@ const resolveLink = async () => {
       class="w-full justify-center"
       wrap
     >
+      <!-- 头像框 -->
+      <ImageVideoCard
+        v-for="pendant in pendants"
+        :key="pendant.item_id"
+        :title="pendant.name + ' - 头像框'"
+        :image="pendant.properties.image"
+        :download-name="`${name} - ${pendant.name} - 头像框`"
+      />
+
       <!-- 粉丝牌背景 -->
       <ImageVideoCard
         v-for="card in cards"

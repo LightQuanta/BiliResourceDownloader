@@ -87,12 +87,15 @@ interface SuitProperties {
 }
 
 enum SuitPartType {
-
+    // 头像框
+    pendant = 1,
+    // 点赞动画
     thumbUp = 3,
     // 完整装扮信息
     suit = 6,
     // 主题
     skin = 9,
+    // 加载动画
     loading = 10,
     // 进度条
     playIcon = 11,
@@ -155,13 +158,6 @@ interface SuitPlayIconProperties {
 }
 
 interface SuitSkinProperties {
-    // 这边的属性敢不敢更多点？
-    // 谁爱标谁标，反正我不愿意标
-
-    // head_bg: string
-    // // 背景视频
-    // head_myself_mp4_bg: string
-
     // 皮肤压缩包md5
     package_md5: string
     // 皮肤压缩包链接
@@ -202,12 +198,18 @@ interface SuitSpaceBGProperties {
 
 interface SuitThumbUpProperties {
 
-    // 这是个啥？？？
+    // SVGA格式点赞动画
     image_ani: string
-    // 这是个啥？？？？？
     image_ani_cut: string
     // 点赞动画预览图？
     image_preview: string
+}
+
+interface SuitPendantProperties {
+    // 头像框效果演示图
+    garb_avatar: string
+    // 头像框
+    image: string
 }
 
 // https://api.bilibili.com/x/garb/v2/user/suit/benefit?item_id=${SuitID}
@@ -242,6 +244,8 @@ interface SuitDetail {
         space_bg?: GeneralSuitItem<SuitSpaceBGProperties>[]
         // 点赞动画
         thumbup?: GeneralSuitItem<SuitThumbUpProperties>[]
+        // 头像框
+        pendant?: GeneralSuitItem<SuitPendantProperties>[]
     }
     buy_link: string
 }
@@ -809,6 +813,7 @@ export type {
     GeneralSuitItem,
     SuitSpaceBGProperties,
     SuitThumbUpProperties,
+    SuitPendantProperties,
     SuitCardProperties,
     SuitSkinProperties,
     SuitPlayIconProperties,
