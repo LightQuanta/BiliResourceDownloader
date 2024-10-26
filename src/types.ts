@@ -45,6 +45,9 @@ interface ActInfo {
     }>
     // JSON存储的收藏集不同等级头像框信息
     collector_medal_info: string
+
+    // 收藏集组简介
+    product_introduce: string
 }
 
 interface MedalInfo {

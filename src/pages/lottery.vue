@@ -329,6 +329,16 @@ const generateDownloadTask = async () => {
         {{ saleTime }}
       </ElDescriptionsItem>
       <ElDescriptionsItem
+        :span="2"
+        label="简介"
+      >
+        <div
+          class="max-h-8 hover:max-h-64 hover:overflow-y-auto transition-all duration-500 whitespace-pre-wrap overflow-hidden text-ellipsis"
+        >
+          {{ actInfo?.product_introduce }}
+        </div>
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
         v-if="(actInfo?.related_mids ?? undefined) !== undefined"
         :span="2"
         label="相关UP主"
