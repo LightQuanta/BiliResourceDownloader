@@ -162,7 +162,7 @@ const jump = async () => {
       <!-- UP主信息 -->
       <ElDescriptionsItem
         label="UP主"
-        min-width="80px"
+        min-width="100px"
       >
         <UPInfo
           :face="authorInfo?.face"

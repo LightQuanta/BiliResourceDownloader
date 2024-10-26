@@ -353,6 +353,7 @@ const jumpToLottery = async (link: string) => {
       <ElDescriptionsItem
         :span="2"
         label="名称"
+        min-width="100px"
       >
         <ElLink
           :href="`https://space.bilibili.com/${uid}`"
@@ -446,17 +447,19 @@ const jumpToLottery = async (link: string) => {
         :span="6"
         label="收藏集卡牌"
       >
-        <ElLink
-          v-for="card in lotteryCards"
-          :key="card.title"
-          type="primary"
-          class="mr-2"
-          @click="jumpToLottery(card.jumpLink)"
-        >
-          <ElTag size="large">
-            {{ card.title }}
-          </ElTag>
-        </ElLink>
+        <ElSpace wrap>
+          <ElLink
+            v-for="card in lotteryCards"
+            :key="card.title"
+            type="primary"
+            class="mr-2"
+            @click="jumpToLottery(card.jumpLink)"
+          >
+            <ElTag size="large">
+              {{ card.title }}
+            </ElTag>
+          </ElLink>
+        </ElSpace>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="6"

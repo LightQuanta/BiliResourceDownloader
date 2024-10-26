@@ -175,7 +175,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
 
       <ElDescriptionsItem
         label="标题"
-        min-width="80px"
+        min-width="100px"
       >
         <ElLink
           :href="`https://live.bilibili.com/${roomID}`"
@@ -187,7 +187,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
       </ElDescriptionsItem>
       <ElDescriptionsItem
         label="分区"
-        min-width="80px"
+        min-width="100px"
       >
         {{ areaType }}
       </ElDescriptionsItem>
