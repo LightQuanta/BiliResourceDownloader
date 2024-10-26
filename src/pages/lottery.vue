@@ -176,9 +176,17 @@ watch(() => route.query.act_id, triggerReload, { immediate: true })
 const router = useRouter()
 const carousel = ref<CarouselInstance>()
 
+let updatingSelectedKey = false
 watch(selectedKey, () => {
+  if (updatingSelectedKey) return
   carousel.value?.setActiveItem(selectedKey.value)
-  router.replace({ query: { act_id: actID.value, lottery_id: selectedKey.value } })
+  router.push({ query: { act_id: actID.value, lottery_id: selectedKey.value } })
+})
+
+watch(() => route.query.lottery_id, () => {
+  updatingSelectedKey = true
+  selectedKey.value = route.query.lottery_id as string
+  updatingSelectedKey = false
 })
 
 const saleTime = computed(() => `${new Date((actInfo.value?.start_time ?? 0) * 1000).toLocaleString()} ~ ${new Date((actInfo.value?.end_time ?? 0) * 1000).toLocaleString()}`)

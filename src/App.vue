@@ -92,15 +92,17 @@ const showDownloadDrawer = ref(false)
         v-slot="{ Component }"
         class="p-4 flex-grow overflow-y-auto overflow-x-hidden"
       >
-        <Transition
-          mode="out-in"
-          name="fade"
-        >
-          <Component
-            :is="Component"
-            class="pb-10"
-          />
-        </Transition>
+        <KeepAlive>
+          <Transition
+            mode="out-in"
+            name="fade"
+          >
+            <Component
+              :is="Component"
+              class="pb-10"
+            />
+          </Transition>
+        </KeepAlive>
       </RouterView>
     </div>
 

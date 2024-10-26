@@ -37,7 +37,9 @@ interface ExtraAPIFetchOptions {
 // 对URL搜索参数进行app签名，原地更新搜索参数
 function paramsAppSign(params: URLSearchParams) {
     params.set('build', '8160400')
-    params.set('ts', Math.floor(Date.now() / 1000).toString())
+    // params.set('ts', Math.floor(Date.now() / 1000).toString())
+    // 不使用正确的时间戳似乎也能过验证，为了避免缓存失效，这里直接使用固定时间戳
+    params.set('ts', '1700000000')
     params.set('appkey', '1d8b6e7d45233436')
 
     const appSec = '560c52ccd288fed045859ed18bffd973'

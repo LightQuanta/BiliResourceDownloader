@@ -486,16 +486,20 @@ const resolveLink = async () => {
         >
           <template v-if="icon.properties.drag_icon">
             <!-- 动画进度条 -->
-            <LottieAnimationCard
-              :url="icon.properties.drag_icon"
-              title="进度条拖动动画"
-              :download-name="`${name} - ${icon.name} - 进度条拖动动画`"
-            />
-            <LottieAnimationCard
-              :url="icon.properties.icon"
-              title="进度条松手动画"
-              :download-name="`${name} - ${icon.name} - 进度条松手动画`"
-            />
+            <KeepAlive>
+              <LottieAnimationCard
+                :url="icon.properties.drag_icon"
+                title="进度条拖动动画"
+                :download-name="`${name} - ${icon.name} - 进度条拖动动画`"
+              />
+            </KeepAlive>
+            <KeepAlive>
+              <LottieAnimationCard
+                :url="icon.properties.icon"
+                title="进度条松手动画"
+                :download-name="`${name} - ${icon.name} - 进度条松手动画`"
+              />
+            </KeepAlive>
           </template>
           <template v-else>
             <!-- 图片进度条 -->
@@ -569,12 +573,14 @@ const resolveLink = async () => {
         class="w-full justify-center"
         wrap
       >
-        <SVGACard
-          v-for="thumpUp in thumpUps"
-          :key="thumpUp.item_id"
-          :title="thumpUp.name + ' - 点赞动画'"
-          :url="thumpUp.properties.image_ani"
-        />
+        <KeepAlive>
+          <SVGACard
+            v-for="thumpUp in thumpUps"
+            :key="thumpUp.item_id"
+            :title="thumpUp.name + ' - 点赞动画'"
+            :url="thumpUp.properties.image_ani"
+          />
+        </KeepAlive>
       </ElSpace>
     </template>
 
