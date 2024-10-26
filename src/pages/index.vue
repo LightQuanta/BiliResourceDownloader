@@ -62,6 +62,7 @@ const jump = async () => {
       autofocus
       clearable
       @input="onChange"
+      @change="jump"
       class="max-w-screen-sm"
       autocomplete="on"
     >
@@ -98,10 +99,6 @@ const jump = async () => {
           <ElOption
             label="装扮"
             value="suit"
-          />
-          <ElOption
-            label="装扮/收藏集搜索"
-            value="garbSearch"
           />
         </ElSelect>
       </template>
