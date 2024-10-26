@@ -378,9 +378,9 @@ const generateDownloadTask = async () => {
           <SingleLotteryPage
             :lottery="lottery"
             :extra-cards-info="extraCardsInfo"
-            class="h-full"
           />
         </KeepAlive>
+        <!-- todo!: 勋章填充位置 -->
       </ElCarouselItem>
     </ElCarousel>
   </div>
