@@ -62,8 +62,6 @@ const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
 
 const skinProps = [
   ['head_bg', '顶部背景图'],
-  ['head_myself_squared_bg', '“我的”界面背景图'],
-  // ['head_myself_mp4_bg', '“我的”界面背景视频'],
   ['head_tab_bg', '首页顶部标签页背景'],
   ['tail_bg', '底部背景图'],
   ['tail_icon_main', '首页按钮图标'],
@@ -78,6 +76,8 @@ const skinProps = [
   ['tail_icon_selected_pub_btn_bg', '发布按钮选中图标'],
   ['tail_icon_selected_shop', '会员购按钮选中图标'],
   ['tail_icon_selected_myself', '“我的”按钮选中图标'],
+  ['head_myself_squared_bg', '“我的”界面背景图'],
+  // ['head_myself_mp4_bg', '“我的”界面背景视频'],
 ]
 
 const withSuffix = (source: string, suffix: string) => source.endsWith(suffix) ? source : `${source}${suffix}`
