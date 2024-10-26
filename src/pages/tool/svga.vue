@@ -67,10 +67,38 @@ const process: UploadProps['onChange'] = async (file) => {
         选择SVGA动画文件
       </div>
     </ElUpload>
+
     <SVGACard
       v-if="dataURL.length > 0"
       :data-u-r-l="dataURL"
       :title="name.split('.').slice(0, -1).join('.')"
     />
+
+    <ElPopover
+      width="600px"
+      placement="bottom-end"
+    >
+      <span>
+        SVGA是一种跨平台的开源动画格式，详细介绍请查看
+        <ElLink
+          type="primary"
+          href="https://svga.dev/"
+          target="_blank"
+        >
+          SVGA官网
+        </ElLink>
+      </span>
+      <br>
+      <span>B站的装扮的点赞动画里使用SVGA格式，此页面可以将SVGA动画逐帧提取为图片</span>
+
+      <template #reference>
+        <ElText
+          type="primary"
+          class="cursor-pointer"
+        >
+          什么是SVGA动画？
+        </ElText>
+      </template>
+    </ElPopover>
   </div>
 </template>

@@ -67,10 +67,38 @@ const process: UploadProps['onChange'] = async (file) => {
         选择Lottie动画文件
       </div>
     </ElUpload>
+
     <LottieAnimationCard
       v-if="JSONObject"
       :json="JSONObject"
       :title="name.split('.').slice(0, -1).join('.')"
     />
+
+    <ElPopover
+      width="600px"
+      placement="bottom-end"
+    >
+      <span>
+        Lottie是由Airbnb开发的一种跨平台的开源矢量动画格式，以JSON格式存储动画，详细介绍请查看
+        <ElLink
+          type="primary"
+          href="https://airbnb.io/lottie/#/"
+          target="_blank"
+        >
+          Lottie官网
+        </ElLink>
+      </span>
+      <br>
+      <span>B站的部分装扮的进度条动画里使用Lottie格式，此页面可以将Lottie动画逐帧提取为图片</span>
+
+      <template #reference>
+        <ElText
+          type="primary"
+          class="cursor-pointer"
+        >
+          什么是Lottie动画？
+        </ElText>
+      </template>
+    </ElPopover>
   </div>
 </template>
