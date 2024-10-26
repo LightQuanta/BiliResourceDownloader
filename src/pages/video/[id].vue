@@ -189,10 +189,11 @@ watch(() => route.params.id, fetchData, { immediate: true })
       <ElDescriptionsItem
         label="简介"
         :span="6"
+        v-if="videoInfo?.desc?.length ?? 0 > 0"
       >
-        <span class="whitespace-pre-wrap">
+        <div class="whitespace-pre-wrap max-h-24 hover:max-h-screen overflow-y-auto transition-all duration-500">
           {{ videoInfo?.desc }}
-        </span>
+        </div>
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
@@ -200,9 +201,9 @@ watch(() => route.params.id, fetchData, { immediate: true })
         :span="6"
         v-if="videoInfo?.dynamic.length ?? 0 > 0"
       >
-        <span class="whitespace-pre-wrap">
+        <div class="whitespace-pre-wrap max-h-24 hover:max-h-screen overflow-y-auto transition-all duration-500">
           {{ videoInfo?.dynamic }}
-        </span>
+        </div>
       </ElDescriptionsItem>
     </ElDescriptions>
 

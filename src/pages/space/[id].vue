@@ -397,14 +397,22 @@ const jumpToLottery = async (link: string) => {
         :span="6"
         label="签名"
       >
-        <span class="whitespace-pre-wrap">{{ userSign }}</span>
+        <div class="whitespace-pre-wrap max-h-8 hover:max-h-64 overflow-y-scroll transition-all duration-500">
+          {{
+            userSign
+          }}
+        </div>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="6"
         label="公告"
         v-if="userNotice.length > 0"
       >
-        <span class="whitespace-pre-wrap">{{ userNotice }}</span>
+        <div class="whitespace-pre-wrap max-h-8 hover:max-h-64 overflow-y-scroll transition-all duration-500">
+          {{
+            userNotice
+          }}
+        </div>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="6"

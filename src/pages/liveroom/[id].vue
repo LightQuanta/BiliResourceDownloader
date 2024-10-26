@@ -195,7 +195,9 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
         :span="2"
         label="简介"
       >
-        {{ liveroomDescription }}
+        <div class="whitespace-pre-wrap max-h-24 hover:max-h-screen overflow-y-auto transition-all duration-500">
+          {{ liveroomDescription }}
+        </div>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
@@ -234,9 +236,9 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
         :span="2"
         label="直播间公告"
       >
-        <span class="whitespace-pre-wrap">
+        <div class="whitespace-pre-wrap max-h-8 hover:max-h-64 overflow-y-auto transition-all duration-500">
           {{ liveroomUserInfo?.room_news.content }}
-        </span>
+        </div>
         <br>
         <ElText size="small">
           {{ liveroomUserInfo?.room_news.ctime_text }}更新
