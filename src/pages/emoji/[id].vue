@@ -157,10 +157,7 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
         />
       </template>
 
-      <ElDescriptionsItem
-        label="名称"
-        width="100px"
-      >
+      <ElDescriptionsItem label="名称">
         {{ name }}
       </ElDescriptionsItem>
       <ElDescriptionsItem label="ID">

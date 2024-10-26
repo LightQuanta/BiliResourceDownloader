@@ -322,7 +322,6 @@ const generateDownloadTask = async () => {
       <ElDescriptionsItem
         label="名称"
         name="name"
-        width="100px"
       >
         <ElLink
           v-if="!loading"
