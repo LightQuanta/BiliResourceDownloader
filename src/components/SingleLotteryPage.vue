@@ -118,6 +118,7 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
       <ElDescriptionsItem
         label="名称"
         name="name"
+        width="100px"
       >
         <ElLink
           :href="jumpLink"

@@ -383,7 +383,10 @@ const resolveLink = async () => {
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 
-      <ElDescriptionsItem label="名称">
+      <ElDescriptionsItem
+        label="名称"
+        width="100px"
+      >
         <ElLink
           type="primary"
           target="_blank"
