@@ -194,6 +194,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
       <ElDescriptionsItem
         :span="2"
         label="简介"
+        v-if="(liveroomDescription?.length ?? 0) > 0"
       >
         <div class="whitespace-pre-wrap max-h-24 hover:max-h-screen overflow-y-auto transition-all duration-500">
           {{ liveroomDescription }}
