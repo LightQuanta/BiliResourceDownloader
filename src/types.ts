@@ -795,6 +795,37 @@ interface BasicVideoInfo {
     }[]
 }
 
+interface TypedSearchResultGroup {
+    result_type: string
+    data: SearchResultItem[]
+}
+
+interface SearchResultItem {
+    type: string
+}
+
+interface BiliUserSearchResultItem extends SearchResultItem {
+    type: 'bili_user'
+    mid: number
+    uname: string
+    usign: string
+    // 头像，注：无 https: 前缀
+    upic: string
+}
+
+// https://api.bilibili.com/x/web-interface/wbi/search/all/v2?keyword=${keyword}
+interface GeneralSearchResult {
+    result: TypedSearchResultGroup[]
+    numPages: number
+}
+
+
+// https://api.bilibili.com/x/web-interface/wbi/search/type?search_type=${type}&keyword=${keyword}
+interface TypedSearchResult {
+    result: SearchResultItem[]
+    numPages: number
+}
+
 export { SuitPartType }
 
 export type {
@@ -844,4 +875,8 @@ export type {
     LiveroomEmojiListInfo,
     LiveroomEmojiInfo,
     BasicVideoInfo,
+    GeneralSearchResult,
+    TypedSearchResult,
+    TypedSearchResultGroup,
+    BiliUserSearchResultItem,
 }

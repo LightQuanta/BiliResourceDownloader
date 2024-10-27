@@ -44,7 +44,7 @@ const fetchData = async () => {
   faceURL.value = props.face
 
   if (hasFullInfo.value) return
-  if (props.mid.length === 0) return
+  if ((props.mid?.length ?? 0) === 0) return
 
   const url = new URL('https://api.bilibili.com/x/web-interface/card')
   url.searchParams.set('mid', String(userMid.value))

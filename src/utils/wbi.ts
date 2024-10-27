@@ -18,8 +18,11 @@ const getMixinKey = (orig: string) =>
 function handleQuery(
     params: Record<string, string | number | object>,
 ) {
-    const curr_time = Math.round(Date.now() / 1000),
-        chr_filter = /[!'()*]/g;
+    // 当前时间戳似乎不影响请求结果，为方便缓存，直接使用固定时间戳
+    // const curr_time = Math.round(Date.now() / 1000)
+    const curr_time = 1700000000
+
+    const chr_filter = /[!'()*]/g
 
     Object.assign(params, { wts: curr_time }); // 添加 wts 字段
     // 按照 key 重排参数

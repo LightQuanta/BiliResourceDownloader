@@ -74,6 +74,9 @@ const showDownloadDrawer = ref(false)
           <template #title>
             搜索
           </template>
+          <ElMenuItem index="/search/general">
+            通用搜索
+          </ElMenuItem>
           <ElMenuItem index="/search/garb">
             装扮/收藏集搜索
           </ElMenuItem>
