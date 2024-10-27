@@ -300,7 +300,7 @@ const generateDownloadTask = async () => {
 <template>
   <div
     v-loading="loading"
-    class="flex flex-col content-center"
+    class="flex flex-col content-center h-full"
   >
     <!-- 收藏集组合详细信息 -->
     <ElDescriptions
