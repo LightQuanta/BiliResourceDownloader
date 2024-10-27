@@ -96,7 +96,6 @@ const loadMore = async () => {
 }
 
 const newSearch = async () => {
-  if ((keyword.value?.trim()?.length ?? 0) === 0) return
   page.value = 1
   maxPage.value = 2
   usersInfo.value = []
@@ -173,7 +172,7 @@ const updateQuery = () => {
     </ElText>
 
     <div
-      class="flex flex-wrap gap-4 content-start items-center justify-center min-h-screen"
+      class="flex flex-wrap gap-4 pb-32 content-start items-center justify-center min-h-screen"
       v-loading="loading"
       v-infinite-scroll="loadMore"
     >
@@ -199,7 +198,7 @@ const updateQuery = () => {
         v-else-if="page < maxPage"
         class="mt-auto"
       >
-        向下滚动页面继续搜索
+        向下滚动页面继续搜索（{{ page }} / {{ maxPage }}）
       </ElDivider>
       <ElDivider v-else>
         已显示全部搜索结果
