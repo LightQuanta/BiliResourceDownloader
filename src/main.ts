@@ -9,6 +9,7 @@ import { BiliResourceDownloadEventEmitter } from "./types.ts";
 import { checkLoginState } from "./utils/loginManager.ts";
 import { createPinia } from 'pinia'
 import './utils/cliboardListener.ts'
+import JsonEditorVue from 'json-editor-vue'
 
 const pinia = createPinia()
 
@@ -29,6 +30,7 @@ console.debug(routes)
 const app = createApp(App)
 app.use(pinia)
 app.use(router)
+app.use(JsonEditorVue)
 
 app.config.errorHandler = (err, instance, info) => {
     console.error(err)

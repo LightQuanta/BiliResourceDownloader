@@ -26,6 +26,8 @@ watch(lastUpdated, update)
 watch(selected, update)
 onMounted(update)
 
+const JSONObject = computed(() => JSON.parse(responseText.value))
+
 </script>
 
 <template>
@@ -74,12 +76,9 @@ onMounted(update)
       </ElDescriptions>
 
       <ElDivider>原始响应数据</ElDivider>
-      <ElInput
-        v-model="responseText"
-        aria-multiline="true"
-        autosize
-        readonly
-        type="textarea"
+      <JsonEditorVue
+        v-model="JSONObject"
+        read-only
       />
     </ElDrawer>
   </Teleport>
