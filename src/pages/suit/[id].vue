@@ -321,7 +321,7 @@ const fetchData = async () => {
         skinProperties = r.properties as unknown as SuitSkinProperties
         // “我的”界面背景视频需要特殊处理
         if (!skinProperties.head_myself_mp4_bg?.startsWith('https')) {
-          skinProperties.head_myself_mp4_bg = (r.suit_items.emoji_package?.[0] as GeneralSuitItem<SuitSkinProperties>).properties.head_myself_mp4_bg
+          skinProperties.head_myself_mp4_bg = (r.suit_items.emoji_package?.[0] as GeneralSuitItem<SuitSkinProperties>)?.properties?.head_myself_mp4_bg
         }
 
         suitDetail.suit_items.skin.push({
