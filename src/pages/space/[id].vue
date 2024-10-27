@@ -60,6 +60,7 @@ const userPendant = ref<PendantInfo>()
 const lotteryCards = ref<{
   title: string
   jumpLink: string
+  cover: string
 }[]>([])
 
 // 充电表情信息
@@ -156,6 +157,7 @@ const fetchData = async () => {
       return {
         title: r.title.title + ' ' + r.title.sub_title,
         jumpLink: r.extra.detail_jump_url,
+        cover: r.cover,
       }
     }) ?? []
 
@@ -170,7 +172,7 @@ const fetchData = async () => {
   }
 
   // 获取基础用户信息
-  let basicUserInfo: BasicUserInfo
+  let basicUserInfo: BasicUserInfo | undefined = undefined
   try {
     const url = new URL('https://api.bilibili.com/x/web-interface/card')
     url.searchParams.set('mid', uid.value)
@@ -204,7 +206,7 @@ const fetchData = async () => {
   userInfo.value = basicUserInfo
 
   // 尝试获取直播间号
-  if (roomID.value.length === 0) {
+  if (roomID.value === 0) {
     try {
       const url = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
       url.searchParams.set('uid', uid.value)
@@ -456,17 +458,30 @@ const jumpToLottery = async (link: string) => {
         label="收藏集卡牌"
       >
         <ElSpace wrap>
-          <ElLink
+          <ElPopover
             v-for="card in lotteryCards"
             :key="card.title"
-            type="primary"
-            class="mr-2"
-            @click="jumpToLottery(card.jumpLink)"
           >
-            <ElTag size="large">
-              {{ card.title }}
-            </ElTag>
-          </ElLink>
+            <!-- 收藏集卡牌预览 -->
+            <ElImage
+              :src="card.cover"
+              :preview-src-list="[card.cover]"
+              referrerpolicy="no-referrer"
+              preview-teleported
+              :hide-on-click-modal="true"
+            />
+            <template #reference>
+              <ElLink
+                type="primary"
+                class="mr-2"
+                @click="jumpToLottery(card.jumpLink)"
+              >
+                <ElTag size="large">
+                  {{ card.title }}
+                </ElTag>
+              </ElLink>
+            </template>
+          </ElPopover>
         </ElSpace>
       </ElDescriptionsItem>
       <ElDescriptionsItem

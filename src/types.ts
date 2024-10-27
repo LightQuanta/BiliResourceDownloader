@@ -577,6 +577,7 @@ interface ExtremelyDetailedUserInfo {
                     extra: {
                         detail_jump_url: string
                     }
+                    cover: string
                 }[]
             }
         }
