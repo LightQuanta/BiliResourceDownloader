@@ -100,6 +100,7 @@ const load = async () => {
   cards.value = cards.value.concat(data) as GarbSearchResult<LotteryProperties | SuitProperties>[]
   loading = false
 }
+onMounted(load)
 
 const filteredCards = computed(() => {
   if (displayMode.value === 'lottery') return cards.value.filter(c => c.properties.type === 'dlc_act')
@@ -151,7 +152,7 @@ const filteredCards = computed(() => {
 
     <div
       v-infinite-scroll="load"
-      class="flex flex-wrap gap-4 justify-center min-h-screen"
+      class="flex flex-wrap gap-4 justify-center content-start min-h-screen"
     >
       <TransitionGroup name="list">
         <GarbSearchCard
