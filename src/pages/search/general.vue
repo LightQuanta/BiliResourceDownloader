@@ -213,7 +213,10 @@ const updateQuery = () => {
         />
       </TransitionGroup>
 
-      <ElDivider v-if="loading">
+      <ElDivider v-if="page === 1">
+        请输入搜索关键词
+      </ElDivider>
+      <ElDivider v-else-if="loading">
         正在加载...
       </ElDivider>
       <ElDivider
