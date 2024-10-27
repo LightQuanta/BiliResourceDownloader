@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { APIFetch } from "../../APIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
-import { BiliUserSearchResultItem, GeneralSearchResult, TypedSearchResult } from "../../types.ts";
+import {
+  BiliUserSearchResultItem,
+  GeneralSearchResult,
+  TypedSearchResult,
+  VideoSearchResultItem
+} from "../../types.ts";
 import { emitter } from "../../main.ts";
 
 const keyword = ref('')
@@ -13,6 +18,7 @@ const route = useRoute()
 const loading = ref(false)
 
 const usersInfo = ref<BiliUserSearchResultItem[]>([])
+const videosInfo = ref<VideoSearchResultItem[]>([])
 
 let searching = false
 const loadMore = async () => {
@@ -48,6 +54,7 @@ const loadMore = async () => {
         // 全部搜索时，后面的页返回的用户似乎和第一页是一样的，这里只添加第一个搜出来的用户
         usersInfo.value.push(...((resp.data.result.filter(r => r.result_type === 'bili_user')?.[0].data as BiliUserSearchResultItem[]) ?? []))
       }
+      videosInfo.value.push(...((resp.data.result.filter(r => r.result_type === 'video')?.[0].data as VideoSearchResultItem[]) ?? []))
     } catch (e) {
       console.error(e)
       ElMessage({
@@ -77,8 +84,11 @@ const loadMore = async () => {
 
       maxPage.value = resp.data.numPages
       switch (searchType.value) {
-        case 'bili_user' :
+        case 'bili_user':
           usersInfo.value.push(...(resp.data?.result as BiliUserSearchResultItem[] ?? []))
+          break
+        case 'video':
+          videosInfo.value.push(...(resp.data?.result as VideoSearchResultItem[] ?? []))
           break
       }
     } catch (e) {
@@ -98,7 +108,9 @@ const loadMore = async () => {
 const newSearch = async () => {
   page.value = 1
   maxPage.value = 2
+
   usersInfo.value = []
+  videosInfo.value = []
 
   await loadMore()
 }
@@ -189,6 +201,16 @@ const updateQuery = () => {
             :face="'https:' + user.upic"
           />
         </RouterLink>
+      </TransitionGroup>
+      <TransitionGroup name="list">
+        <VideoCard
+          v-for="video in videosInfo"
+          :key="video.bvid"
+          :cover="video.pic"
+          :bvid="video.bvid"
+          :title="video.title"
+          :desc="video.description"
+        />
       </TransitionGroup>
 
       <ElDivider v-if="loading">

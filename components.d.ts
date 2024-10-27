@@ -67,6 +67,7 @@ declare module 'vue' {
     SingleLotteryPage: typeof import('./src/components/SingleLotteryPage.vue')['default']
     SVGACard: typeof import('./src/components/SVGACard.vue')['default']
     UPInfo: typeof import('./src/components/UPInfo.vue')['default']
+    VideoCard: typeof import('./src/components/VideoCard.vue')['default']
   }
   export interface ComponentCustomProperties {
     vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']

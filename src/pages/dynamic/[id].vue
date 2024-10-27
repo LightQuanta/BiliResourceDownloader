@@ -268,26 +268,12 @@ const jump = async () => {
         v-if="dynamicType === 'DYNAMIC_TYPE_AV'"
         label="视频投稿"
       >
-        <div class="flex justify-start">
-          <RouterLink
-            :to="`/video/${BVID}`"
-            class="flex items-stretch justify-start"
-          >
-            <ElImage
-              :src="videoCover"
-              class="h-36"
-              referrerpolicy="no-referrer"
-            />
-            <div class="h-36 w-72 border text-wrap rounded-r-md p-2">
-              <ElText class="font-bold">
-                {{ videoTitle }}
-              </ElText>
-              <div class="text-wrap overflow-hidden h-16 text-ellipsis">
-                {{ videoDesc }}
-              </div>
-            </div>
-          </RouterLink>
-        </div>
+        <VideoCard
+          :bvid="BVID"
+          :title="videoTitle"
+          :desc="videoDesc"
+          :cover="videoCover"
+        />
       </ElDescriptionsItem>
     </ElDescriptions>
 

@@ -813,6 +813,18 @@ interface BiliUserSearchResultItem extends SearchResultItem {
     upic: string
 }
 
+interface VideoSearchResultItem extends SearchResultItem {
+    type: 'video'
+    aid: number
+    bvid: string
+    title: string
+    // 封面，注：无 https: 前缀
+    pic: string
+    description: string
+    // 逗号分隔tag
+    tag: string
+}
+
 // https://api.bilibili.com/x/web-interface/wbi/search/all/v2?keyword=${keyword}
 interface GeneralSearchResult {
     result: TypedSearchResultGroup[]
@@ -879,4 +891,5 @@ export type {
     TypedSearchResult,
     TypedSearchResultGroup,
     BiliUserSearchResultItem,
+    VideoSearchResultItem,
 }
