@@ -2,6 +2,7 @@
 import { APIFetch } from "../../APIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import type { GarbSearchResult, LotteryProperties, SuitProperties } from "../../types.ts";
+import { emitter } from "../../main.ts";
 
 const params = useUrlSearchParams()
 
@@ -64,6 +65,8 @@ const load = async () => {
   if (currentPage.value === 1) {
     cards.value = []
   }
+
+  emitter.emit('scrollUp')
 
   const url = new URL('https://api.bilibili.com/x/garb/v2/mall/home/search')
   url.searchParams.set('key_word', keyword.value)
@@ -148,7 +151,7 @@ const filteredCards = computed(() => {
 
     <div
       v-infinite-scroll="load"
-      class="flex flex-wrap gap-4 justify-center"
+      class="flex flex-wrap gap-4 justify-center min-h-screen"
     >
       <TransitionGroup name="list">
         <GarbSearchCard

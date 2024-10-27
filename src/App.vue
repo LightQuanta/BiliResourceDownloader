@@ -5,6 +5,12 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
+
+const mainDivRef = ref<HTMLElement>()
+// 向上滚动页面，避免搜索界面滚动时卡住
+emitter.on('scrollUp', () => {
+  mainDivRef.value?.scrollBy({ top: -100, behavior: 'smooth' })
+})
 </script>
 
 <template>
@@ -112,22 +118,26 @@ const showDownloadDrawer = ref(false)
       </ElMenu>
 
       <!-- 内容 -->
-      <RouterView
-        v-slot="{ Component }"
+      <div
+        ref="mainDivRef"
         class="p-4 flex-grow overflow-y-auto overflow-x-hidden"
       >
-        <KeepAlive>
-          <Transition
-            mode="out-in"
-            name="fade"
-          >
-            <Component
-              :is="Component"
-              class="pb-10"
-            />
-          </Transition>
-        </KeepAlive>
-      </RouterView>
+        <RouterView
+          v-slot="{ Component }"
+        >
+          <KeepAlive>
+            <Transition
+              mode="out-in"
+              name="fade"
+            >
+              <Component
+                :is="Component"
+                class="pb-10"
+              />
+            </Transition>
+          </KeepAlive>
+        </RouterView>
+      </div>
     </div>
 
     <ElDrawer

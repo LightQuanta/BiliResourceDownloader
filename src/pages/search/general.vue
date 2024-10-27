@@ -2,6 +2,7 @@
 import { APIFetch } from "../../APIFetch.ts";
 import { Search } from "@element-plus/icons-vue";
 import { BiliUserSearchResultItem, GeneralSearchResult, TypedSearchResult } from "../../types.ts";
+import { emitter } from "../../main.ts";
 
 const keyword = ref('')
 const searchType = ref('all')
@@ -18,9 +19,12 @@ const loadMore = async () => {
   if ((keyword.value?.trim()?.length ?? 0) === 0) return
   if (page.value >= maxPage.value) return
 
+  emitter.emit('scrollUp')
+
   if (searching) return
   searching = true
 
+  loading.value = true
   if (searchType.value === 'all') {
     // 全部搜索
     const url = new URL('https://api.bilibili.com/x/web-interface/wbi/search/all/v2')
@@ -33,13 +37,17 @@ const loadMore = async () => {
         debug: {
           name: '搜索',
           extraParams: {
-            keyword: '关键词'
+            keyword: '关键词',
+            page: '页数',
           }
         }
       })
 
       maxPage.value = resp.data.numPages
-      usersInfo.value.push(...((resp.data.result.filter(r => r.result_type === 'bili_user')?.[0].data as BiliUserSearchResultItem[]) ?? []))
+      if (page.value === 1) {
+        // 全部搜索时，后面的页返回的用户似乎和第一页是一样的，这里只添加第一个搜出来的用户
+        usersInfo.value.push(...((resp.data.result.filter(r => r.result_type === 'bili_user')?.[0].data as BiliUserSearchResultItem[]) ?? []))
+      }
     } catch (e) {
       console.error(e)
       ElMessage({
@@ -62,6 +70,7 @@ const loadMore = async () => {
           extraParams: {
             keyword: '关键词',
             search_type: '类型',
+            page: '页数',
           }
         }
       })
@@ -83,6 +92,7 @@ const loadMore = async () => {
 
   searching = false
   page.value++
+  loading.value = false
 }
 
 const newSearch = async () => {
@@ -91,11 +101,7 @@ const newSearch = async () => {
   maxPage.value = 2
   usersInfo.value = []
 
-  loading.value = true
-
   await loadMore()
-
-  loading.value = false
 }
 
 onMounted(() => {
@@ -185,8 +191,12 @@ const updateQuery = () => {
           />
         </RouterLink>
       </TransitionGroup>
+
+      <ElDivider v-if="loading">
+        正在加载...
+      </ElDivider>
       <ElDivider
-        v-if="page < maxPage"
+        v-else-if="page < maxPage"
         class="mt-auto"
       >
         向下滚动页面继续搜索

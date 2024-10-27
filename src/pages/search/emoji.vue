@@ -4,6 +4,7 @@ import { Search } from "@element-plus/icons-vue";
 import { EmojiPackageInfo, EmojiPackages, GeneralAPIResponse } from "../../types.ts";
 import Fuse from "fuse.js";
 import { userLoggedIn } from "../../utils/loginManager.ts";
+import { emitter } from "../../main.ts";
 
 // 默认首页展示的表情数
 const DEFAULT_SHOW_COUNT = 50
@@ -110,6 +111,7 @@ const updateSearchAndQuery = () => {
 }
 
 const showMore = () => {
+  emitter.emit('scrollUp')
   currentIndex.value += EACH_PAGE_COUNT
   updateSearch()
 }
@@ -121,7 +123,7 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
 </script>
 
 <template>
-  <LoginRequired class="flex gap-4 flex-col">
+  <LoginRequired class="flex gap-4 flex-col h-full pb-40">
     <ElInput
       v-model="keyword"
       placeholder="输入要搜索的表情包"
@@ -151,7 +153,7 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
 
     <div
       v-infinite-scroll="showMore"
-      class="flex flex-wrap gap-4 items-center justify-center"
+      class="flex flex-wrap gap-4 items-center justify-center min-w-screen"
       v-loading="loading"
     >
       <TransitionGroup name="list">
