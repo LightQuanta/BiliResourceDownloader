@@ -46,6 +46,7 @@ const thumpUps = ref<GeneralSuitItem<SuitThumbUpProperties>[]>([])
 const pendants = ref<GeneralSuitItem<SuitPendantProperties>[]>([])
 
 const suitDescription = ref<string>()
+const saleStartTime = ref(0)
 
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   const landscapes: string[] = []
@@ -279,6 +280,7 @@ const fetchData = async () => {
       case SuitPartType.suit:
         // 如果是完整装扮信息，直接返回
         suitDetail = r
+        saleStartTime.value = r.properties?.sale_time_begin ?? 0
         suitDescription.value = r.properties?.desc
         break
       case SuitPartType.thumbUp:
@@ -419,11 +421,20 @@ const resolveLink = async () => {
       </ElDescriptionsItem>
       <ElDescriptionsItem
         label="简介"
-        :span="6"
+        :span="2"
         v-if="suitDescription"
       >
         <div class="whitespace-pre-wrap">
           {{ suitDescription }}
+        </div>
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        label="开售时间"
+        :span="2"
+        v-if="saleStartTime > 0"
+      >
+        <div class="whitespace-pre-wrap">
+          {{ new Date(saleStartTime * 1000).toLocaleString() }}
         </div>
       </ElDescriptionsItem>
     </ElDescriptions>

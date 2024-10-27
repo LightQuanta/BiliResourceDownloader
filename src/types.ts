@@ -83,6 +83,9 @@ interface SuitProperties {
     // 装扮本身背景图
     image_cover: string
 
+    // 开售时间
+    sale_time_begin: number
+
     type: "ip"
 }
 
