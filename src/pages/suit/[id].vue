@@ -45,6 +45,8 @@ const spaceBgs = ref<GeneralSuitItem<SuitSpaceBGProperties>[]>([])
 const thumpUps = ref<GeneralSuitItem<SuitThumbUpProperties>[]>([])
 const pendants = ref<GeneralSuitItem<SuitPendantProperties>[]>([])
 
+const suitDescription = ref<string>()
+
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   const landscapes: string[] = []
   const portraits: string[] = []
@@ -277,6 +279,7 @@ const fetchData = async () => {
       case SuitPartType.suit:
         // 如果是完整装扮信息，直接返回
         suitDetail = r
+        suitDescription.value = r.properties?.desc
         break
       case SuitPartType.thumbUp:
         if (suitDetail.suit_items.thumbup === undefined) {
@@ -374,7 +377,10 @@ const resolveLink = async () => {
 
 <template>
   <div>
-    <ElDescriptions border>
+    <ElDescriptions
+      border
+      :column="2"
+    >
       <template #title>
         装扮相关信息
       </template>
@@ -410,6 +416,15 @@ const resolveLink = async () => {
         v-if="mid.length > 0"
       >
         <UPInfo :mid="mid" />
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        label="简介"
+        :span="6"
+        v-if="suitDescription"
+      >
+        <div class="whitespace-pre-wrap">
+          {{ suitDescription }}
+        </div>
       </ElDescriptionsItem>
     </ElDescriptions>
 
