@@ -842,7 +842,7 @@ interface TypedSearchResult {
 }
 
 // https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?host_mid=${uid}
-// 需要wbi签名
+// 需要登录或wbi签名
 interface UserDynamicList {
     has_more: boolean
     items: DynamicInfo[]

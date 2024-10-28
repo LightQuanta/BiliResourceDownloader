@@ -300,6 +300,7 @@ const fetchData = async () => {
         name: '用户动态列表',
         extraParams: { host_mid: '用户UID' },
       },
+      wbiSign: true,
     })
     dynamicInfo.value = resp.data.items[0]
   } catch (e) {
