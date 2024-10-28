@@ -841,6 +841,14 @@ interface TypedSearchResult {
     numPages: number
 }
 
+// https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?host_mid=${uid}
+// 需要wbi签名
+interface UserDynamicList {
+    has_more: boolean
+    items: DynamicInfo[]
+    offset: string
+}
+
 export { SuitPartType }
 
 export type {
@@ -895,4 +903,5 @@ export type {
     TypedSearchResultGroup,
     BiliUserSearchResultItem,
     VideoSearchResultItem,
+    UserDynamicList,
 }

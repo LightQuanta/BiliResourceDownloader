@@ -5,14 +5,16 @@ import {
   BasicUserInfo,
   BatchDownloadTask,
   ChargeEmojiInfo,
+  DynamicInfo,
   ExtremelyDetailedUserInfo,
   GeneralAPIResponse,
   PendantInfo,
   PowerRights,
-  SuitDetail
+  SuitDetail,
+  UserDynamicList
 } from "../../types.ts";
 import { sep } from "@tauri-apps/api/path";
-import { autoJump } from "../../utils/linkResolver.ts";
+import { autoJump, resolveText } from "../../utils/linkResolver.ts";
 import DebugButton from "../../components/DebugButton.vue";
 
 const route = useRoute<'/space/[id]'>()
@@ -65,6 +67,11 @@ const lotteryCards = ref<{
 
 // 充电表情信息
 const chargeEmojiInfo = ref<ChargeEmojiInfo[]>([])
+
+// 动态信息（仅存储第一个）
+const dynamicInfo = ref<DynamicInfo>()
+// 根据动态信息提取的装扮信息
+const decorateInfo = computed(() => dynamicInfo.value?.modules.module_author.decorate)
 
 const debugRequestNames = ref<string[]>([])
 
@@ -283,6 +290,26 @@ const fetchData = async () => {
     })
   }
 
+  // 尝试获取首条动态
+  try {
+    debugRequestNames.value.push('用户动态列表')
+    const url = new URL('https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space')
+    url.searchParams.set('host_mid', uid.value)
+    const resp = await APIFetch<UserDynamicList>(url, undefined, {
+      debug: {
+        name: '用户动态列表',
+        extraParams: { host_mid: '用户UID' },
+      },
+    })
+    dynamicInfo.value = resp.data.items[0]
+  } catch (e) {
+    console.error(e)
+    ElMessage({
+      message: `获取用户空间公告出错：${e}`,
+      type: 'error',
+    })
+  }
+
   loading.value = false
 }
 onMounted(fetchData)
@@ -325,9 +352,6 @@ const jumpToPendant = async () => {
     await autoJump(`https://www.bilibili.com/h5/mall/equity-link/collect-home?item_id=${id}&part=pendant`, true)
   }
 }
-// https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/space.md#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4%E5%8A%A8%E6%80%81
-// 尝试根据第一条获取的动态获得装扮信息？
-
 const jumpToLottery = async (link: string) => {
   if (!await autoJump(link)) {
     ElMessage({
@@ -335,6 +359,21 @@ const jumpToLottery = async (link: string) => {
       type: 'error',
     })
   }
+}
+
+// 装扮描述文本，显示用
+const decorateDescription = computed(() => {
+  const type = resolveText(decorateInfo.value?.jump_url)
+  if (type === 'suit' && decorateInfo.value?.fan.is_fan) {
+    return '粉丝装扮'
+  } else if (type === 'lottery') {
+    return '收藏集'
+  }
+  return '装扮'
+})
+
+const jump = async () => {
+  await autoJump(decorateInfo.value?.jump_url, true)
 }
 
 </script>
@@ -357,7 +396,6 @@ const jumpToLottery = async (link: string) => {
         <DebugButton :names="debugRequestNames" />
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
-
 
       <ElDescriptionsItem
         :span="2"
@@ -412,41 +450,38 @@ const jumpToLottery = async (link: string) => {
           }}
         </div>
       </ElDescriptionsItem>
+
+      <!-- 收藏集/装扮信息展示 -->
       <ElDescriptionsItem
+        :label="decorateDescription"
         :span="6"
-        label="公告"
-        v-if="userNotice.length > 0"
       >
-        <div class="whitespace-pre-wrap max-h-8 hover:max-h-64 overflow-y-scroll transition-all duration-500">
-          {{
-            userNotice
-          }}
+        <div class="flex items-center">
+          <ElLink
+            v-if="decorateInfo"
+            type="primary"
+            @click="jump"
+          >
+            {{ decorateInfo?.name ?? '无' }}
+          </ElLink>
+          <template v-else>
+            无
+          </template>
+          <span
+            v-if="decorateInfo?.fan.is_fan"
+            :style="{color: decorateInfo?.fan.color}"
+            class="ml-auto translate-x-24 z-50 font-bold select-none"
+          >{{ decorateInfo.fan.num_str }}</span>
+          <ElImage
+            v-if="decorateInfo"
+            :class="decorateInfo?.fan.is_fan ? 'h-12 select-none' : 'ml-auto h-12 select-none'"
+            :src="decorateInfo?.card_url"
+            referrerpolicy="no-referrer"
+          />
         </div>
       </ElDescriptionsItem>
-      <ElDescriptionsItem
-        :span="6"
-        label="标签"
-        v-if="spaceTags.length > 0"
-      >
-        <ElTag
-          v-for="tag in spaceTags"
-          :key="tag"
-        >
-          {{ tag }}
-        </ElTag>
-      </ElDescriptionsItem>
-      <ElDescriptionsItem
-        :span="6"
-        label="佩戴粉丝牌"
-        v-if="fansMedal"
-      >
-        <ElTag
-          type="success"
-          size="large"
-        >
-          lv.{{ fansMedal.level }} {{ fansMedal.medal_name }}
-        </ElTag>
-      </ElDescriptionsItem>
+
+      <!-- 头像框 -->
       <ElDescriptionsItem
         v-if="hasPendant"
         :span="6"
@@ -459,6 +494,8 @@ const jumpToLottery = async (link: string) => {
           {{ userInfo?.card.pendant.name }}
         </ElLink>
       </ElDescriptionsItem>
+
+      <!-- 收藏集卡牌预览 -->
       <ElDescriptionsItem
         v-if="lotteryCards.length > 0"
         :span="6"
@@ -469,7 +506,6 @@ const jumpToLottery = async (link: string) => {
             v-for="card in lotteryCards"
             :key="card.title"
           >
-            <!-- 收藏集卡牌预览 -->
             <ElImage
               :src="card.cover"
               :preview-src-list="[card.cover]"
@@ -491,6 +527,49 @@ const jumpToLottery = async (link: string) => {
           </ElPopover>
         </ElSpace>
       </ElDescriptionsItem>
+
+      <!-- 公告 -->
+      <ElDescriptionsItem
+        :span="6"
+        label="公告"
+        v-if="userNotice.length > 0"
+      >
+        <div class="whitespace-pre-wrap max-h-8 hover:max-h-64 overflow-y-scroll transition-all duration-500">
+          {{
+            userNotice
+          }}
+        </div>
+      </ElDescriptionsItem>
+
+      <!-- 粉丝牌 -->
+      <ElDescriptionsItem
+        :span="6"
+        label="佩戴粉丝牌"
+        v-if="fansMedal"
+      >
+        <ElTag
+          type="success"
+          size="large"
+        >
+          lv.{{ fansMedal.level }} {{ fansMedal.medal_name }}
+        </ElTag>
+      </ElDescriptionsItem>
+
+      <!-- 标签（大学、IP属地等） -->
+      <ElDescriptionsItem
+        :span="6"
+        label="标签"
+        v-if="spaceTags.length > 0"
+      >
+        <ElTag
+          v-for="tag in spaceTags"
+          :key="tag"
+        >
+          {{ tag }}
+        </ElTag>
+      </ElDescriptionsItem>
+
+      <!-- 直播间链接 -->
       <ElDescriptionsItem
         :span="6"
         label="直播间"
