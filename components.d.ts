@@ -63,6 +63,7 @@ declare module 'vue' {
     ImageVideoCard: typeof import('./src/components/ImageVideoCard.vue')['default']
     LoginRequired: typeof import('./src/components/LoginRequired.vue')['default']
     LottieAnimationCard: typeof import('./src/components/LottieAnimationCard.vue')['default']
+    QRCodeDialogButton: typeof import('./src/components/QRCodeDialogButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SingleLotteryPage: typeof import('./src/components/SingleLotteryPage.vue')['default']

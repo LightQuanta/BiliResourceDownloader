@@ -315,8 +315,15 @@ const generateDownloadTask = async () => {
       </template>
 
       <template #extra>
-        <DebugButton :names="['收藏集组信息','收藏集额外信息']" />
-        <BatchDownloadButton :task="generateDownloadTask" />
+        <div class="flex">
+          <DebugButton :names="['收藏集组信息','收藏集额外信息']" />
+          <QRCodeDialogButton
+            button-text="在App端查看"
+            title="在App端扫码查看该收藏集"
+            :content="`https://www.bilibili.com/h5/mall/digital-card/home?&act_id=${actID}`"
+          />
+          <BatchDownloadButton :task="generateDownloadTask" />
+        </div>
       </template>
 
       <ElDescriptionsItem

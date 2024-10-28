@@ -387,8 +387,15 @@ const resolveLink = async () => {
         装扮相关信息
       </template>
       <template #extra>
-        <DebugButton :names="debugRequestNames" />
-        <BatchDownloadButton :task="generateDownloadTask" />
+        <div class="flex flex-row">
+          <DebugButton :names="debugRequestNames" />
+          <QRCodeDialogButton
+            button-text="在App端查看"
+            title="在App端扫码查看该装扮"
+            :content="jumpLink.length > 0 ? jumpLink : `https://www.bilibili.com/h5/mall/suit/detail?id=${ids[0]}`"
+          />
+          <BatchDownloadButton :task="generateDownloadTask" />
+        </div>
       </template>
 
       <ElDescriptionsItem label="名称">
