@@ -172,18 +172,17 @@ const jump = async () => {
       </ElDescriptionsItem>
 
       <!-- 收藏集/装扮信息展示 -->
-      <ElDescriptionsItem :label="decorateDescription">
+      <ElDescriptionsItem
+        :label="decorateDescription"
+        v-if="hasDecoration && ((authorInfo?.decorate?.name ?? '').length > 0)"
+      >
         <div class="flex items-center">
           <ElLink
-            v-if="hasDecoration"
             type="primary"
             @click="jump"
           >
-            {{ authorInfo?.decorate?.name ?? '无' }}
+            {{ authorInfo?.decorate?.name }}
           </ElLink>
-          <template v-else>
-            无
-          </template>
           <span
             v-if="authorInfo?.decorate?.fan.is_fan"
             :style="{color: authorInfo?.decorate?.fan.color}"

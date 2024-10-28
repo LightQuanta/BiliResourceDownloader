@@ -454,19 +454,16 @@ const jump = async () => {
       <!-- 收藏集/装扮信息展示 -->
       <ElDescriptionsItem
         :label="decorateDescription"
+        v-if="(decorateInfo?.name ?? '').length > 0"
         :span="6"
       >
         <div class="flex items-center">
           <ElLink
-            v-if="decorateInfo"
             type="primary"
             @click="jump"
           >
-            {{ decorateInfo?.name ?? '无' }}
+            {{ decorateInfo?.name }}
           </ElLink>
-          <template v-else>
-            无
-          </template>
           <span
             v-if="decorateInfo?.fan.is_fan"
             :style="{color: decorateInfo?.fan.color}"
