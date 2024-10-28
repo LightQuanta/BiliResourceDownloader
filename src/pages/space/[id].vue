@@ -66,6 +66,8 @@ const lotteryCards = ref<{
 // 充电表情信息
 const chargeEmojiInfo = ref<ChargeEmojiInfo[]>([])
 
+const debugRequestNames = ref<string[]>([])
+
 const generateDownloadTask = () => {
   const task: BatchDownloadTask = {
     name: userName.value,
@@ -119,6 +121,7 @@ const fetchData = async () => {
   loading.value = true
 
   try {
+    debugRequestNames.value.push('用户详细信息')
     // 获取app端详细用户信息
     const uu = new URL('https://app.bilibili.com/x/v2/space')
     uu.searchParams.set('vmid', uid.value)
@@ -174,6 +177,7 @@ const fetchData = async () => {
   // 获取基础用户信息
   let basicUserInfo: BasicUserInfo | undefined = undefined
   try {
+    debugRequestNames.value.push('用户空间信息')
     const url = new URL('https://api.bilibili.com/x/web-interface/card')
     url.searchParams.set('mid', uid.value)
     url.searchParams.set('photo', 'true')
@@ -207,6 +211,7 @@ const fetchData = async () => {
 
   // 尝试获取直播间号
   if (roomID.value === 0) {
+    debugRequestNames.value.push('用户直播间信息')
     try {
       const url = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
       url.searchParams.set('uid', uid.value)
@@ -230,6 +235,7 @@ const fetchData = async () => {
   // 获取用户充电信息
   let rightsData: PowerRights | undefined
   try {
+    debugRequestNames.value.push('用户充电信息')
     const url3 = new URL('https://api.bilibili.com/x/upowerv2/gw/rights/index')
     url3.searchParams.set('up_mid', uid.value)
     const resp = await APIFetch<PowerRights | undefined>(url3, undefined, {
@@ -261,6 +267,7 @@ const fetchData = async () => {
   }
 
   try {
+    debugRequestNames.value.push('用户空间公告')
     const url = new URL('https://api.bilibili.com/x/space/notice')
     url.searchParams.set('mid', uid.value)
     userNotice.value = (await APIFetch<string>(url, undefined, {
@@ -347,7 +354,7 @@ const jumpToLottery = async (link: string) => {
       </template>
 
       <template #extra>
-        <DebugButton :names="['用户详细信息','用户空间信息','用户空间公告','用户直播间信息','用户充电信息']" />
+        <DebugButton :names="debugRequestNames" />
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
 

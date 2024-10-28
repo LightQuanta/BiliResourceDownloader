@@ -8,14 +8,14 @@ const props = defineProps<{
 const showDebugDrawer = ref(false)
 const responseText = ref('')
 
-const selected = ref(props.names[0])
+const selected = ref('')
 
 const info = ref<DebugInfo>()
 const params = computed(() => Object.keys(info.value?.extraParams ?? {}))
 
 const update = () => {
   info.value = getDebugInfo(selected.value)
-  responseText.value = info.value?.response ?? ''
+  responseText.value = info.value?.response ?? '{}'
 }
 
 const getParam = (url: string | URL, name: string) => {
@@ -24,7 +24,13 @@ const getParam = (url: string | URL, name: string) => {
 
 watch(lastUpdated, update)
 watch(selected, update)
-onMounted(update)
+onMounted(() => {
+  selected.value = props.names[0]
+  update()
+})
+watch(() => props.names, () => {
+  selected.value = props.names[0]
+}, { deep: true })
 
 const JSONObject = computed(() => JSON.parse(responseText.value))
 
