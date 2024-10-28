@@ -11,6 +11,30 @@ const mainDivRef = ref<HTMLElement>()
 emitter.on('scrollUp', () => {
   mainDivRef.value?.scrollBy({ top: -100, behavior: 'smooth' })
 })
+
+const rotate180 = ref(false)
+const minusX = ref(false)
+const minusY = ref(false)
+
+watchEffect(() => {
+  if (rotate180.value) {
+    document.body.classList.add('rotate-180')
+  } else {
+    document.body.classList.remove('rotate-180')
+  }
+
+  if (minusX.value) {
+    document.body.classList.add('scale-x-[-1]')
+  } else {
+    document.body.classList.remove('scale-x-[-1]')
+  }
+
+  if (minusY.value) {
+    document.body.classList.add('scale-y-[-1]')
+  } else {
+    document.body.classList.remove('scale-y-[-1]')
+  }
+})
 </script>
 
 <template>
@@ -21,10 +45,40 @@ emitter.on('scrollUp', () => {
         class="fixed top-0 w-full h-[--title-bar-height] bg-gray-100 flex gap-2 items-center pl-2 z-[1145141919810] shadow select-none"
         data-tauri-drag-region
       >
-        <ElImage
-          src="../src-tauri/icons/icon.png"
-          class="h-4 w-4"
-        />
+        <ElPopover
+          placement="bottom-start"
+          trigger="click"
+        >
+          <div
+            class="reversed m-[-12px] rounded transition-colors bg-gradient-to-br from-green-300 via-blue-300 to-cyan-300 p-2"
+          >
+            <div class="flex">
+              <div class="rotate-180 mr-auto flex justify-center items-center">
+                反转了
+              </div>
+              <ElSwitch v-model="rotate180" />
+            </div>
+            <div class="flex">
+              <div class="scale-x-[-1] mr-auto flex justify-center items-center">
+                反转了
+              </div>
+              <ElSwitch v-model="minusX" />
+            </div>
+            <div class="flex">
+              <div class="scale-y-[-1] mr-auto flex justify-center items-center">
+                反转了
+              </div>
+              <ElSwitch v-model="minusY" />
+            </div>
+          </div>
+          <template #reference>
+            <ElImage
+              src="../src-tauri/icons/icon.png"
+              class="h-4 w-4 cursor-pointer"
+            />
+          </template>
+        </ElPopover>
+
         <ElText
           size="small"
           class="overflow-ellipsis shrink"
@@ -168,5 +222,20 @@ emitter.on('scrollUp', () => {
 
 .router-mark :deep(.el-menu-item.is-active) {
   background-color: var(--el-menu-hover-bg-color);
+}
+
+.reversed {
+  animation-name: hue;
+  animation-iteration-count: infinite;
+  animation-duration: 2s;
+}
+
+@keyframes hue {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }
 </style>
