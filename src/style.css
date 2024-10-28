@@ -17,6 +17,11 @@
     margin-top: var(--title-bar-height) !important;
 }
 
+/* ElNotification基础高度 */
+.el-notification {
+    margin-top: var(--title-bar-height) !important;
+}
+
 /* ElDrawer等组件的遮罩位置调整 */
 .el-overlay {
     height: calc(100% - var(--title-bar-height)) !important;

@@ -17,6 +17,8 @@ const rotate180 = ref(false)
 const minusX = ref(false)
 const minusY = ref(false)
 
+let achievementAchieved = false
+
 watchEffect(() => {
   if (rotate180.value) {
     document.body.classList.add('rotate-180')
@@ -34,6 +36,16 @@ watchEffect(() => {
     document.body.classList.add('scale-y-[-1]')
   } else {
     document.body.classList.remove('scale-y-[-1]')
+  }
+
+  if (!achievementAchieved && rotate180.value && minusX.value && minusY.value) {
+    ElNotification({
+      title: '获得成就',
+      message: '了转反',
+      type: 'success',
+      duration: 0,
+    })
+    achievementAchieved = true
   }
 })
 </script>
