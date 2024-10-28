@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import DownloadManager from "./components/DownloadManager.vue";
-import { emitter } from "./main.ts";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import DownloadManager from "./components/DownloadManager.vue"
+import { emitter } from "./main.ts"
+import { getCurrentWindow } from "@tauri-apps/api/window"
+import Icon from '../src-tauri/icons/icon.png'
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
@@ -73,7 +74,7 @@ watchEffect(() => {
           </div>
           <template #reference>
             <ElImage
-              src="../src-tauri/icons/icon.png"
+              :src="Icon"
               class="h-4 w-4 cursor-pointer"
             />
           </template>
