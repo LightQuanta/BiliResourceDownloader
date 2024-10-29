@@ -48,14 +48,64 @@ watchEffect(() => {
     achievementAchieved = true
   }
 })
+
+const router = useRouter()
+const reload = () => document.location.reload()
+const route = useRoute()
+
+const currentPath = ref('')
+watch(() => route.fullPath, () => {
+  currentPath.value = route.fullPath
+})
+
 </script>
 
 <template>
   <div class="fixed top-0 left-0 right-0 bottom-0 p-0">
     <!-- 标题栏 -->
     <Teleport to="body">
+      <!-- 导航栏 -->
       <div
-        class="fixed top-0 w-full h-[--title-bar-height] bg-gray-100 flex gap-2 items-center pl-2 z-[1145141919810] shadow select-none"
+        class="fixed top-0 w-full pointer-events-none h-[--title-bar-height] flex items-center z-[114515] justify-center gap-2"
+      >
+        <div class="pointer-events-auto flex max-w-screen-md">
+          <ElButtonGroup class="shrink-0">
+            <ElButton
+              class="h-6 w-6"
+              @click="router.back()"
+            >
+              <ElIcon>
+                <i-ep-arrow-left-bold />
+              </ElIcon>
+            </ElButton>
+            <ElButton
+              class="h-6 w-6"
+              @click="router.forward()"
+            >
+              <ElIcon>
+                <i-ep-arrow-right-bold />
+              </ElIcon>
+            </ElButton>
+            <ElButton
+              class="h-6 w-6"
+              @click="reload"
+            >
+              <ElIcon>
+                <i-ep-refresh />
+              </ElIcon>
+            </ElButton>
+          </ElButtonGroup>
+          <ElInput
+            class="ml-1 h-6 w-80 hover:w-[600px] transition-all"
+            v-model="currentPath"
+            @change="router.push(currentPath)"
+          />
+        </div>
+      </div>
+
+      <!-- 图标、标题、操作按钮 -->
+      <div
+        class="fixed top-0 w-full h-[--title-bar-height] bg-gray-100 flex gap-2 items-center pl-2 z-[114514] shadow select-none"
         data-tauri-drag-region
       >
         <ElPopover
@@ -250,5 +300,9 @@ watchEffect(() => {
   100% {
     filter: hue-rotate(360deg);
   }
+}
+
+:deep(.el-input__inner) {
+  line-height: 0.5px;
 }
 </style>
