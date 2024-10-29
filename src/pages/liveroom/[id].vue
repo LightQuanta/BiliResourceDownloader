@@ -291,9 +291,9 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
       </ElSpace>
     </template>
 
-    <ElDivider v-if="!userLoggedIn">
+    <CustomDivider v-if="!userLoggedIn">
       直播间表情
-    </ElDivider>
+    </CustomDivider>
     <LoginRequired>
       <div v-if="upEmoji !== undefined">
         <CustomDivider>UP主大表情</CustomDivider>

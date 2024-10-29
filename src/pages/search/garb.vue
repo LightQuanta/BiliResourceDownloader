@@ -163,15 +163,15 @@ const filteredCards = computed(() => {
       </TransitionGroup>
     </div>
 
-    <ElDivider v-if="!searched">
+    <CustomDivider v-if="!searched">
       请输入关键词进行搜索
-    </ElDivider>
-    <ElDivider v-else-if="hasMore">
+    </CustomDivider>
+    <CustomDivider v-else-if="hasMore">
       正在加载...
-    </ElDivider>
-    <ElDivider v-else>
+    </CustomDivider>
+    <CustomDivider v-else>
       已加载全部搜索结果
-    </ElDivider>
+    </CustomDivider>
   </div>
 </template>
 

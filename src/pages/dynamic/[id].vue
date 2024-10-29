@@ -276,9 +276,9 @@ const jump = async () => {
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider v-if="pictureLinks?.length ?? 0 > 0">
+    <CustomDivider v-if="pictureLinks?.length ?? 0 > 0">
       动态配图
-    </ElDivider>
+    </CustomDivider>
     <ElSpace
       class="w-full justify-center"
       wrap

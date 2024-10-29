@@ -186,9 +186,9 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider v-if="pictureLinks?.length ?? 0 > 0">
+    <CustomDivider v-if="pictureLinks?.length ?? 0 > 0">
       表情包内容
-    </ElDivider>
+    </CustomDivider>
     <ElSpace
       class="w-full justify-center"
       wrap

@@ -184,9 +184,9 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
       </TransitionGroup>
     </div>
 
-    <ElDivider v-if="hasMore">
+    <CustomDivider v-if="hasMore">
       正在加载...
-    </ElDivider>
+    </CustomDivider>
   </LoginRequired>
 </template>
 

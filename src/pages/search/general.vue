@@ -213,21 +213,21 @@ const updateQuery = () => {
         />
       </TransitionGroup>
 
-      <ElDivider v-if="page === 1">
+      <CustomDivider v-if="page === 1">
         请输入搜索关键词
-      </ElDivider>
-      <ElDivider v-else-if="loading">
+      </CustomDivider>
+      <CustomDivider v-else-if="loading">
         正在加载...
-      </ElDivider>
-      <ElDivider
+      </CustomDivider>
+      <CustomDivider
         v-else-if="page < maxPage"
         class="mt-auto"
       >
         向下滚动页面继续搜索（{{ page }} / {{ maxPage }}）
-      </ElDivider>
-      <ElDivider v-else>
+      </CustomDivider>
+      <CustomDivider v-else>
         已显示全部搜索结果
-      </ElDivider>
+      </CustomDivider>
     </div>
   </div>
 </template>
