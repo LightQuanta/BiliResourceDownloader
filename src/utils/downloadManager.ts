@@ -1,5 +1,5 @@
 import { BatchDownloadTask } from "../types.ts";
-import { createStore, Store } from '@tauri-apps/plugin-store';
+import { Store } from '@tauri-apps/plugin-store';
 import { download } from "@tauri-apps/plugin-upload";
 import { emitter } from "../main.ts";
 import { sep } from "@tauri-apps/api/path";
@@ -14,7 +14,7 @@ const taskDownloadFinishRecorder: Record<string, number> = {}
 
 async function getDownloadStore() {
     if (internalStore === null) {
-        internalStore = await createStore('downloadManager')
+        internalStore = await Store.load('downloadManager')
     }
     return internalStore
 }

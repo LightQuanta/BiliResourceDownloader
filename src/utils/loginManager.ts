@@ -1,4 +1,4 @@
-import { createStore, Store } from "@tauri-apps/plugin-store";
+import { Store } from "@tauri-apps/plugin-store";
 import { clearAPICache } from "../APIFetch.ts";
 
 let internalStore: Store | null = null
@@ -7,7 +7,7 @@ const userLoggedIn = ref(false)
 
 async function getLoginStore() {
     if (internalStore === null) {
-        internalStore = await createStore('login.json')
+        internalStore = await Store.load('login.json')
     }
     return internalStore
 }

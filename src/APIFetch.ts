@@ -1,4 +1,4 @@
-import { createStore, Store } from '@tauri-apps/plugin-store';
+import { Store } from '@tauri-apps/plugin-store';
 import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./utils/loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
 import { encWbiWithFetch } from "./utils/wbi.ts";
@@ -18,7 +18,7 @@ interface CachedJSONResponse<T> {
 
 async function getStore() {
     if (internalStore === null) {
-        internalStore = await createStore('cachedAPIFetch')
+        internalStore = await Store.load('cachedAPIFetch')
     }
     return internalStore
 }
