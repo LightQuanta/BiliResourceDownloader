@@ -22,11 +22,10 @@ const login = async () => {
   }
 
   loggingIn.value = true
-  const resp: GeneralAPIResponse<{
+  const resp = await APIFetch<{
     url: string
     qrcode_key: string
-  }> = await fetch('https://passport.bilibili.com/x/passport-login/web/qrcode/generate')
-      .then(d => d.json())
+  }>('https://passport.bilibili.com/x/passport-login/web/qrcode/generate', undefined, { useCache: false })
   if (resp.code !== 0) {
     console.error(resp)
     ElMessage({
@@ -52,7 +51,7 @@ const login = async () => {
   do {
     await sleep(1000)
 
-    pollResp = await fetch(pollURL).then(d => d.json())
+    pollResp = await APIFetch(pollURL, undefined, { useCache: false })
 
     console.log(pollResp)
 
@@ -83,7 +82,7 @@ const login = async () => {
     })
 
     const loginURL = new URL(pollResp.data.url)
-    const params = loginURL.search.substring(1)
+    const params = loginURL.search.substring(1).split('&').join('; ')
 
     await saveLoginCookie(params)
     userLoggedIn.value = true
@@ -112,7 +111,7 @@ const testLoginState = async () => {
     resp = await APIFetch<{
       isLogin: boolean
       uname?: string
-    }>(`https://api.bilibili.com/x/web-interface/nav?random=${Math.random()}`, undefined, { useCache: false })
+    }>(`https://api.bilibili.com/x/web-interface/nav`, undefined, { useCache: false, useCookie: true })
   } catch (e) {
     if ((e as GeneralAPIResponse<unknown>).code === -101) {
       ElMessage({

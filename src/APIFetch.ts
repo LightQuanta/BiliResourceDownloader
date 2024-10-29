@@ -1,12 +1,13 @@
-import { Store } from '@tauri-apps/plugin-store';
+import { LazyStore } from '@tauri-apps/plugin-store';
 import { clearLoginCookie, getLoginCookie, userLoggedIn } from "./utils/loginManager.ts";
 import { GeneralAPIResponse } from "./types.ts";
 import { encWbiWithFetch } from "./utils/wbi.ts";
 import { useWbiStore } from "./store/useWbiStore";
 import { setDebugInfo } from "./utils/debug.ts";
 import md5 from "md5";
+import { ClientOptions, fetch } from "@tauri-apps/plugin-http";
 
-let internalStore: Store | null = null
+const store = new LazyStore('cachedAPIFetch')
 
 // 缓存5分钟
 const CACHE_TIME = 5 * 60 * 1000
@@ -16,12 +17,6 @@ interface CachedJSONResponse<T> {
     response: T
 }
 
-async function getStore() {
-    if (internalStore === null) {
-        internalStore = await Store.load('cachedAPIFetch')
-    }
-    return internalStore
-}
 
 interface ExtraAPIFetchOptions {
     wbiSign?: boolean
@@ -51,7 +46,6 @@ function paramsAppSign(params: URLSearchParams) {
 async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?: ExtraAPIFetchOptions): Promise<GeneralAPIResponse<T>> {
     const parsedURL = new URL(url)
     const getURLStr = () => parsedURL.toString()
-    const store = await getStore()
 
     const { useCache, wbiSign, appSign, useCookie, debug: debugInfo } = {
         useCache: true,
@@ -90,15 +84,16 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
         }
     }
 
-    const options: RequestInit = {
+    const options: RequestInit & ClientOptions = {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
             'Cookie': 'bili_ticket=1&b_nut=1&buvid3=1&buvid4=1',
-        }
+            'Origin': 'https://www.bilibili.com',
+        },
     }
     if (useCookie) {
         const cookie = await getLoginCookie()
-        if (cookie !== null) {
+        if (cookie !== undefined) {
             options.headers['Cookie'] = cookie
         }
     }
@@ -152,7 +147,6 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
 }
 
 async function clearAPICache() {
-    const store = await getStore()
     await store.clear()
 }
 

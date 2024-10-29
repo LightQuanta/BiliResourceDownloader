@@ -1,19 +1,11 @@
-import { Store } from "@tauri-apps/plugin-store";
+import { LazyStore } from "@tauri-apps/plugin-store";
 import { clearAPICache } from "../APIFetch.ts";
 
-let internalStore: Store | null = null
+const store = new LazyStore('login.json')
 
 const userLoggedIn = ref(false)
 
-async function getLoginStore() {
-    if (internalStore === null) {
-        internalStore = await Store.load('login.json')
-    }
-    return internalStore
-}
-
 async function saveLoginCookie(cookie: string) {
-    const store = await getLoginStore()
     await store.set('cookie', cookie)
     await store.save()
     await clearAPICache()
@@ -21,8 +13,7 @@ async function saveLoginCookie(cookie: string) {
 }
 
 async function getLoginCookie() {
-    const store = await getLoginStore()
-    return await store.get('cookie') as string
+    return await store.get<string>('cookie')
 }
 
 async function checkLoginState() {
@@ -32,7 +23,6 @@ async function checkLoginState() {
 }
 
 async function clearLoginCookie() {
-    const store = await getLoginStore()
     await store.clear()
     await store.save()
     await clearAPICache()

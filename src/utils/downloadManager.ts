@@ -1,26 +1,18 @@
 import { BatchDownloadTask } from "../types.ts";
-import { Store } from '@tauri-apps/plugin-store';
+import { LazyStore } from '@tauri-apps/plugin-store';
 import { download } from "@tauri-apps/plugin-upload";
 import { emitter } from "../main.ts";
 import { sep } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api/core";
 
-let internalStore: Store | null = null
+const store = new LazyStore('downloadManager')
 
 const MAX_TASKS = 3
 
 // todo!: 长时间运行可能存在对象过大内存占用
 const taskDownloadFinishRecorder: Record<string, number> = {}
 
-async function getDownloadStore() {
-    if (internalStore === null) {
-        internalStore = await Store.load('downloadManager')
-    }
-    return internalStore
-}
-
 async function pushNewTask(task: BatchDownloadTask) {
-    const store = await getDownloadStore()
     const tasks = (await store.get('tasks')) as BatchDownloadTask[]
     if (tasks === null) {
         await store.set('tasks', [task])
@@ -34,12 +26,11 @@ let downloading = false
 
 async function pauseDownload() {
     downloading = false
-    await internalStore?.set('downloading', false)
+    await store.set('downloading', false)
 }
 
 async function clearDownload() {
     downloading = false
-    const store = await getDownloadStore()
     await store.clear()
 }
 
@@ -69,11 +60,10 @@ function enableDownloadScheduler() {
 async function startDownload() {
     if (downloading) return
     downloading = true
-    const store = await getDownloadStore()
     await store.set('downloading', true)
     try {
         while (downloading && await store.get('tasks') !== null) {
-            const tasks = (await store.get('tasks')) as BatchDownloadTask[]
+            const tasks = await store.get<BatchDownloadTask[]>('tasks') ?? []
             if (tasks.length === 0) {
                 downloading = false
                 await store.set('downloading', false)
@@ -143,8 +133,23 @@ async function startDownload() {
 }
 
 async function getAllDownloadTasks() {
-    const store = await getDownloadStore()
-    return (await store.get('tasks') ?? []) as BatchDownloadTask[]
+    return await store.get<BatchDownloadTask[]>('tasks') ?? []
 }
 
-export { getDownloadStore, pushNewTask, pauseDownload, clearDownload, startDownload, getAllDownloadTasks }
+// 若批量下载未完成，自动重新发起下载
+async function continueUnfinishedDownloadTasks() {
+    if (await store.get('downloading') === true) {
+        console.debug('发现未完成下载任务，继续下载')
+        await startDownload()
+        console.debug('未完成下载任务下载完成')
+    }
+}
+
+export {
+    pushNewTask,
+    pauseDownload,
+    clearDownload,
+    startDownload,
+    getAllDownloadTasks,
+    continueUnfinishedDownloadTasks
+}

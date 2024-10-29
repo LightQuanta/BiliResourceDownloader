@@ -4,7 +4,7 @@ import "./style.css";
 import { createRouter, createWebHistory } from 'vue-router'
 import { handleHotUpdate, routes } from 'vue-router/auto-routes'
 import mitt from "mitt";
-import { getDownloadStore, startDownload } from "./utils/downloadManager.ts";
+import { continueUnfinishedDownloadTasks } from "./utils/downloadManager.ts";
 import { BiliResourceDownloadEventEmitter } from "./types.ts";
 import { checkLoginState } from "./utils/loginManager.ts";
 import { createPinia } from 'pinia'
@@ -46,13 +46,7 @@ app.config.errorHandler = (err, instance, info) => {
 app.mount("#app");
 
 // 若批量下载未完成，自动重新发起下载
-getDownloadStore().then(async store => {
-    if (await store.get('downloading') === true) {
-        console.debug('发现未完成下载任务，继续下载')
-        await startDownload()
-        console.debug('未完成下载任务下载完成')
-    }
-})
+continueUnfinishedDownloadTasks()
 
 checkLoginState()
 

@@ -1,29 +1,18 @@
-import { Store } from "@tauri-apps/plugin-store";
+import { LazyStore } from "@tauri-apps/plugin-store";
 
-let internalStore: Store | null = null
-
-async function getWbiStore() {
-    if (internalStore === null) {
-        internalStore = await Store.load('wbi.bin')
-    }
-    return internalStore
-}
+const store = new LazyStore('wbi.bin')
 
 async function clearWbiStore() {
-    const store = await getWbiStore()
     await store.clear()
-    internalStore = null
 }
 
 async function getWbi() {
-    const store = await getWbiStore()
-    return await store.get('wbi') as WbiStore
+    return await store.get<WbiStore>('wbi')
 }
 
 async function setWbi(wbi: WbiStore) {
-    const store = await getWbiStore()
     await store.set('wbi', wbi)
     await store.save()
 }
 
-export { getWbiStore, clearWbiStore, getWbi, setWbi }
+export { clearWbiStore, getWbi, setWbi }
