@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { autoJump, resolveText } from "../utils/linkResolver.ts";
+import { autoJump, canParseURL, resolveText } from "../utils/linkResolver.ts";
 
 const inputText = ref('')
 const processedInputText = computed<string>(() => {
-  if (URL.canParse(inputText.value)) {
+  if (canParseURL(inputText.value)) {
     const url = new URL(inputText.value)
     if (url.protocol === 'http:') {
       url.protocol = 'https:'
@@ -69,7 +69,7 @@ const jump = async () => {
       <template #prepend>
         <ElSelect
           v-model="selectedSearchType"
-          class="!w-40"
+          class="!w-28"
           placeholder="选择搜索类型"
         >
           <ElOption

@@ -2,9 +2,18 @@ import { router } from "../main.ts";
 
 type Types = 'liveroom' | 'user' | 'dynamic' | 'video' | 'suit' | 'lottery'
 
+const canParseURL = (text: string) => {
+    try {
+        new URL(text)
+        return true
+    } catch {
+        return false
+    }
+}
+
 function resolveText(text?: string): Types | null {
     if (text === null || text === undefined) return null
-    if (URL.canParse(text)) {
+    if (canParseURL(text)) {
         const url = new URL(text)
         if (/^https:\/\/live\.bilibili\.com\/\d+(\?.+)?$/.test(text)) {
             return 'liveroom'
@@ -58,7 +67,7 @@ async function resolveB23Link(url: string): Promise<string | null> {
 function resolveUID(text: string): string | null {
     let uid = ''
     if (resolveText(text) === 'user') {
-        if (URL.canParse(text)) {
+        if (canParseURL(text)) {
             uid = new URL(text).pathname.split('?')[0].split('/')[1]
         } else {
             uid = text.substring(4)
@@ -243,6 +252,7 @@ async function autoJump(input?: string, showMessage = false, typeOverride = ''):
 }
 
 export {
+    canParseURL,
     resolveText,
     resolveUID,
     resolveLiveroomID,
