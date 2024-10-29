@@ -28,6 +28,7 @@ const login = async () => {
   }> = await fetch('https://passport.bilibili.com/x/passport-login/web/qrcode/generate')
       .then(d => d.json())
   if (resp.code !== 0) {
+    console.error(resp)
     ElMessage({
       message: '获取登录二维码出错：' + resp.message,
       type: 'error',
@@ -56,6 +57,7 @@ const login = async () => {
     console.log(pollResp)
 
     if (pollResp.code !== 0) {
+      console.error(pollResp)
       ElMessage({
         message: '获取登录信息出错：' + pollResp.message,
         type: 'error',
@@ -65,6 +67,7 @@ const login = async () => {
   } while (pollResp.data.code === 86101 || pollResp.data.code === 86090)
 
   if (pollResp.data.code === 86038) {
+    console.error(pollResp)
     ElMessage({
       message: '二维码已失效，请重新刷新',
       type: 'error',
@@ -109,7 +112,7 @@ const testLoginState = async () => {
     resp = await APIFetch<{
       isLogin: boolean
       uname?: string
-    }>('https://api.bilibili.com/x/web-interface/nav', undefined, { useCache: false })
+    }>(`https://api.bilibili.com/x/web-interface/nav?random=${Math.random()}`, undefined, { useCache: false })
   } catch (e) {
     if ((e as GeneralAPIResponse<unknown>).code === -101) {
       ElMessage({
@@ -117,6 +120,7 @@ const testLoginState = async () => {
         type: 'error',
       })
     } else {
+      console.error(e)
       ElMessage({
         message: '获取登录信息出错：' + e,
         type: 'error',
