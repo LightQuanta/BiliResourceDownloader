@@ -44,28 +44,35 @@ const relatedLinks: RelatedLink[] = [
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full p-16">
-    <span class="text-xl">BiliResourceDownloader</span>
-    <span class="text-sm">版本 0.1.0</span>
-    <br>
-    <span>多功能资源下载工具</span>
-    <span>本软件开源免费，基于MIT协议进行开源</span>
-    <br>
-    <span
-      v-for="related in relatedLinks"
-      :key="related.name"
-    >
-      <span>{{ related.name }}：</span>
-      <ElLink
-        v-for="link in related.links"
-        :key="link.link"
-        :href="link.link"
-        type="primary"
-        target="_blank"
-        class="mr-2"
+  <div class="flex flex-col w-full h-full p-12">
+    <div class="max-w-screen-lg overflow-hidden flex flex-col bg-gray-100 rounded-lg p-8">
+      <span class="text-xl">BiliResourceDownloader</span>
+      <span class="text-sm">版本 0.1.0</span>
+      <ElDivider />
+      <span>多功能资源下载工具</span>
+      <span>本软件开源免费，基于MIT协议进行开源</span>
+      <br>
+      <div
+        v-for="related in relatedLinks"
+        :key="related.name"
+        class="flex mb-2"
       >
-        {{ link.name }}
-      </ElLink>
-    </span>
+        <div class="w-24 shrink-0">
+          {{ related.name }}：
+        </div>
+        <div class="flex flex-wrap justify-start overflow-hidden">
+          <ElLink
+            v-for="link in related.links"
+            :key="link.link"
+            :href="link.link"
+            type="primary"
+            target="_blank"
+            class="mr-4 text-ellipsis"
+          >
+            {{ link.name }}
+          </ElLink>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
