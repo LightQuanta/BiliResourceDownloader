@@ -71,7 +71,7 @@ const fetchData = async () => {
       name.value = packageDetail.text
       emojiInfo.value = packageDetail.emote.map(e => {
         return {
-          name: e.meta.alias ?? '',
+          name: e.meta.alias ?? e.text,
           url: e.url,
         }
       }) ?? []
@@ -205,16 +205,20 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
     </ElSpace>
     <div
       v-else
-      class="flex flex-col gap-4 justify-center"
+      class="flex flex-wrap gap-4 justify-center"
     >
-      <ElText
-        type="primary"
-        size="large"
+      <ElCard
         v-for="emoji in emojiInfo"
         :key="emoji.name"
       >
-        {{ emoji.name }}
-      </ElText>
+        <ElText
+          type="primary"
+          size="large"
+          class="block"
+        >
+          {{ emoji.name }}
+        </ElText>
+      </ElCard>
     </div>
   </div>
 </template>
