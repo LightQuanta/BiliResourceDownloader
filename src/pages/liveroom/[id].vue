@@ -254,7 +254,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
     </ElDescriptions>
 
     <template v-if="hasImages">
-      <ElDivider>直播间相关图片</ElDivider>
+      <CustomDivider>直播间相关图片</CustomDivider>
       <ElSpace
         class="w-full justify-center"
         direction="vertical"
@@ -296,7 +296,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
     </ElDivider>
     <LoginRequired>
       <div v-if="upEmoji !== undefined">
-        <ElDivider>UP主大表情</ElDivider>
+        <CustomDivider>UP主大表情</CustomDivider>
         <ElSpace
           class="justify-center w-full"
           wrap
@@ -314,7 +314,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
         </ElSpace>
       </div>
       <div v-if="roomEmoji !== undefined">
-        <ElDivider>房间专属表情</ElDivider>
+        <CustomDivider>房间专属表情</CustomDivider>
         <ElSpace
           class="justify-center w-full"
           wrap

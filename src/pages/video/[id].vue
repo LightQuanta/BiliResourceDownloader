@@ -207,7 +207,7 @@ watch(() => route.params.id, fetchData, { immediate: true })
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider>视频图片</ElDivider>
+    <CustomDivider>视频图片</CustomDivider>
     <ElSpace
       class="w-full justify-center"
       wrap

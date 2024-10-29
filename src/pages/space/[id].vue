@@ -589,7 +589,7 @@ const jump = async () => {
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider>用户相关图片</ElDivider>
+    <CustomDivider>用户相关图片</CustomDivider>
     <div class="flex flex-wrap gap-4 justify-center items-center">
       <ImageVideoCard
         :download-name="`${userName} - 头像`"
@@ -620,7 +620,7 @@ const jump = async () => {
       />
     </div>
     <template v-if="chargeEmojiInfo.length > 0">
-      <ElDivider>充电表情</ElDivider>
+      <CustomDivider>充电表情</CustomDivider>
       <ElSpace
         class="w-full justify-center"
         wrap

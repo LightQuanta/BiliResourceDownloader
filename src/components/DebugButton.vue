@@ -81,7 +81,7 @@ const JSONObject = computed(() => JSON.parse(responseText.value))
         </ElDescriptionsItem>
       </ElDescriptions>
 
-      <ElDivider>原始响应数据</ElDivider>
+      <CustomDivider>原始响应数据</CustomDivider>
       <JsonEditorVue
         v-model="JSONObject"
         read-only

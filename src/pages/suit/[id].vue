@@ -452,7 +452,7 @@ const resolveLink = async () => {
         v-for="spaceBg in spaceBgs"
         :key="spaceBg.item_id"
       >
-        <ElDivider>空间背景图 - {{ spaceBg.name }}</ElDivider>
+        <CustomDivider>空间背景图 - {{ spaceBg.name }}</CustomDivider>
         <ElSpace
           class="w-full justify-center"
           wrap
@@ -490,7 +490,7 @@ const resolveLink = async () => {
         v-for="emojiInfo in emojiPackages"
         :key="emojiInfo.item_id"
       >
-        <ElDivider>表情包 - {{ emojiInfo.name }}</ElDivider>
+        <CustomDivider>表情包 - {{ emojiInfo.name }}</CustomDivider>
         <ElSpace
           class="w-full justify-center"
           wrap
@@ -510,7 +510,7 @@ const resolveLink = async () => {
 
     <!-- 进度条 -->
     <template v-if="playIcons?.length ?? 0 > 0">
-      <ElDivider>进度条 - {{ playIcons[0].name }}</ElDivider>
+      <CustomDivider>进度条 - {{ playIcons[0].name }}</CustomDivider>
       <div
         v-for="icon in playIcons"
         :key="icon.item_id"
@@ -576,7 +576,7 @@ const resolveLink = async () => {
         v-for="skin in skins"
         :key="skin.item_id"
       >
-        <ElDivider>皮肤 - {{ skin.name }}</ElDivider>
+        <CustomDivider>皮肤 - {{ skin.name }}</CustomDivider>
         <ElSpace
           class="w-full justify-center"
           wrap
@@ -603,7 +603,7 @@ const resolveLink = async () => {
 
     <!-- 点赞动画 -->
     <template v-if="thumpUps.length > 0">
-      <ElDivider>点赞动画</ElDivider>
+      <CustomDivider>点赞动画</CustomDivider>
       <ElSpace
         class="w-full justify-center"
         wrap
@@ -620,7 +620,7 @@ const resolveLink = async () => {
     </template>
 
     <!-- 杂项 -->
-    <ElDivider>杂项</ElDivider>
+    <CustomDivider>杂项</CustomDivider>
     <ElSpace
       class="w-full justify-center"
       wrap

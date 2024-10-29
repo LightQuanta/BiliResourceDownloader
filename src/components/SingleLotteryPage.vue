@@ -206,7 +206,7 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
       />
     </ElSpace>
 
-    <ElDivider>其他内容</ElDivider>
+    <CustomDivider>其他内容</CustomDivider>
     <ElSpace
       class="justify-center w-full"
       wrap

@@ -37,10 +37,3 @@
 .el-image-viewer__wrapper {
     top: var(--title-bar-height) !important;
 }
-
-/* ElDivider内容 */
-.el-divider__text {
-    border-radius: 9999px;
-    width: 100%;
-    text-align: center;
-}

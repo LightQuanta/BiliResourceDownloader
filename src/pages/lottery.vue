@@ -370,7 +370,7 @@ const generateDownloadTask = async () => {
       </ElDescriptionsItem>
     </ElDescriptions>
 
-    <ElDivider>收藏集内容</ElDivider>
+    <CustomDivider>收藏集内容</CustomDivider>
 
     <ElRadioGroup
       v-show="(parsedLotteryInfo?.length ?? 0) > 1"
@@ -410,7 +410,7 @@ const generateDownloadTask = async () => {
 
         <!-- 收藏集勋章展示 -->
         <template v-if="medals.length > 0">
-          <ElDivider>收藏集勋章</ElDivider>
+          <CustomDivider>收藏集勋章</CustomDivider>
           <ElTabs
             class="h-[512px]"
             stretch
