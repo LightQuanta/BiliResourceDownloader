@@ -84,18 +84,18 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
         }
     }
 
+    let cookie: string | undefined
+    if (useCookie) {
+        cookie = await getLoginCookie()
+    }
+
     const options: RequestInit & ClientOptions = {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
-            'Cookie': 'bili_ticket=1&b_nut=1&buvid3=1&buvid4=1',
+            // 无cookie时，填写这几个参数貌似也能过一些验证
+            'Cookie': cookie ?? 'bili_ticket=1; b_nut=1; buvid3=1; buvid4=1',
             'Origin': 'https://www.bilibili.com',
         },
-    }
-    if (useCookie) {
-        const cookie = await getLoginCookie()
-        if (cookie !== undefined) {
-            options.headers['Cookie'] = cookie
-        }
     }
 
     const finalOptions = { ...options, ...init }
