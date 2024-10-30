@@ -154,12 +154,8 @@ const connect9Pic = async () => {
 
   const wArray = pics.map(p => p.width)
   const w = wArray.slice(0, 3).reduce((acc, curr) => curr + acc, 0)
-  const hArray = [
-    Math.min(pics[0].height, pics[1].height, pics[2].height),
-    Math.min(pics[3].height, pics[4].height, pics[5].height),
-    Math.min(pics[6].height, pics[7].height, pics[8].height),
-  ]
-  const h = hArray.reduce((acc, curr) => acc + curr, 0)
+  const hMin = Math.min(...pics.map(p => p.height))
+  const h = hMin * 3
 
   canvas.width = w
   canvas.height = h
@@ -172,9 +168,9 @@ const connect9Pic = async () => {
 
   imageBitmaps.forEach((bitmap, index) => {
     const x = (wArray[index % 3 - 1] ?? 0) + (wArray[index % 3 - 2] ?? 0)
-    const y = (hArray[Math.floor(index / 3) - 1] ?? 0) + (hArray[Math.floor(index / 3) - 2] ?? 0)
+    const y = hMin * Math.floor(index / 3)
     const imgW = wArray[index]
-    const imgH = hArray[Math.floor(index / 3)]
+    const imgH = hMin
 
     ctx.drawImage(bitmap, 0, 0, imgW, imgH, x, y, imgW, imgH)
   })
