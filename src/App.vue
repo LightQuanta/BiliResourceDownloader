@@ -144,7 +144,7 @@ watch(() => route.fullPath, () => {
 
         <ElText
           size="small"
-          class="overflow-ellipsis shrink"
+          class="overflow-ellipsis shrink pointer-events-none"
         >
           BiliResourceDownloader
         </ElText>
