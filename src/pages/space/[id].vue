@@ -8,7 +8,6 @@ import {
   DynamicInfo,
   ExtremelyDetailedUserInfo,
   GeneralAPIResponse,
-  PendantInfo,
   PowerRights,
   SuitDetail,
   UserDynamicList
@@ -20,56 +19,72 @@ import DebugButton from "../../components/DebugButton.vue";
 const route = useRoute<'/space/[id]'>()
 const loading = ref(false)
 
-const uid = computed(() => route.params.id)
-const roomID = ref(0)
-const roomTitle = ref<string>()
-
-const fans = ref(0)
-const attention = ref(0)
-const like = ref(0)
-
+// 基础用户信息
 const userInfo = ref<BasicUserInfo>()
+// 详细用户信息
 const detailedUserInfo = ref<ExtremelyDetailedUserInfo>()
-// 用户名
-const userName = ref('')
-// 头像
-const faceURL = ref('')
-// 签名
-const userSign = ref('')
-// 性别
-const gender = ref('未知')
-// 空间tag（IP属地等信息，需要app端access_key验证，放弃解析）
-const spaceTags = ref<string[]>([])
-
-// app端头图
-const appImage = ref<string>()
-// app端头图（暗色）
-const appNightImage = ref<string>()
-
+// 直播间信息
+const liveUserInfo = ref<BasicLiveUserInfo>()
 // 空间公告
 const userNotice = ref('')
-
-// 粉丝牌信息
-const fansMedal = ref<{
-  level: number
-  medal_name: string
-}>()
-
-// 头像框信息
-const userPendant = ref<PendantInfo>()
-
-// 收藏集头图
-const lotteryCards = ref<{
-  title: string
-  jumpLink: string
-  cover: string
-}[]>([])
-
-// 充电表情信息
-const chargeEmojiInfo = ref<ChargeEmojiInfo[]>([])
-
+// 充电权益
+const powerRights = ref<PowerRights>()
 // 动态信息（仅存储第一个）
 const dynamicInfo = ref<DynamicInfo>()
+
+// 用户UID
+const uid = computed(() => route.params.id)
+// 直播间号
+const roomID = computed(() => detailedUserInfo.value?.live.roomid ?? liveUserInfo.value?.room_id ?? -1)
+// 直播间标题
+const roomTitle = computed(() => detailedUserInfo.value?.live.title ?? roomID.value)
+
+// 粉丝数
+const fans = computed(() => detailedUserInfo.value?.card?.fans ?? userInfo.value?.follower)
+// 关注数
+const attention = computed(() => detailedUserInfo.value?.card.attention ?? userInfo.value?.card.attention)
+// 点赞数
+const like = computed(() => detailedUserInfo.value?.card.likes.like_num ?? userInfo.value?.like_num)
+
+// 用户名
+const userName = computed(() => detailedUserInfo.value?.card.name ?? userInfo.value?.card.name)
+// 头像
+const faceURL = computed(() => detailedUserInfo.value?.card.face ?? userInfo.value?.card.name)
+// 签名
+const userSign = computed(() => detailedUserInfo.value?.card.sign ?? userInfo.value?.card.sign)
+// 性别
+const gender = computed(() => userInfo.value?.card.sex)
+// 空间tag（IP属地等信息，需要app端access_key验证，放弃解析）
+const spaceTags = computed(() => detailedUserInfo.value?.card.space_tag.map(t => t.title) ?? [])
+
+// app端头图
+const appImage = computed(() => detailedUserInfo.value?.images.imgUrl)
+// app端头图（暗色）
+const appNightImage = computed(() => detailedUserInfo.value?.images.night_imgurl)
+
+
+// 粉丝牌信息
+const fansMedal = computed(() => detailedUserInfo.value?.card.live_fans_wearing)
+// 头像框信息
+const userPendant = computed(() => detailedUserInfo.value?.card.pendant ?? userInfo.value?.card.pendant)
+// 收藏集头图
+const lotteryCards = computed(() => detailedUserInfo.value?.images?.collection_top_simple?.top?.result?.map(r => {
+  return {
+    title: r.title.title + ' ' + r.title.sub_title,
+    jumpLink: r.extra.detail_jump_url,
+    cover: r.cover,
+  }
+}) ?? [])
+
+// 充电表情信息
+const chargeEmojiInfo = computed(() => {
+  if (!powerRights.value) return ([] as ChargeEmojiInfo[])
+  const rights = powerRights.value.privilege_rights
+  const levels = Object.keys(rights).sort((a, b) => +b - +a)[0]
+  const levelRights = rights[levels]
+  return levelRights.emote?.emojis ?? []
+})
+
 // 根据动态信息提取的装扮信息
 const decorateInfo = computed(() => dynamicInfo.value?.modules.module_author.decorate)
 
@@ -77,7 +92,7 @@ const debugRequestNames = ref<string[]>([])
 
 const generateDownloadTask = () => {
   const task: BatchDownloadTask = {
-    name: userName.value,
+    name: userName.value ?? '',
     files: [],
   }
 
@@ -88,8 +103,8 @@ const generateDownloadTask = () => {
 
   if (hasPendant.value) {
     task.files.push({
-      path: `头像框 - ${userInfo.value?.card.pendant?.name}`,
-      url: userInfo.value?.card.pendant?.image_enhance ?? '',
+      path: `头像框 - ${userPendant.value?.name}`,
+      url: userPendant.value?.image_enhance ?? '',
     })
   }
 
@@ -125,7 +140,22 @@ const generateDownloadTask = () => {
 }
 
 const fetchData = async () => {
+  if (!/^\d+$/.test(uid.value)) {
+    ElMessage({
+      message: '无效的用户UID！',
+      type: 'error',
+    })
+    return
+  }
+
   loading.value = true
+
+  userInfo.value = undefined
+  detailedUserInfo.value = undefined
+  liveUserInfo.value = undefined
+  userNotice.value = ''
+  powerRights.value = undefined
+  dynamicInfo.value = undefined
 
   try {
     debugRequestNames.value.push('用户详细信息')
@@ -145,34 +175,7 @@ const fetchData = async () => {
         }
       }
     })
-    const data = resp.data
-    detailedUserInfo.value = data
-
-    userName.value = data.card.name
-    faceURL.value = data.card.face
-    userSign.value = data.card.sign
-
-    fans.value = data.card.fans
-    like.value = data.card.likes.like_num
-    attention.value = data.card.attention
-
-    fansMedal.value = data.card.live_fans_wearing
-    spaceTags.value = data.card.space_tag.map(t => t.title)
-    userPendant.value = data.card.pendant
-
-    appImage.value = data.images.imgUrl
-    appNightImage.value = data.images.night_imgurl
-
-    lotteryCards.value = data.images?.collection_top_simple?.top?.result?.map(r => {
-      return {
-        title: r.title.title + ' ' + r.title.sub_title,
-        jumpLink: r.extra.detail_jump_url,
-        cover: r.cover,
-      }
-    }) ?? []
-
-    roomID.value = data.live.roomid
-    roomTitle.value = data.live.title
+    detailedUserInfo.value = resp.data
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -195,17 +198,6 @@ const fetchData = async () => {
       },
     })
     basicUserInfo = resp.data
-
-    userName.value = basicUserInfo.card.name
-    faceURL.value = basicUserInfo.card.face
-    userSign.value = basicUserInfo.card.sign
-    gender.value = basicUserInfo.card.sex
-
-    fans.value = basicUserInfo.follower
-    like.value = basicUserInfo.like_num
-    attention.value = basicUserInfo.card.attention
-
-    userPendant.value = basicUserInfo.card.pendant
   } catch (e) {
     console.error(e)
     ElMessage({
@@ -228,7 +220,7 @@ const fetchData = async () => {
           extraParams: { uid: '用户UID' },
         },
       })
-      roomID.value = resp.data.room_id
+      liveUserInfo.value = resp.data
     } catch (e) {
       console.error(e)
       ElMessage({
@@ -240,7 +232,6 @@ const fetchData = async () => {
 
 
   // 获取用户充电信息
-  let rightsData: PowerRights | undefined
   try {
     debugRequestNames.value.push('用户充电信息')
     const url3 = new URL('https://api.bilibili.com/x/upowerv2/gw/rights/index')
@@ -251,7 +242,7 @@ const fetchData = async () => {
         extraParams: { up_mid: '用户UID' },
       },
     })
-    rightsData = resp.data
+    powerRights.value = resp.data
   } catch (e) {
     // 203010似乎是无充电信息专属错误码，只处理空充电信息以外的错误
     if ((e as GeneralAPIResponse<unknown>).code !== 203010) {
@@ -260,16 +251,6 @@ const fetchData = async () => {
         message: `获取充电信息出错：${e}`,
         type: 'error',
       })
-    }
-  }
-
-  if (rightsData !== undefined) {
-    const rights = rightsData.privilege_rights
-    const levels = Object.keys(rights).sort((a, b) => +b - +a)[0]
-    const levelRights = rights[levels]
-
-    if (levelRights.emote !== undefined) {
-      chargeEmojiInfo.value = levelRights.emote.emojis
     }
   }
 
@@ -316,10 +297,10 @@ const fetchData = async () => {
 onMounted(fetchData)
 watch(uid, fetchData)
 
-const hasPendant = computed(() => userInfo.value?.card?.pendant.pid ?? 0 !== 0)
+const hasPendant = computed(() => (userPendant.value?.pid ?? 0) !== 0)
 
 const jumpToPendant = async () => {
-  const id = userInfo.value?.card.pendant.n_pid ?? -1
+  const id = userPendant.value?.n_pid ?? -1
   const url = new URL('https://api.bilibili.com/x/garb/v2/user/suit/benefit')
   url.searchParams.set('item_id', id.toString())
   url.searchParams.set('part', 'card')
@@ -380,10 +361,7 @@ const jump = async () => {
 </script>
 
 <template>
-  <div
-    class="flex flex-col"
-    v-loading="loading"
-  >
+  <div class="flex flex-col">
     <!-- 信息展示界面 -->
     <ElDescriptions
       :column="6"
@@ -455,7 +433,7 @@ const jump = async () => {
       <!-- 收藏集/装扮信息展示 -->
       <ElDescriptionsItem
         :label="decorateDescription"
-        v-if="(decorateInfo?.name ?? '').length > 0"
+        v-if="decorateInfo?.name"
         :span="6"
       >
         <div class="flex items-center">
@@ -489,7 +467,7 @@ const jump = async () => {
           type="primary"
           @click="jumpToPendant"
         >
-          {{ userInfo?.card.pendant.name }}
+          {{ userPendant?.name }}
         </ElLink>
       </ElDescriptionsItem>
 
@@ -598,8 +576,8 @@ const jump = async () => {
       />
       <ImageVideoCard
         v-if="hasPendant"
-        :image="userInfo?.card.pendant?.image_enhance"
-        :title="`头像框 - ${userInfo?.card.pendant.name}`"
+        :image="userPendant?.image_enhance"
+        :title="`头像框 - ${userPendant?.name}`"
       />
       <ImageVideoCard
         v-if="appImage"
