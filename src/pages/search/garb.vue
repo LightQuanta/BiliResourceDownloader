@@ -147,7 +147,7 @@ const filteredCards = computed(() => {
     </div>
 
     <ElText class="self-start my-[-8px]">
-      * 仅可搜索在售收藏集
+      * 仅可搜索在售的收藏集和装扮，已下架的收藏集和装扮无法搜索到，请直接在主页输入链接进行解析
     </ElText>
 
     <div

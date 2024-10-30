@@ -28,7 +28,7 @@ const onChange = () => {
 const jump = async () => {
   if (processedInputText.value === '') {
     ElMessage({
-      message: '请输入要搜索的内容！',
+      message: '请输入要解析的内容！',
       type: 'error',
     })
     return
@@ -43,7 +43,7 @@ const jump = async () => {
       selectedSearchType.value = inferredType
     } else {
       ElMessage({
-        message: '无法自动推断出要搜索的类型，请手动选择！',
+        message: '无法自动推断出要解析的类型，请手动选择！',
         type: 'error',
       })
       return
@@ -58,7 +58,7 @@ const jump = async () => {
   <div class="flex justify-center items-center w-full h-full">
     <ElInput
       v-model="inputText"
-      placeholder="输入要搜索的内容"
+      placeholder="输入要解析的链接"
       autofocus
       clearable
       @input="onChange"

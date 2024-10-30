@@ -240,9 +240,11 @@ const generateDownloadTask = () => {
   return task
 }
 
+const loading = ref(false)
 const fetchData = async () => {
   ids.value = route.params.id.split(',')
 
+  loading.value = true
   let suitDetail: SuitDetail
 
   suitDetail = {
@@ -268,6 +270,15 @@ const fetchData = async () => {
       }
     })
   }))).map(r => r.data)
+
+  if (!results[0]) {
+    ElMessage({
+      message: '解析装扮信息失败，该装扮信息无效！',
+      type: 'error',
+    })
+    loading.value = false
+    return
+  }
 
   jumpLink.value = results[0].buy_link
   suitDetail.buy_link = results[0].buy_link
@@ -363,6 +374,8 @@ const fetchData = async () => {
   spaceBgs.value = suitDetail.suit_items.space_bg ?? []
   thumpUps.value = suitDetail.suit_items.thumbup ?? []
   pendants.value = suitDetail.suit_items.pendant ?? []
+
+  loading.value = false
 }
 
 watch(() => route.params.id, fetchData, { immediate: true })
@@ -378,7 +391,7 @@ const resolveLink = async () => {
 </script>
 
 <template>
-  <div>
+  <div v-loading="loading">
     <ElDescriptions
       border
       :column="2"
@@ -445,6 +458,14 @@ const resolveLink = async () => {
         </div>
       </ElDescriptionsItem>
     </ElDescriptions>
+
+    <ElText
+      class="self-start block mt-2"
+      type="danger"
+      v-if="!loading && jumpLink.length === 0"
+    >
+      * 该装扮来源信息缺失，可能已经下架或无效
+    </ElText>
 
     <!-- 空间背景图 -->
     <template v-if="spaceBgs?.length ?? 0 > 0">
@@ -654,18 +675,18 @@ const resolveLink = async () => {
 
       <!-- 加载动画 -->
       <ImageVideoCard
-        v-for="loading in loadings"
-        :key="loading.item_id"
-        :title="loading.name + ' - 加载动画'"
-        :image="loading.properties.loading_url"
-        :download-name="`${name} - ${loading.name} - 加载动画`"
+        v-for="load in loadings"
+        :key="load.item_id"
+        :title="load.name + ' - 加载动画'"
+        :image="load.properties.loading_url"
+        :download-name="`${name} - ${load.name} - 加载动画`"
       />
       <ImageVideoCard
-        v-for="loading in loadings"
-        :key="loading.item_id"
-        :title="loading.name + ' - 加载动画(序列帧)'"
-        :image="loading.properties.loading_frame_url"
-        :download-name="`${name} - ${loading.name} - 加载动画(序列帧)`"
+        v-for="load in loadings"
+        :key="load.item_id"
+        :title="load.name + ' - 加载动画(序列帧)'"
+        :image="load.properties.loading_frame_url"
+        :download-name="`${name} - ${load.name} - 加载动画(序列帧)`"
       />
     </ElSpace>
   </div>
