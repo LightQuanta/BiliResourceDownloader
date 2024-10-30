@@ -395,6 +395,8 @@ interface DynamicInfo {
                 // 动态内容
                 opus: {
                     pics?: {
+                        height: number
+                        width: number
                         url: string
                     }[]
                     summary: {

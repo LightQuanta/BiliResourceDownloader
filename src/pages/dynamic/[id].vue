@@ -18,9 +18,13 @@ const authorInfo = computed(() => dynamicData.value?.modules.module_author)
 // 动态信息
 const dynamicInfo = computed(() => dynamicData.value?.modules.module_dynamic)
 
+// 九宫格图拼接后数据
+const ninePicData = ref('')
+
 const fetchData = async (paramID: string) => {
   loading.value = true
   dynamicID.value = paramID
+  ninePicData.value = ''
 
   const url = new URL('https://api.bilibili.com/x/polymer/web-dynamic/v1/detail')
   url.searchParams.set('id', paramID)
@@ -127,6 +131,57 @@ const generateDownloadTask = () => {
 
 const pictures = computed(() => dynamicInfo.value?.major?.opus?.pics ?? [])
 const pictureLinks = computed(() => pictures.value.map(p => p.url))
+const ninePicRenderCanvasRef = ref<HTMLCanvasElement>()
+// 九宫格判定
+const is9Pic = computed(() => {
+  if (pictures.value.length < 9) return false
+
+  // 根据观察得来的规律，暂且认为拥有至少9张图，且第一、二、三列图片宽度相同的动态为九宫格动态
+  const w = pictures.value.map(p => p.width)
+  return w[0] === w[3] && w[3] === w[6]
+      && w[1] === w[4] && w[4] === w[7]
+      && w[2] === w[5] && w[5] === w[8]
+})
+
+const ninePicLoading = ref(false)
+const connect9Pic = async () => {
+  ninePicLoading.value = true
+  const canvas = ninePicRenderCanvasRef.value
+  const ctx = ninePicRenderCanvasRef.value?.getContext('2d') as CanvasRenderingContext2D
+  if (!canvas || !ctx || !is9Pic.value) return
+
+  const pics = pictures.value
+
+  const wArray = pics.map(p => p.width)
+  const w = wArray.slice(0, 3).reduce((acc, curr) => curr + acc, 0)
+  const hArray = [
+    Math.min(pics[0].height, pics[1].height, pics[2].height),
+    Math.min(pics[3].height, pics[4].height, pics[5].height),
+    Math.min(pics[6].height, pics[7].height, pics[8].height),
+  ]
+  const h = hArray.reduce((acc, curr) => acc + curr, 0)
+
+  canvas.width = w
+  canvas.height = h
+
+  const imageBitmaps = await Promise.all(
+      pics.map(p => fetch(p.url.replace('http://', 'https://'))
+          .then(d => d.blob())
+          .then(b => createImageBitmap(b)))
+  )
+
+  imageBitmaps.forEach((bitmap, index) => {
+    const x = (wArray[index % 3 - 1] ?? 0) + (wArray[index % 3 - 2] ?? 0)
+    const y = (hArray[Math.floor(index / 3) - 1] ?? 0) + (hArray[Math.floor(index / 3) - 2] ?? 0)
+    const imgW = wArray[index]
+    const imgH = hArray[Math.floor(index / 3)]
+
+    ctx.drawImage(bitmap, 0, 0, imgW, imgH, x, y, imgW, imgH)
+  })
+
+  ninePicData.value = canvas.toDataURL()
+  ninePicLoading.value = false
+}
 
 const jump = async () => {
   await autoJump(authorInfo.value?.decorate?.jump_url, true)
@@ -197,12 +252,15 @@ const jump = async () => {
         </div>
       </ElDescriptionsItem>
 
+      <!-- 动态类型 -->
       <ElDescriptionsItem
         :span="2"
         label="类型"
       >
         {{ dynamicTypeDesc }}
       </ElDescriptionsItem>
+
+      <!-- 动态标题 -->
       <ElDescriptionsItem
         v-if="dynamicInfo?.major?.opus?.title"
         :span="2"
@@ -276,6 +334,51 @@ const jump = async () => {
       </ElDescriptionsItem>
     </ElDescriptions>
 
+    <!-- 九宫格动态拼接 -->
+    <div v-if="is9Pic">
+      <ElText
+        size="small"
+      >
+        该动态可能是一个九宫格动态，
+        <ElLink
+          type="primary"
+          size="small"
+          @click="connect9Pic"
+          v-loading="ninePicLoading"
+          v-if="ninePicData.length === 0"
+        >
+          尝试拼接九宫格图片
+        </ElLink>
+        <ElLink
+          type="success"
+          v-else
+        >
+          拼接成功！
+        </ElLink>
+      </ElText>
+      <canvas
+        class="hidden"
+        ref="ninePicRenderCanvasRef"
+      />
+    </div>
+
+    <CustomDivider v-if="ninePicData.length > 0">
+      九宫格拼接图
+    </CustomDivider>
+    <ElSpace
+      class="w-full justify-center"
+      v-if="ninePicData.length > 0"
+      wrap
+    >
+      <ImageVideoCard
+        :image="ninePicData"
+        title="九宫格拼接图"
+        :download-name="`动态${dynamicID} - 九宫格拼接图`"
+        suffix="png"
+      />
+    </ElSpace>
+
+    <!-- 动态图片 -->
     <CustomDivider v-if="pictureLinks?.length ?? 0 > 0">
       动态配图
     </CustomDivider>

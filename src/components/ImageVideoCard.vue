@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { download } from '@tauri-apps/plugin-upload'
 import { save } from '@tauri-apps/plugin-dialog'
+import { invoke } from "@tauri-apps/api/core";
 
-const prop = defineProps<{
+const props = defineProps<{
   image?: string
   title?: string
   subtitle?: string
@@ -14,11 +15,15 @@ const prop = defineProps<{
   video?: string
 
   lazy?: boolean
+  suffix?: string
 }>()
 
+const saveDataURL = async (path: string, data: string) => {
+  return await invoke('save_data_url', { path, data }) === 'ok'
+}
 const downloadFile = async (url: string) => {
-  const suffix = url.split('?')[0].split('.').pop() ?? ''
-  const name = (prop.downloadName ?? prop.title) + '.' + suffix
+  const suffix = props.suffix ?? url.split('?')[0].split('.').pop() ?? ''
+  const name = (props.downloadName ?? props.title) + '.' + suffix
 
   const path = await save({
     defaultPath: name,
@@ -30,6 +35,22 @@ const downloadFile = async (url: string) => {
     ],
   })
   if (path === null) return
+
+  // dataURL额外处理
+  if (url.startsWith('data:')) {
+    if (await saveDataURL(path, url)) {
+      ElMessage({
+        message: `${name}保存成功`,
+        type: 'success',
+      })
+    } else {
+      ElMessage({
+        message: '保存时出现未知错误',
+        type: 'error',
+      })
+    }
+    return
+  }
 
   // 必须设置UA才能绕过视频下载检测
   const header = new Map<string, string>()
