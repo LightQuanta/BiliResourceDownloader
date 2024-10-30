@@ -49,6 +49,7 @@ const suitDescription = ref<string>()
 const saleStartTime = ref(0)
 
 const saleType = ref('')
+const currentState = ref('')
 
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   const landscapes: string[] = []
@@ -256,6 +257,7 @@ const fetchData = async () => {
     suit_items: {},
     buy_link: '',
     biz_sale_type: '',
+    state: '',
   }
 
   // 批量获取装扮所有部分的信息
@@ -285,6 +287,7 @@ const fetchData = async () => {
   }
 
   suitDetail.biz_sale_type = results[0].biz_sale_type
+  suitDetail.state = results[0].state
   suitDetail.buy_link = results[0].buy_link
   suitDetail.name = suitDetail.name === '未知' ? results[0].name : suitDetail.name
 
@@ -361,6 +364,7 @@ const fetchData = async () => {
   name.value = suitDetail.name
   mid.value = suitDetail.properties?.fan_mid ?? ''
   saleType.value = suitDetail.biz_sale_type
+  currentState.value = suitDetail.state
 
   cards.value = suitDetail.suit_items.card ?? []
   cardBgs.value = suitDetail.suit_items.card_bg ?? []
@@ -477,6 +481,14 @@ const resolveLink = async () => {
       v-if="!loading && saleType !== 'vip' && mid.length === 0 && jumpLink.length === 0"
     >
       * 该装扮来源信息缺失，可能已经下架或无效
+    </ElText>
+
+    <ElText
+      class="self-start block mt-2"
+      type="danger"
+      v-if="currentState === 'inactive'"
+    >
+      * 该装扮已下架
     </ElText>
 
     <!-- 空间背景图 -->

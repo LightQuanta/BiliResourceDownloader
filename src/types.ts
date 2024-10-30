@@ -222,6 +222,8 @@ interface SuitDetail {
     properties?: SuitProperties
     // 销售类型，pay、vip等
     biz_sale_type: string
+    // 当前状态，active、inactive等
+    state: string
     suit_items: {
         // 粉丝牌背景（动态右上角那个）
         card?: GeneralSuitItem<SuitCardProperties>[]
