@@ -220,6 +220,8 @@ interface SuitDetail {
     name: string
     part_id: SuitPartType
     properties?: SuitProperties
+    // 销售类型，pay、vip等
+    biz_sale_type: string
     suit_items: {
         // 粉丝牌背景（动态右上角那个）
         card?: GeneralSuitItem<SuitCardProperties>[]

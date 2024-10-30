@@ -48,6 +48,8 @@ const pendants = ref<GeneralSuitItem<SuitPendantProperties>[]>([])
 const suitDescription = ref<string>()
 const saleStartTime = ref(0)
 
+const saleType = ref('')
+
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   const landscapes: string[] = []
   const portraits: string[] = []
@@ -245,13 +247,15 @@ const fetchData = async () => {
   ids.value = route.params.id.split(',')
 
   loading.value = true
-  let suitDetail: SuitDetail
+  saleType.value = ''
 
+  let suitDetail: SuitDetail
   suitDetail = {
     name: route.query.name as string ?? '未知',
     part_id: 6,
     suit_items: {},
     buy_link: '',
+    biz_sale_type: '',
   }
 
   // 批量获取装扮所有部分的信息
@@ -280,7 +284,7 @@ const fetchData = async () => {
     return
   }
 
-  jumpLink.value = results[0].buy_link
+  suitDetail.biz_sale_type = results[0].biz_sale_type
   suitDetail.buy_link = results[0].buy_link
   suitDetail.name = suitDetail.name === '未知' ? results[0].name : suitDetail.name
 
@@ -356,6 +360,7 @@ const fetchData = async () => {
 
   name.value = suitDetail.name
   mid.value = suitDetail.properties?.fan_mid ?? ''
+  saleType.value = suitDetail.biz_sale_type
 
   cards.value = suitDetail.suit_items.card ?? []
   cardBgs.value = suitDetail.suit_items.card_bg ?? []
@@ -422,6 +427,13 @@ const resolveLink = async () => {
       </ElDescriptionsItem>
 
       <ElDescriptionsItem
+        label="来源"
+        v-if="saleType === 'vip'"
+      >
+        大会员专属
+      </ElDescriptionsItem>
+
+      <ElDescriptionsItem
         label="相关链接"
         v-if="jumpLink.length > 0"
       >
@@ -462,7 +474,7 @@ const resolveLink = async () => {
     <ElText
       class="self-start block mt-2"
       type="danger"
-      v-if="!loading && jumpLink.length === 0"
+      v-if="!loading && saleType !== 'vip' && mid.length === 0 && jumpLink.length === 0"
     >
       * 该装扮来源信息缺失，可能已经下架或无效
     </ElText>
