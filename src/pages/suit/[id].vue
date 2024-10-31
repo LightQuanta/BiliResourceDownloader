@@ -11,6 +11,7 @@ import {
   SuitPartType,
   SuitPendantProperties,
   SuitPlayIconProperties,
+  SuitRank,
   SuitSkinProperties,
   SuitSpaceBGProperties,
   SuitThumbUpProperties
@@ -50,6 +51,7 @@ const saleStartTime = ref(0)
 
 const saleType = ref('')
 const currentState = ref('')
+const saleCount = ref<number>()
 
 const getSpaceBgImages = (spaceBgProp: Record<string, string>) => {
   const landscapes: string[] = []
@@ -249,6 +251,7 @@ const fetchData = async () => {
 
   loading.value = true
   saleType.value = ''
+  saleCount.value = undefined
 
   let suitDetail: SuitDetail
   suitDetail = {
@@ -385,6 +388,42 @@ const fetchData = async () => {
   thumpUps.value = suitDetail.suit_items.thumbup ?? []
   pendants.value = suitDetail.suit_items.pendant ?? []
 
+  try {
+    const url = new URL('https://api.bilibili.com/x/garb/rank/fan/recent')
+    url.searchParams.set('item_id', ids.value[0])
+    debugRequestNames.value.push('装扮播报')
+    const resp = await APIFetch<SuitRank>(url, undefined, {
+      debug: {
+        name: '装扮播报',
+        extraParams: {
+          item_id: '装扮ID',
+        }
+      }
+    })
+
+    let count = 0
+    let lastID = -1
+
+    for (let index in resp.data.rank) {
+      const rank = resp.data.rank[index]
+      // 若当前编号等于上一个编号 - 1，认为是非预留的编号
+      if (rank.number + 1 === lastID) {
+        count += rank.number
+        break
+      }
+      // 否则认为是预留编号
+      count++
+      lastID = rank.number
+    }
+
+    saleCount.value = count
+  } catch (e) {
+    ElMessage({
+      message: `获取销量出错：${e}`,
+      type: 'error'
+    })
+  }
+
   loading.value = false
 }
 
@@ -421,6 +460,7 @@ const resolveLink = async () => {
         </div>
       </template>
 
+      <!-- 装扮名称 -->
       <ElDescriptionsItem label="名称">
         <ElLink
           type="primary"
@@ -431,6 +471,7 @@ const resolveLink = async () => {
         </ElLink>
       </ElDescriptionsItem>
 
+      <!-- 大会员类型装扮标记 -->
       <ElDescriptionsItem
         label="来源"
         v-if="saleType === 'vip'"
@@ -438,6 +479,7 @@ const resolveLink = async () => {
         大会员专属
       </ElDescriptionsItem>
 
+      <!-- 装扮链接 -->
       <ElDescriptionsItem
         label="相关链接"
         v-if="jumpLink.length > 0"
@@ -450,12 +492,15 @@ const resolveLink = async () => {
         </ElLink>
       </ElDescriptionsItem>
 
+      <!-- 装扮所属UP -->
       <ElDescriptionsItem
         label="相关UP信息"
         v-if="mid.length > 0"
       >
         <UPInfo :mid="mid" />
       </ElDescriptionsItem>
+
+      <!-- 装扮简介 -->
       <ElDescriptionsItem
         label="简介"
         :span="2"
@@ -473,6 +518,20 @@ const resolveLink = async () => {
         <div class="whitespace-pre-wrap">
           {{ new Date(saleStartTime * 1000).toLocaleString() }}
         </div>
+      </ElDescriptionsItem>
+
+      <!-- 推测装扮销量 -->
+      <ElDescriptionsItem
+        label="销量"
+        v-if="saleCount"
+      >
+        <ElTooltip
+          content="销量由装扮播报推测，已扣除预留编号影响"
+          placement="bottom-start"
+          effect="light"
+        >
+          {{ saleCount }}
+        </ElTooltip>
       </ElDescriptionsItem>
     </ElDescriptions>
 

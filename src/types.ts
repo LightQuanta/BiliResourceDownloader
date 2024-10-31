@@ -130,6 +130,19 @@ interface SuitCardBGProperties {
     image_preview_small: string
 }
 
+// https://api.bilibili.com/x/garb/rank/fan/recent?item_id=${}
+// 装扮已售编号
+interface SuitRank {
+    rank: {
+        // 恒为0？
+        mid: number
+        nickname: string
+        avatar: string
+        // 装扮编号
+        number: number
+    }[]
+}
+
 interface SuitEmojiPackageProperties {
     // 表情包代表图？
     image: string
@@ -881,6 +894,7 @@ export type {
     SuitLoadingProperties,
     SuitEmojiPackageProperties,
     SuitCardBGProperties,
+    SuitRank,
     BatchDownloadTask,
     DynamicInfo,
     DynamicTypes,
