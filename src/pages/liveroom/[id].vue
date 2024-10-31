@@ -44,16 +44,16 @@ const generateDownloadTask = () => {
     files: []
   }
 
+  if (coverImage.value) {
+    task.files.push({ path: `${userName.value}直播间${sep()}封面`, url: coverImage.value })
+  }
+
   if (backgroundImage.value) {
     task.files.push({ path: `${userName.value}直播间${sep()}网页端背景图`, url: backgroundImage.value ?? '' })
   }
 
   if (appBackgroundImage.value) {
     task.files.push({ path: `${userName.value}直播间${sep()}App端背景图`, url: appBackgroundImage.value ?? '' })
-  }
-
-  if (coverImage.value) {
-    task.files.push({ path: `${userName.value}直播间${sep()}封面`, url: coverImage.value })
   }
 
   if (keyframeImage.value) {
@@ -189,7 +189,7 @@ const fetchData = async (paramID: string) => {
 watch(() => route.params.id, fetchData, { immediate: true })
 
 const previewImages = computed(() => {
-  return [backgroundImage.value, appBackgroundImage.value, coverImage.value, keyframeImage.value]
+  return [coverImage.value, backgroundImage.value, appBackgroundImage.value, keyframeImage.value]
       .filter(i => (i?.length ?? 0) > 0) as string[]
 })
 
@@ -314,10 +314,18 @@ const hasImages = computed(() => previewImages.value.length > 0)
           wrap
         >
           <ImageVideoCard
+            v-if="coverImage"
+            :download-name="`${userName} - 直播间封面`"
+            :image="coverImage"
+            :index="0"
+            :preview-images="previewImages"
+            title="直播间封面"
+          />
+          <ImageVideoCard
             v-if="backgroundImage"
             :download-name="`${userName} - 直播间背景图`"
             :image="backgroundImage"
-            :index="0"
+            :index="1"
             :preview-images="previewImages"
             title="网页端直播间背景图"
           />
@@ -325,17 +333,9 @@ const hasImages = computed(() => previewImages.value.length > 0)
             v-if="appBackgroundImage"
             :download-name="`${userName} - App端直播间背景图`"
             :image="appBackgroundImage"
-            :index="1"
-            :preview-images="previewImages"
-            title="App端直播间背景图"
-          />
-          <ImageVideoCard
-            v-if="coverImage"
-            :download-name="`${userName} - 直播间封面`"
-            :image="coverImage"
             :index="2"
             :preview-images="previewImages"
-            title="直播间封面"
+            title="App端直播间背景图"
           />
           <ImageVideoCard
             v-if="keyframeImage != ''"
