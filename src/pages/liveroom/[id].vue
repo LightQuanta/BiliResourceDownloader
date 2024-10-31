@@ -18,7 +18,7 @@ const basicRoomInfo = ref<BasicRoomInfo>()
 const liveroomUserInfo = ref<BasicLiveUserInfo>()
 const liveroomEmojis = ref<LiveroomEmojiListInfo[]>()
 
-const debugNames = ref<string[]>([])
+const debugRequestNames = ref<string[]>([])
 
 const userName = computed(() => detailedRoomInfo.value?.anchor_info.base_info.uname ?? liveroomUserInfo.value?.info.uname)
 const backgroundImage = computed(() => detailedRoomInfo.value?.room_info.background ?? basicRoomInfo.value?.background)
@@ -85,6 +85,7 @@ const fetchData = async (paramID: string) => {
   basicRoomInfo.value = undefined
   liveroomUserInfo.value = undefined
   liveroomEmojis.value = undefined
+  debugRequestNames.value = []
 
   try {
     // 移动端详细直播间信息
@@ -92,7 +93,7 @@ const fetchData = async (paramID: string) => {
     url.searchParams.set('room_id', roomID.value)
     url.searchParams.set('device', 'android')
     url.searchParams.set('platform', 'android')
-    debugNames.value.push('详细直播间信息')
+    debugRequestNames.value.push('详细直播间信息')
     const resp = await APIFetch<ExtremelyDetailedRoomInfo>(url, undefined, {
       appSign: true,
       debug: {
@@ -117,7 +118,7 @@ const fetchData = async (paramID: string) => {
     const url = new URL('https://api.live.bilibili.com/room/v1/Room/get_info')
     url.searchParams.set('room_id', roomID.value)
 
-    debugNames.value.push('直播间信息')
+    debugRequestNames.value.push('直播间信息')
     try {
       const resp = await APIFetch<BasicRoomInfo>(url, undefined, {
         debug: {
@@ -140,7 +141,7 @@ const fetchData = async (paramID: string) => {
     const url2 = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
     url2.searchParams.set('uid', uid.value?.toString() ?? '')
 
-    debugNames.value.push('直播间用户信息')
+    debugRequestNames.value.push('直播间用户信息')
     try {
       const resp = await APIFetch<BasicLiveUserInfo>(url2, undefined, {
         debug: {
@@ -165,7 +166,7 @@ const fetchData = async (paramID: string) => {
     url3.searchParams.set('platform', 'pc')
     url3.searchParams.set('room_id', roomID.value)
 
-    debugNames.value.push('直播间表情信息')
+    debugRequestNames.value.push('直播间表情信息')
     try {
       const resp = await APIFetch<{ data: LiveroomEmojiListInfo[] }>(url3, undefined, {
         debug: {
@@ -211,7 +212,7 @@ const hasImages = computed(() => previewImages.value.length > 0)
       </template>
 
       <template #extra>
-        <DebugButton :names="debugNames" />
+        <DebugButton :names="debugRequestNames" />
 
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>

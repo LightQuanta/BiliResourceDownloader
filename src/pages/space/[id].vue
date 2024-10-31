@@ -156,6 +156,7 @@ const fetchData = async () => {
   userNotice.value = ''
   powerRights.value = undefined
   dynamicInfo.value = undefined
+  debugRequestNames.value = []
 
   try {
     debugRequestNames.value.push('用户详细信息')

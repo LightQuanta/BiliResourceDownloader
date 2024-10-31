@@ -252,6 +252,7 @@ const fetchData = async () => {
   loading.value = true
   saleType.value = ''
   saleCount.value = undefined
+  debugRequestNames.value = []
 
   let suitDetail: SuitDetail
   suitDetail = {
