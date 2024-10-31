@@ -365,6 +365,7 @@ const fetchData = async () => {
   mid.value = suitDetail.properties?.fan_mid ?? ''
   saleType.value = suitDetail.biz_sale_type
   currentState.value = suitDetail.state
+  jumpLink.value = suitDetail.buy_link ?? ''
 
   cards.value = suitDetail.suit_items.card ?? []
   cardBgs.value = suitDetail.suit_items.card_bg ?? []
