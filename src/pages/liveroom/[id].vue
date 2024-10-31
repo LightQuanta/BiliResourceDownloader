@@ -1,26 +1,40 @@
 <script setup lang="ts">
 import { APIFetch } from "../../APIFetch.ts";
-import { BasicLiveUserInfo, BasicRoomInfo, BatchDownloadTask, LiveroomEmojiListInfo } from "../../types.ts";
+import {
+  BasicLiveUserInfo,
+  BasicRoomInfo,
+  BatchDownloadTask,
+  ExtremelyDetailedRoomInfo,
+  LiveroomEmojiListInfo
+} from "../../types.ts";
 import { userLoggedIn } from "../../utils/loginManager.ts";
 import { sep } from "@tauri-apps/api/path";
 
 const route = useRoute<'/liveroom/[id]'>()
-
 const loading = ref(false)
 
-const backgroundImage = ref('')
-const coverImage = ref('')
-const keyframeImage = ref('')
-const liveroomTitle = ref('')
-const liveroomDescription = ref('')
-const areaType = ref('')
-const roomID = ref('')
-const roomTags = ref<string[]>([])
-const uid = ref('')
-
+const detailedRoomInfo = ref<ExtremelyDetailedRoomInfo>()
+const basicRoomInfo = ref<BasicRoomInfo>()
 const liveroomUserInfo = ref<BasicLiveUserInfo>()
-
 const liveroomEmojis = ref<LiveroomEmojiListInfo[]>()
+
+const debugNames = ref<string[]>([])
+
+const userName = computed(() => detailedRoomInfo.value?.anchor_info.base_info.uname ?? liveroomUserInfo.value?.info.uname)
+const backgroundImage = computed(() => detailedRoomInfo.value?.room_info.background ?? basicRoomInfo.value?.background)
+const appBackgroundImage = computed(() => detailedRoomInfo.value?.room_info.app_background)
+const coverImage = computed(() => detailedRoomInfo.value?.room_info.cover ?? basicRoomInfo.value?.user_cover)
+const keyframeImage = computed(() => detailedRoomInfo.value?.room_info.keyframe ?? basicRoomInfo.value?.keyframe)
+const liveroomTitle = computed(() => detailedRoomInfo.value?.room_info.title ?? basicRoomInfo.value?.title)
+const liveroomDescription = computed(() => detailedRoomInfo.value?.room_info.description ?? basicRoomInfo.value?.description)
+const roomNews = computed(() => detailedRoomInfo.value?.room_info.room_news.news_content ?? liveroomUserInfo.value?.room_news.content)
+const roomNewsUpdateTime = computed(() => liveroomUserInfo.value?.room_news.ctime_text)
+const areaType = computed(() => detailedRoomInfo.value?.room_info.area_name ?? basicRoomInfo.value?.area_name)
+const roomTags = computed<string[]>(() => detailedRoomInfo.value?.room_info.tags?.split(',') ?? basicRoomInfo.value?.tags?.split(',') ?? [])
+const uid = computed(() => detailedRoomInfo.value?.room_info.uid ?? basicRoomInfo.value?.uid ?? 0)
+const roomID = ref('')
+
+// 为什么这里不能自动推断出类型？
 const upEmoji = computed<LiveroomEmojiListInfo | undefined>(() => liveroomEmojis.value?.find(e => e.pkg_name === 'UP主大表情') ?? undefined)
 const roomEmoji = computed<LiveroomEmojiListInfo | undefined>(() => liveroomEmojis.value?.find(e => e.pkg_name === '房间专属表情') ?? undefined)
 
@@ -31,27 +45,31 @@ const generateDownloadTask = () => {
   }
 
   if (backgroundImage.value) {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}背景图`, url: backgroundImage.value })
+    task.files.push({ path: `${userName.value}直播间${sep()}网页端背景图`, url: backgroundImage.value ?? '' })
+  }
+
+  if (appBackgroundImage.value) {
+    task.files.push({ path: `${userName.value}直播间${sep()}App端背景图`, url: appBackgroundImage.value ?? '' })
   }
 
   if (coverImage.value) {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}封面`, url: coverImage.value })
+    task.files.push({ path: `${userName.value}直播间${sep()}封面`, url: coverImage.value })
   }
 
   if (keyframeImage.value) {
-    task.files.push({ path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}关键帧`, url: keyframeImage.value })
+    task.files.push({ path: `${userName.value}直播间${sep()}关键帧`, url: keyframeImage.value })
   }
 
   upEmoji.value?.emoticons.forEach(e => {
     task.files.push({
-      path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}UP主大表情${sep()}${e.emoji}`,
+      path: `${userName.value}直播间${sep()}UP主大表情${sep()}${e.emoji}`,
       url: e.url
     })
   })
 
   roomEmoji.value?.emoticons.forEach(e => {
     task.files.push({
-      path: `${liveroomUserInfo.value?.info.uname}直播间${sep()}房间专属表情${sep()}${e.emoji}`,
+      path: `${userName.value}直播间${sep()}房间专属表情${sep()}${e.emoji}`,
       url: e.url
     })
   })
@@ -63,64 +81,91 @@ const fetchData = async (paramID: string) => {
   loading.value = true
   roomID.value = paramID
 
-  const url = new URL('https://api.live.bilibili.com/room/v1/Room/get_info')
-  url.searchParams.set('room_id', roomID.value)
+  detailedRoomInfo.value = undefined
+  basicRoomInfo.value = undefined
+  liveroomUserInfo.value = undefined
+  liveroomEmojis.value = undefined
 
-  let data: BasicRoomInfo
   try {
-    const resp = await APIFetch<BasicRoomInfo>(url, undefined, {
+    // 移动端详细直播间信息
+    const url = new URL('https://api.live.bilibili.com/xlive/app-room/v1/index/getInfoByRoom')
+    url.searchParams.set('room_id', roomID.value)
+    url.searchParams.set('device', 'android')
+    url.searchParams.set('platform', 'android')
+    debugNames.value.push('详细直播间信息')
+    const resp = await APIFetch<ExtremelyDetailedRoomInfo>(url, undefined, {
+      appSign: true,
       debug: {
-        name: '直播间信息',
-        extraParams: { room_id: '直播间ID' },
+        name: '详细直播间信息',
+        extraParams: {
+          room_id: '直播间号',
+        }
       }
     })
-    data = resp.data
+    detailedRoomInfo.value = resp.data
   } catch (e) {
     console.error(e)
     ElMessage({
-      message: `获取直播间信息出错：${e}`,
+      message: `获取详细直播间信息出错：${e}`,
       type: 'error',
     })
-    loading.value = false
-    return null
   }
 
-  const { description, title, background, user_cover, keyframe, area_name, tags, uid: userId } = data
+  // 若无法使用app端直播间信息api，再考虑使用网页端API获取
+  if (!detailedRoomInfo.value) {
+    // 房间信息
+    const url = new URL('https://api.live.bilibili.com/room/v1/Room/get_info')
+    url.searchParams.set('room_id', roomID.value)
 
-  backgroundImage.value = background
-  coverImage.value = user_cover
-  keyframeImage.value = keyframe
-  liveroomTitle.value = title
-  liveroomDescription.value = description
-  areaType.value = area_name
-  uid.value = userId.toString()
-  roomTags.value = tags.split(',')
+    debugNames.value.push('直播间信息')
+    try {
+      const resp = await APIFetch<BasicRoomInfo>(url, undefined, {
+        debug: {
+          name: '直播间信息',
+          extraParams: { room_id: '直播间ID' },
+        }
+      })
+      basicRoomInfo.value = resp.data
+    } catch (e) {
+      console.error(e)
+      ElMessage({
+        message: `获取直播间信息出错：${e}`,
+        type: 'error',
+      })
+      loading.value = false
+      return null
+    }
 
-  // 额外信息获取
-  const url2 = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
-  url2.searchParams.set('uid', uid.value)
+    // 额外信息获取
+    const url2 = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
+    url2.searchParams.set('uid', uid.value?.toString() ?? '')
 
-  try {
-    const resp = await APIFetch<BasicLiveUserInfo>(url2, undefined, {
-      debug: {
-        name: '直播间用户信息',
-        extraParams: { uid: '用户UID' },
-      }
-    })
-    liveroomUserInfo.value = resp.data
-  } catch (e) {
-    console.error(e)
-    ElMessage({
-      message: `获取直播间用户信息出错：${JSON.stringify(e)}`,
-      type: 'error',
-    })
+    debugNames.value.push('直播间用户信息')
+    try {
+      const resp = await APIFetch<BasicLiveUserInfo>(url2, undefined, {
+        debug: {
+          name: '直播间用户信息',
+          extraParams: { uid: '用户UID' },
+        }
+      })
+      liveroomUserInfo.value = resp.data
+    } catch (e) {
+      console.error(e)
+      ElMessage({
+        message: `获取直播间用户信息出错：${JSON.stringify(e)}`,
+        type: 'error',
+      })
+    }
+
   }
 
   if (userLoggedIn.value) {
+    // 直播间表情获取
     const url3 = new URL('https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons')
     url3.searchParams.set('platform', 'pc')
     url3.searchParams.set('room_id', roomID.value)
 
+    debugNames.value.push('直播间表情信息')
     try {
       const resp = await APIFetch<{ data: LiveroomEmojiListInfo[] }>(url3, undefined, {
         debug: {
@@ -143,18 +188,16 @@ const fetchData = async (paramID: string) => {
 watch(() => route.params.id, fetchData, { immediate: true })
 
 const previewImages = computed(() => {
-  let images = [backgroundImage.value, coverImage.value]
-  if (keyframeImage.value) images.push(keyframeImage.value)
-  return images
+  return [backgroundImage.value, appBackgroundImage.value, coverImage.value, keyframeImage.value]
+      .filter(i => (i?.length ?? 0) > 0) as string[]
 })
 
-const hasImages = computed(() => backgroundImage.value || coverImage.value || keyframeImage.value)
+const hasImages = computed(() => previewImages.value.length > 0)
 
 </script>
 
 <template>
   <div v-loading="loading">
-    <!-- TODO 什么b玩意丑死了，谁能帮忙改改UI -->
     <ElDescriptions
       :column="2"
       border
@@ -168,7 +211,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
       </template>
 
       <template #extra>
-        <DebugButton :names="['直播间信息','直播间用户信息', '直播间表情信息']" />
+        <DebugButton :names="debugNames" />
 
         <BatchDownloadButton :task="generateDownloadTask" />
       </template>
@@ -233,23 +276,29 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
         </ElTag>
       </ElDescriptionsItem>
       <ElDescriptionsItem
-        v-if="liveroomUserInfo?.room_news?.content.length ?? 0 > 0"
+        v-if="roomNews"
         :span="2"
         label="直播间公告"
       >
         <div class="whitespace-pre-wrap max-h-8 hover:max-h-64 overflow-y-auto transition-all duration-500">
-          {{ liveroomUserInfo?.room_news.content }}
+          {{ roomNews }}
         </div>
         <br>
-        <ElText size="small">
-          {{ liveroomUserInfo?.room_news.ctime_text }}更新
+        <ElText
+          size="small"
+          v-if="roomNewsUpdateTime"
+        >
+          {{ roomNewsUpdateTime }}更新
         </ElText>
       </ElDescriptionsItem>
       <ElDescriptionsItem
         :span="2"
         label="主播信息"
       >
-        <UPInfo :mid="uid" />
+        <UPInfo
+          v-if="uid"
+          :mid="uid.toString()"
+        />
       </ElDescriptionsItem>
     </ElDescriptions>
 
@@ -265,23 +314,31 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
         >
           <ImageVideoCard
             v-if="backgroundImage"
-            :download-name="`${liveroomUserInfo?.info.uname} - 直播间背景图`"
+            :download-name="`${userName} - 直播间背景图`"
             :image="backgroundImage"
             :index="0"
             :preview-images="previewImages"
             title="网页端直播间背景图"
           />
           <ImageVideoCard
-            v-if="coverImage"
-            :download-name="`${liveroomUserInfo?.info.uname} - 直播间封面`"
-            :image="coverImage"
+            v-if="appBackgroundImage"
+            :download-name="`${userName} - App端直播间背景图`"
+            :image="appBackgroundImage"
             :index="1"
+            :preview-images="previewImages"
+            title="App端直播间背景图"
+          />
+          <ImageVideoCard
+            v-if="coverImage"
+            :download-name="`${userName} - 直播间封面`"
+            :image="coverImage"
+            :index="2"
             :preview-images="previewImages"
             title="直播间封面"
           />
           <ImageVideoCard
             v-if="keyframeImage != ''"
-            :download-name="`${liveroomUserInfo?.info.uname} - 直播间关键帧`"
+            :download-name="`${userName} - 直播间关键帧`"
             :image="keyframeImage"
             :index="2"
             :preview-images="previewImages"
@@ -308,7 +365,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
             :image="emoji.url"
             :preview-images="upEmoji.emoticons.map(e => e.url)"
             :title="emoji.emoji"
-            :download-name="`${liveroomUserInfo?.info.uname}UP主大表情 - ${emoji.emoji}`"
+            :download-name="`${userName}UP主大表情 - ${emoji.emoji}`"
             :subtitle="emoji.unlock_show_text"
           />
         </ElSpace>
@@ -326,7 +383,7 @@ const hasImages = computed(() => backgroundImage.value || coverImage.value || ke
             :image="emoji.url"
             :preview-images="roomEmoji.emoticons.map(e => e.url)"
             :title="emoji.emoji"
-            :download-name="`${liveroomUserInfo?.info.uname}房间专属表情 - ${emoji.emoji}`"
+            :download-name="`${userName}房间专属表情 - ${emoji.emoji}`"
           />
         </ElSpace>
       </div>

@@ -633,6 +633,50 @@ interface PendantInfo {
     n_pid: number
 }
 
+// https://api.live.bilibili.com/xlive/app-room/v1/index/getInfoByRoom?room_id=${roomID}&platform=android&device=android
+// 需要app签名
+interface ExtremelyDetailedRoomInfo {
+    // 房间信息
+    room_info: {
+        uid: number
+        room_id: number
+        title: string
+        tags: string
+        // 封面
+        cover: string
+        // 网页端直播间背景
+        background: string
+        // app端直播间背景
+        app_background: string
+        // 关键帧（一般开播时才有）
+        keyframe: string
+        // 简介
+        description: string
+        // 直播间分区名称
+        area_name: string
+
+        // 房间公告
+        room_news: {
+            news_content: string
+        }
+    }
+
+    // 主播信息
+    anchor_info: {
+        base_info: {
+            uname: string
+            face: string
+        }
+        medal_info: {
+            medal_name: string
+        }
+        relation_info: {
+            // 粉丝数
+            attention: number
+        }
+    }
+}
+
 // https://api.live.bilibili.com/live_user/v1/Master/info?uid=${uid}
 interface BasicLiveUserInfo {
     info: {
@@ -907,6 +951,7 @@ export type {
     PendantInfo,
     BasicUserInfo,
     ExtremelyDetailedUserInfo,
+    ExtremelyDetailedRoomInfo,
     BasicLiveUserInfo,
     BasicRoomInfo,
     EmojiPackages,
