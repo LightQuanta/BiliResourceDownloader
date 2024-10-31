@@ -323,7 +323,7 @@ const hasImages = computed(() => previewImages.value.length > 0)
           />
           <ImageVideoCard
             v-if="backgroundImage"
-            :download-name="`${userName} - 直播间背景图`"
+            :download-name="`${userName} - 网页端直播间背景图`"
             :image="backgroundImage"
             :index="1"
             :preview-images="previewImages"
