@@ -304,7 +304,6 @@ const generateDownloadTask = async () => {
   >
     <!-- 收藏集组合详细信息 -->
     <ElDescriptions
-      v-if="!loading"
       :column="2"
       border
     >
