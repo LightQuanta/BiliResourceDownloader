@@ -76,7 +76,7 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
 
     if (useCache && await store.has(getURLStr())) {
         const cacheData = await store.get(getURLStr()) as CachedJSONResponse<T>
-        if ((cacheData.cachedTime + CACHE_TIME.value) > Date.now()) {
+        if ((cacheData.cachedTime + CACHE_TIME.value * 1000) > Date.now()) {
             console.debug(`using cached ${getURLStr()}`)
 
             if (debugInfo) {
