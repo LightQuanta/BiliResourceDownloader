@@ -1,6 +1,15 @@
 <script setup lang="ts">
 
 import { globalConfig } from "../utils/globalConfig.ts";
+import { clearAPICache } from "../APIFetch.ts";
+
+const clearCache = async () => {
+  await clearAPICache()
+  ElMessage({
+    message: '已清空请求缓存！',
+    type: 'success',
+  })
+}
 </script>
 
 <template>
@@ -62,6 +71,18 @@ import { globalConfig } from "../utils/globalConfig.ts";
           />
         </ElFormItem>
       </ElForm>
+    </ElCard>
+
+    <ElCard>
+      <template #header>
+        杂项
+      </template>
+      <ElButton
+        type="primary"
+        @click="clearCache"
+      >
+        清空请求缓存
+      </ElButton>
     </ElCard>
   </div>
 </template>
