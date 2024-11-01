@@ -126,7 +126,12 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
             if (debugInfo) {
                 setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(json, null, 2), debugInfo.extraParams)
             }
-            throw json
+            throw {
+                ...json,
+                toString() {
+                    return JSON.stringify(this)
+                }
+            }
         }
         break
     } while (retryCount < 1)
