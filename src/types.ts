@@ -889,6 +889,9 @@ interface VideoSearchResultItem extends SearchResultItem {
     description: string
     // 逗号分隔tag
     tag: string
+
+    author: string
+    mid: number
 }
 
 // https://api.bilibili.com/x/web-interface/wbi/search/all/v2?keyword=${keyword}

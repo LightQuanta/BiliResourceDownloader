@@ -6,6 +6,8 @@ const props = defineProps<{
   cover?: string
   avid?: string
   bvid?: string
+  upName?: string
+  upMid?: string
 }>()
 
 const processedTitle = computed(() => {
@@ -48,9 +50,26 @@ const processedCover = computed(() => {
           </ElText>
         </ElTooltip>
       </RouterLink>
-      <div class="line-clamp-5 text-sm h-24">
-        {{ desc }}
-      </div>
+      <UPInfo
+        v-if="upMid && upName"
+        :mid="upMid"
+        :name="upName"
+        type="at"
+      />
+      <ElPopover
+        effect="dark"
+        placement="bottom"
+        :width="500"
+      >
+        <div class="whitespace-pre-wrap">
+          {{ desc }}
+        </div>
+        <template #reference>
+          <div class="line-clamp-4 text-sm h-20">
+            {{ desc }}
+          </div>
+        </template>
+      </ElPopover>
     </div>
   </div>
 </template>

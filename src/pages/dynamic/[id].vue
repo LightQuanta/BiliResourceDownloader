@@ -326,6 +326,8 @@ const jump = async () => {
           :title="videoTitle"
           :desc="videoDesc"
           :cover="videoCover"
+          :up-mid="authorInfo?.mid.toString()"
+          :up-name="`@${authorInfo?.name}`"
         />
       </ElDescriptionsItem>
     </ElDescriptions>

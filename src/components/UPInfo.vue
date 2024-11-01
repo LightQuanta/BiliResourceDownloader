@@ -85,7 +85,7 @@ watch(() => props.mid, fetchData)
     </div>
     <span
       v-else
-      class="mx-1"
+      class="mr-2"
     >{{ userName }}</span>
   </ElLink>
 </template>

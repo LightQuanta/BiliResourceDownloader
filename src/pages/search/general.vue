@@ -210,6 +210,8 @@ const updateQuery = () => {
           :bvid="video.bvid"
           :title="video.title"
           :desc="video.description"
+          :up-name="`@${video.author}`"
+          :up-mid="video.mid.toString()"
         />
       </TransitionGroup>
 
