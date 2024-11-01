@@ -193,14 +193,18 @@ watch(() => route.fullPath, () => {
         default-active="test"
       >
         <ElMenuItem index="/">
-          <span class="text-center">
-            主页
-          </span>
+          <ElIcon>
+            <i-ep-home-filled />
+          </ElIcon>
+          <span>主页</span>
         </ElMenuItem>
 
         <ElSubMenu index="search">
           <template #title>
-            搜索
+            <ElIcon>
+              <i-ep-search />
+            </ElIcon>
+            <span>搜索</span>
           </template>
           <ElMenuItem index="/search/general">
             通用搜索
@@ -215,7 +219,10 @@ watch(() => route.fullPath, () => {
 
         <ElSubMenu index="tool">
           <template #title>
-            工具
+            <ElIcon>
+              <i-ep-tools />
+            </ElIcon>
+            <span>工具</span>
           </template>
           <ElMenuItem index="/tool/svga">
             SVGA动画解析
@@ -226,16 +233,28 @@ watch(() => route.fullPath, () => {
         </ElSubMenu>
 
         <ElMenuItem @click="showDownloadDrawer = true">
-          下载管理
+          <ElIcon>
+            <i-ep-download />
+          </ElIcon>
+          <span>下载管理</span>
         </ElMenuItem>
         <ElMenuItem index="/login">
-          登录
+          <ElIcon>
+            <i-ep-user-filled />
+          </ElIcon>
+          <span>登录</span>
         </ElMenuItem>
         <ElMenuItem index="/settings">
-          设置
+          <ElIcon>
+            <i-ep-setting />
+          </ElIcon>
+          <span>设置</span>
         </ElMenuItem>
         <ElMenuItem index="/about">
-          关于
+          <ElIcon>
+            <i-ep-info-filled />
+          </ElIcon>
+          <span>关于</span>
         </ElMenuItem>
       </ElMenu>
 
