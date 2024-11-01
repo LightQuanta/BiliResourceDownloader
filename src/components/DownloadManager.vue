@@ -83,6 +83,10 @@ const pause = async () => {
 const clear = async () => {
   await clearDownload()
   await refreshTasks()
+  ElMessage({
+    message: '已清空下载任务',
+    type: 'success',
+  })
 }
 
 const getProgress = (file: Progress) => {
@@ -104,12 +108,18 @@ const getProgress = (file: Progress) => {
     >
       暂停下载
     </ElButton>
-    <ElButton
-      type="primary"
-      @click="clear"
+    <ElPopconfirm
+      title="确定要清空下载任务吗？"
+      confirm-button-text="确定"
+      cancel-button-text="取消"
+      @confirm="clear"
     >
-      清空任务
-    </ElButton>
+      <template #reference>
+        <ElButton type="primary">
+          清空任务
+        </ElButton>
+      </template>
+    </ElPopconfirm>
     <div class="flex flex-col overflow-hidden">
       <TransitionGroup name="list">
         <div
