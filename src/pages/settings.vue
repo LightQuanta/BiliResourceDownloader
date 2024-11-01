@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { globalConfig } from "../utils/globalConfig.ts";
+import { globalConfig, resetConfig } from "../utils/globalConfig.ts";
 import { clearAPICache } from "../APIFetch.ts";
 
 const clearCache = async () => {
@@ -8,6 +8,24 @@ const clearCache = async () => {
   ElMessage({
     message: '已清空请求缓存！',
     type: 'success',
+  })
+}
+
+const reset = () => {
+  ElMessageBox.confirm(
+      '确定要重置所有设置吗？',
+      '提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  ).then(() => {
+    resetConfig()
+    ElMessage({
+      message: '成功重置所有设置！',
+      type: 'success',
+    })
   })
 }
 </script>
@@ -82,6 +100,12 @@ const clearCache = async () => {
         @click="clearCache"
       >
         清空请求缓存
+      </ElButton>
+      <ElButton
+        type="danger"
+        @click="reset"
+      >
+        重置设置
       </ElButton>
     </ElCard>
   </div>

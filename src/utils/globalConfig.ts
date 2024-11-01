@@ -4,7 +4,7 @@ import { LazyStore } from "@tauri-apps/plugin-store";
 const store = new LazyStore('config.json')
 
 const DEFAULT_CONFIG = {
-    showDebugButton: false,
+    showDebugButton: true,
     showNavigationButtons: true,
     showLocationBar: true,
 
@@ -25,6 +25,10 @@ async function readConfig() {
     globalConfig.value = await store.get<typeof DEFAULT_CONFIG>('config') ?? DEFAULT_CONFIG
 }
 
+function resetConfig() {
+    globalConfig.value = DEFAULT_CONFIG
+}
+
 readConfig()
 
-export { globalConfig }
+export { globalConfig, resetConfig }
