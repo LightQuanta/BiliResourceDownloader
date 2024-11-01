@@ -6,7 +6,7 @@ import { sep } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api/core";
 import { globalConfig } from "./globalConfig.ts";
 
-const store = new LazyStore('downloadManager')
+const store = new LazyStore('downloadTask.json')
 
 const MAX_TASKS = computed(() => globalConfig.value.maxConcurrentDownloadTasks)
 

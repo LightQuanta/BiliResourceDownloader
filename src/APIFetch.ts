@@ -7,7 +7,10 @@ import { setDebugInfo } from "./utils/debug.ts";
 import md5 from "md5";
 import { ClientOptions, fetch } from "@tauri-apps/plugin-http";
 
-const store = new LazyStore('cachedAPIFetch')
+const store = new LazyStore('APIResponseCache', {
+    // 不要持久化请求缓存
+    autoSave: false
+})
 
 // 缓存5分钟
 const CACHE_TIME = 5 * 60 * 1000
