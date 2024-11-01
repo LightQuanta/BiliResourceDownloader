@@ -4,10 +4,11 @@ import { download } from "@tauri-apps/plugin-upload";
 import { emitter } from "../main.ts";
 import { sep } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api/core";
+import { globalConfig } from "./globalConfig.ts";
 
 const store = new LazyStore('downloadManager')
 
-const MAX_TASKS = 3
+const MAX_TASKS = computed(() => globalConfig.value.maxConcurrentDownloadTasks)
 
 // todo!: 长时间运行可能存在对象过大内存占用
 const taskDownloadFinishRecorder: Record<string, number> = {}
@@ -39,12 +40,12 @@ const subConcurrentCount = () => concurrentCount.value--
 
 function enableDownloadScheduler() {
     return new Promise<() => void>((res) => {
-        if (concurrentCount.value < MAX_TASKS) {
+        if (concurrentCount.value < MAX_TASKS.value) {
             concurrentCount.value++
             res(subConcurrentCount)
         } else {
             const unwatch = watch(() => concurrentCount.value, (n) => {
-                if (n < MAX_TASKS) {
+                if (n < MAX_TASKS.value) {
                     unwatch()
                     concurrentCount.value++
                     res(subConcurrentCount)

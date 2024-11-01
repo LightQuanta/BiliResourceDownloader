@@ -1,15 +1,13 @@
 import { readText } from "@tauri-apps/plugin-clipboard-manager";
 import { autoJump } from "./linkResolver.ts";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-
-// TODO 实现自动跳转对应的配置项
-// const enabled = true
+import { globalConfig } from "./globalConfig.ts";
 
 let clipboardCache = ''
 
 const window = getCurrentWindow()
 window.onFocusChanged(async ({ payload: focused }) => {
-    if (!focused) return
+    if (!focused || !globalConfig.value.readClipboard) return
 
     let text: string
     try {

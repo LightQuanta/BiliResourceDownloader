@@ -3,6 +3,7 @@ import DownloadManager from "./components/DownloadManager.vue"
 import { emitter } from "./main.ts"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import Icon from '../src-tauri/icons/icon.png'
+import { globalConfig } from "./utils/globalConfig.ts";
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
@@ -69,7 +70,10 @@ watch(() => route.fullPath, () => {
         class="fixed top-0 w-full pointer-events-none h-[--title-bar-height] flex items-center z-[114515] justify-center gap-2"
       >
         <div class="pointer-events-auto flex max-w-screen-md">
-          <ElButtonGroup class="shrink-0">
+          <ElButtonGroup
+            class="shrink-0"
+            v-if="globalConfig.showNavigationButtons"
+          >
             <ElButton
               class="h-6 w-6"
               @click="router.back()"
@@ -96,6 +100,7 @@ watch(() => route.fullPath, () => {
             </ElButton>
           </ElButtonGroup>
           <ElInput
+            v-if="globalConfig.showLocationBar"
             class="ml-1 h-6 w-80 hover:w-[600px] transition-all"
             v-model="currentPath"
             @change="router.push(currentPath)"

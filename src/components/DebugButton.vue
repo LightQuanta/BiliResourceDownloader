@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DebugInfo, getDebugInfo, lastUpdated } from "../utils/debug.ts";
+import { globalConfig } from "../utils/globalConfig.ts";
 
 const props = defineProps<{
   names: string[]
@@ -37,7 +38,10 @@ const JSONObject = computed(() => JSON.parse(responseText.value))
 </script>
 
 <template>
-  <ElButton @click="showDebugDrawer = true">
+  <ElButton
+    @click="showDebugDrawer = true"
+    v-if="globalConfig.showDebugButton"
+  >
     显示调试信息
   </ElButton>
   <Teleport to="body">

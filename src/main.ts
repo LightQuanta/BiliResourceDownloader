@@ -9,6 +9,7 @@ import { BiliResourceDownloadEventEmitter } from "./types.ts";
 import { checkLoginState } from "./utils/loginManager.ts";
 import { createPinia } from 'pinia'
 import './utils/cliboardListener.ts'
+import './utils/globalConfig.ts'
 import JsonEditorVue from 'json-editor-vue'
 
 const pinia = createPinia()
