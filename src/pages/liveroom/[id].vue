@@ -341,7 +341,7 @@ const hasImages = computed(() => previewImages.value.length > 0)
             v-if="keyframeImage != ''"
             :download-name="`${userName} - 直播间关键帧`"
             :image="keyframeImage"
-            :index="2"
+            :index="3"
             :preview-images="previewImages"
             title="直播间关键帧"
           />
