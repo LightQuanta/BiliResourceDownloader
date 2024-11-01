@@ -6,14 +6,15 @@ import { useWbiStore } from "./store/useWbiStore";
 import { setDebugInfo } from "./utils/debug.ts";
 import md5 from "md5";
 import { ClientOptions, fetch } from "@tauri-apps/plugin-http";
+import { globalConfig } from "./utils/globalConfig.ts";
 
 const store = new LazyStore('APIResponseCache', {
     // 不要持久化请求缓存
     autoSave: false
 })
 
-// 缓存5分钟
-const CACHE_TIME = 5 * 60 * 1000
+// 请求缓存
+const CACHE_TIME = computed(() => globalConfig.value.requestCacheTime)
 
 interface CachedJSONResponse<T> {
     cachedTime: number
@@ -74,8 +75,8 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
     }
 
     if (useCache && await store.has(getURLStr())) {
-        const cacheData = (await store.get(getURLStr())) as CachedJSONResponse<T>
-        if (cacheData.cachedTime > Date.now()) {
+        const cacheData = await store.get(getURLStr()) as CachedJSONResponse<T>
+        if ((cacheData.cachedTime + CACHE_TIME.value) > Date.now()) {
             console.debug(`using cached ${getURLStr()}`)
 
             if (debugInfo) {
@@ -83,6 +84,7 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
             }
             return cacheData.response as GeneralAPIResponse<T>
         } else {
+            await store.delete(getURLStr())
             console.debug(`expired cache ${getURLStr()}`)
         }
     }
@@ -145,7 +147,7 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
 
     if (useCache) {
         await store.set(getURLStr(), {
-            cachedTime: Date.now() + CACHE_TIME,
+            cachedTime: Date.now(),
             response: json,
         })
         console.debug(`cached ${getURLStr()}`)
