@@ -13,7 +13,8 @@ const processedTitle = computed(() => {
 })
 
 const processedCover = computed(() => {
-  return (props.cover?.startsWith('https:') ? props.cover : `https:${props.cover}`) ?? ''
+  const cover = props.cover?.replace('http:', 'https:')
+  return (cover?.startsWith('https:') ? cover : `https:${cover}`) ?? ''
 })
 </script>
 
