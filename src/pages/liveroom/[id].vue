@@ -32,6 +32,8 @@ const roomNewsUpdateTime = computed(() => liveroomUserInfo.value?.room_news.ctim
 const areaType = computed(() => detailedRoomInfo.value?.room_info.area_name ?? basicRoomInfo.value?.area_name)
 const roomTags = computed<string[]>(() => detailedRoomInfo.value?.room_info.tags?.split(',') ?? basicRoomInfo.value?.tags?.split(',') ?? [])
 const uid = computed(() => detailedRoomInfo.value?.room_info.uid ?? basicRoomInfo.value?.uid ?? 0)
+const medalName = computed(() => detailedRoomInfo.value?.anchor_info.medal_info.medal_name ?? liveroomUserInfo.value?.medal_name)
+const fansNum = computed(() => detailedRoomInfo.value?.anchor_info.relation_info.attention ?? liveroomUserInfo.value?.follower_num)
 const roomID = ref('')
 
 // 为什么这里不能自动推断出类型？
@@ -245,7 +247,7 @@ const hasImages = computed(() => previewImages.value.length > 0)
         </div>
       </ElDescriptionsItem>
       <ElDescriptionsItem
-        :span="2"
+        :span="1"
         label="标签"
       >
         <ElSpace
@@ -264,7 +266,13 @@ const hasImages = computed(() => previewImages.value.length > 0)
         </ElText>
       </ElDescriptionsItem>
       <ElDescriptionsItem
-        v-if="liveroomUserInfo?.medal_name"
+        :span="1"
+        label="粉丝数"
+      >
+        {{ fansNum }}
+      </ElDescriptionsItem>
+      <ElDescriptionsItem
+        v-if="medalName"
         :span="2"
         label="粉丝牌"
       >
@@ -273,7 +281,7 @@ const hasImages = computed(() => previewImages.value.length > 0)
           size="large"
           type="success"
         >
-          {{ liveroomUserInfo?.medal_name }}
+          {{ medalName }}
         </ElTag>
       </ElDescriptionsItem>
       <ElDescriptionsItem
