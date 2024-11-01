@@ -13,8 +13,8 @@ const MAX_TASKS = 3
 const taskDownloadFinishRecorder: Record<string, number> = {}
 
 async function pushNewTask(task: BatchDownloadTask) {
-    const tasks = (await store.get('tasks')) as BatchDownloadTask[]
-    if (tasks === null) {
+    const tasks = await store.get<BatchDownloadTask[]>('tasks')
+    if (tasks === undefined) {
         await store.set('tasks', [task])
     } else {
         tasks.push(task)
@@ -62,7 +62,7 @@ async function startDownload() {
     downloading = true
     await store.set('downloading', true)
     try {
-        while (downloading && await store.get('tasks') !== null) {
+        while (downloading && await store.get('tasks') !== undefined) {
             const tasks = await store.get<BatchDownloadTask[]>('tasks') ?? []
             if (tasks.length === 0) {
                 downloading = false
@@ -138,7 +138,7 @@ async function getAllDownloadTasks() {
 
 // 若批量下载未完成，自动重新发起下载
 async function continueUnfinishedDownloadTasks() {
-    if (await store.get('downloading') === true) {
+    if (await store.get<boolean>('downloading') === true) {
         console.debug('发现未完成下载任务，继续下载')
         await startDownload()
         console.debug('未完成下载任务下载完成')
