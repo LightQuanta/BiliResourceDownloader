@@ -317,32 +317,24 @@ const hasImages = computed(() => previewImages.value.length > 0)
             v-if="coverImage"
             :download-name="`${userName} - 直播间封面`"
             :image="coverImage"
-            :index="0"
-            :preview-images="previewImages"
             title="直播间封面"
           />
           <ImageVideoCard
             v-if="backgroundImage"
             :download-name="`${userName} - 网页端直播间背景图`"
             :image="backgroundImage"
-            :index="1"
-            :preview-images="previewImages"
             title="网页端直播间背景图"
           />
           <ImageVideoCard
             v-if="appBackgroundImage"
             :download-name="`${userName} - App端直播间背景图`"
             :image="appBackgroundImage"
-            :index="2"
-            :preview-images="previewImages"
             title="App端直播间背景图"
           />
           <ImageVideoCard
             v-if="keyframeImage != ''"
             :download-name="`${userName} - 直播间关键帧`"
             :image="keyframeImage"
-            :index="3"
-            :preview-images="previewImages"
             title="直播间关键帧"
           />
         </ElSpace>
