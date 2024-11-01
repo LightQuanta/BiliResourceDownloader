@@ -68,7 +68,7 @@ watch(() => props.mid, fetchData)
     <ElImage
       v-if="type === 'face'"
       :src="faceURL"
-      class="h-8 w-8 rounded-full"
+      class="h-8 w-8 rounded-full mr-1"
       referrerpolicy="no-referrer"
     />
     <div
