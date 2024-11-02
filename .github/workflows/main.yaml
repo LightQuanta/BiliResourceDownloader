@@ -21,7 +21,7 @@ jobs:
           - platform: 'ubuntu-22.04'
             args: ''
           - platform: 'windows-latest'
-            args: '-b'  # Windows下不构建安装包，直接构建程序本体
+            args: ''
 
     runs-on: ${{ matrix.platform }}
     steps:
