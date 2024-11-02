@@ -36,7 +36,7 @@ const selectImg = async () => {
     filters: [
       {
         name: 'Images',
-        extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif',  'bmp', ],
+        extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp',],
       },
     ]
   })
@@ -149,16 +149,16 @@ const selectImg = async () => {
         杂项
       </template>
       <ElButton
-        type="primary"
-        @click="clearCache"
-      >
-        清空请求缓存
-      </ElButton>
-      <ElButton
         type="danger"
         @click="reset"
       >
         重置设置
+      </ElButton>
+      <ElButton
+        type="primary"
+        @click="clearCache"
+      >
+        清空请求缓存
       </ElButton>
     </ElCard>
   </div>
