@@ -153,10 +153,10 @@ watch(() => route.fullPath, () => {
         >
           BiliResourceDownloader
         </ElText>
-        <ElButtonGroup class="ml-auto">
+        <ElButtonGroup class="ml-auto h-[--title-bar-height]">
           <ElButton
             text
-            class="hover:!bg-gray-300 rounded-none"
+            class="hover:!bg-gray-300 rounded-none h-full"
             @click="window.minimize()"
           >
             <ElIcon>
@@ -165,7 +165,7 @@ watch(() => route.fullPath, () => {
           </ElButton>
           <ElButton
             text
-            class="hover:!bg-gray-300 rounded-none"
+            class="hover:!bg-gray-300 rounded-none h-full"
             @click="window.toggleMaximize()"
           >
             <ElIcon>
@@ -174,7 +174,7 @@ watch(() => route.fullPath, () => {
           </ElButton>
           <ElButton
             text
-            class="hover:!bg-red-500 rounded-none"
+            class="hover:!bg-red-500 rounded-none h-full"
             @click="window.close()"
           >
             <ElIcon>
@@ -305,7 +305,7 @@ watch(() => route.fullPath, () => {
 
 <style scoped>
 .route-input:has(.el-input__inner:focus) {
-    width: 600px;
+  width: 600px;
 }
 
 .color-bg {
