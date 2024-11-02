@@ -50,7 +50,7 @@ emitter.on('downloadProgress', (info: DownloadProgress) => {
 })
 
 // 该组件位于 drawer 内是懒加载的，所以页面首次渲染时触发的事件与该回调处于同个任务循环，因此不需要 onMounted 来触发刷新，否则会导致任务列表重复
-emitter.on('drawerOpen', async () => {
+emitter.on('downloadDrawerOpen', async () => {
   await refreshTasks()
 })
 

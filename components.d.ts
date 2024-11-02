@@ -72,6 +72,7 @@ declare module 'vue' {
     IEpVideoPause: typeof import('~icons/ep/video-pause')['default']
     IEpVideoPlay: typeof import('~icons/ep/video-play')['default']
     ImageVideoCard: typeof import('./src/components/ImageVideoCard.vue')['default']
+    LoginManager: typeof import('./src/components/LoginManager.vue')['default']
     LoginRequired: typeof import('./src/components/LoginRequired.vue')['default']
     LottieAnimationCard: typeof import('./src/components/LottieAnimationCard.vue')['default']
     QRCodeDialogButton: typeof import('./src/components/QRCodeDialogButton.vue')['default']

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DownloadManager from "./components/DownloadManager.vue"
 import { emitter } from "./main.ts"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import Icon from '../src-tauri/icons/icon.png'
@@ -8,6 +7,7 @@ import AppBackground from "./components/AppBackground.vue";
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
+const showLoginDrawer = ref(false)
 
 const mainDivRef = ref<HTMLElement>()
 // 向上滚动页面，避免搜索界面滚动时卡住
@@ -241,7 +241,7 @@ watch(() => route.fullPath, () => {
           </ElIcon>
           <span>下载管理</span>
         </ElMenuItem>
-        <ElMenuItem index="/login">
+        <ElMenuItem @click="showLoginDrawer = true">
           <ElIcon>
             <i-ep-user-filled />
           </ElIcon>
@@ -288,9 +288,17 @@ watch(() => route.fullPath, () => {
       v-model="showDownloadDrawer"
       size="60%"
       title="下载管理"
-      @open="emitter.emit('drawerOpen')"
+      @open="emitter.emit('downloadDrawerOpen')"
     >
       <DownloadManager />
+    </ElDrawer>
+    <ElDrawer
+      v-model="showLoginDrawer"
+      size="60%"
+      title="登录"
+      @open="emitter.emit('loginDrawerOpen')"
+    >
+      <LoginManager />
     </ElDrawer>
   </div>
 </template>
@@ -301,11 +309,11 @@ watch(() => route.fullPath, () => {
 }
 
 .color-bg {
-   background-image: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
-   background-size: cover;
-   background-repeat: no-repeat;
-   background-attachment: fixed;
-   background-position: center center;
+  background-image: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
 }
 
 .fade-enter-active,

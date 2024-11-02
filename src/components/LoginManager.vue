@@ -4,6 +4,7 @@ import { ElMessage } from "element-plus";
 import { checkLoginState, clearLoginCookie, saveLoginCookie, userLoggedIn } from "../utils/loginManager.ts";
 import { APIFetch } from "../APIFetch.ts";
 import { GeneralAPIResponse } from "../types.ts";
+import { emitter } from "../main.ts";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -98,7 +99,8 @@ const logoff = async () => {
   })
 }
 
-onMounted(async () => {
+// 该组件位于 drawer 内是懒加载的，所以页面首次渲染时触发的事件与该回调处于同个任务循环，因此不需要 onMounted 来触发刷新，否则会导致任务列表重复
+emitter.on('loginDrawerOpen', async () => {
   userLoggedIn.value = await checkLoginState()
 })
 
@@ -159,12 +161,6 @@ const testLoginState = async () => {
       @click="logoff"
     >
       退出登录
-    </ElButton>
-    <ElButton @click="userLoggedIn = false">
-      （调试） 模拟登出状态
-    </ElButton>
-    <ElButton @click="userLoggedIn = true">
-      （调试） 模拟登录状态
     </ElButton>
     <div
       class="mt-4 flex flex-col"

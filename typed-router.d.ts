@@ -24,7 +24,6 @@ declare module 'vue-router/auto-routes' {
     '/dynamic/[id]': RouteRecordInfo<'/dynamic/[id]', '/dynamic/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/emoji/[id]': RouteRecordInfo<'/emoji/[id]', '/emoji/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/liveroom/[id]': RouteRecordInfo<'/liveroom/[id]', '/liveroom/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
-    '/login': RouteRecordInfo<'/login', '/login', Record<never, never>, Record<never, never>>,
     '/lottery': RouteRecordInfo<'/lottery', '/lottery', Record<never, never>, Record<never, never>>,
     '/search/emoji': RouteRecordInfo<'/search/emoji', '/search/emoji', Record<never, never>, Record<never, never>>,
     '/search/garb': RouteRecordInfo<'/search/garb', '/search/garb', Record<never, never>, Record<never, never>>,
