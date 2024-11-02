@@ -108,7 +108,7 @@ async function startDownload() {
                     endOperate()
                     emitter.emit('fileDownloadFinish', { name, file })
                     taskDownloadFinishRecorder[name] = taskDownloadFinishRecorder[name] ? taskDownloadFinishRecorder[name] - 1 : 0
-                    if (taskDownloadFinishRecorder[name] === 0) {
+                    if (taskDownloadFinishRecorder[name] === 0 && files.length === 0) {
                         emitter.emit('downloadFinish', { name })
                     }
                 })
