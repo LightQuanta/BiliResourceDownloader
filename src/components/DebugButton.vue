@@ -76,6 +76,9 @@ const JSONObject = computed(() => JSON.parse(responseText.value))
             {{ info?.url }}
           </ElLink>
         </ElDescriptionsItem>
+        <ElDescriptionsItem label="请求时间">
+          {{ new Date(info?.requestTime ?? 0).toLocaleString() }}
+        </ElDescriptionsItem>
         <ElDescriptionsItem
           v-for="key in params"
           :key="key"

@@ -80,7 +80,7 @@ async function APIFetch<T>(url: URL | string, init?: RequestInit, extraOptions?:
             console.debug(`using cached ${getURLStr()}`)
 
             if (debugInfo) {
-                setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(cacheData.response, null, 2), debugInfo.extraParams)
+                setDebugInfo(debugInfo.name, parsedURL, JSON.stringify(cacheData.response, null, 2), debugInfo.extraParams, cacheData.cachedTime)
             }
             return cacheData.response as GeneralAPIResponse<T>
         } else {

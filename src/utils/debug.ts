@@ -1,5 +1,6 @@
 interface DebugInfo {
     url: string
+    requestTime: number
     response: string
     extraParams: Record<string, string>
 }
@@ -7,9 +8,9 @@ interface DebugInfo {
 const debugInfos = new Map<string, DebugInfo>()
 const lastUpdated = ref(0)
 
-function setDebugInfo(name: string, url: string | URL, response: string, extraParams: Record<string, string> = {}) {
+function setDebugInfo(name: string, url: string | URL, response: string, extraParams: Record<string, string> = {}, requestTime: number = Date.now()) {
     const urlString = new URL(url).toString()
-    debugInfos.set(name, { url: urlString, response, extraParams })
+    debugInfos.set(name, { url: urlString, response, extraParams, requestTime })
     lastUpdated.value = Date.now()
 }
 
