@@ -75,7 +75,7 @@ watch(() => route.fullPath, () => {
             v-if="globalConfig.showNavigationButtons"
           >
             <ElButton
-              class="h-6 w-6"
+              class="h-8 w-6"
               @click="router.back()"
             >
               <ElIcon>
@@ -83,7 +83,7 @@ watch(() => route.fullPath, () => {
               </ElIcon>
             </ElButton>
             <ElButton
-              class="h-6 w-6"
+              class="h-8 w-6"
               @click="router.forward()"
             >
               <ElIcon>
@@ -91,7 +91,7 @@ watch(() => route.fullPath, () => {
               </ElIcon>
             </ElButton>
             <ElButton
-              class="h-6 w-6"
+              class="h-8 w-6"
               @click="reload"
             >
               <ElIcon>
@@ -101,7 +101,7 @@ watch(() => route.fullPath, () => {
           </ElButtonGroup>
           <ElInput
             v-if="globalConfig.showLocationBar"
-            class="ml-1 h-6 w-80 hover:w-[600px] transition-all"
+            class="ml-1 h-8 w-80 route-input transition-all"
             v-model="currentPath"
             @change="router.push(currentPath)"
           />
@@ -296,6 +296,10 @@ watch(() => route.fullPath, () => {
 </template>
 
 <style scoped>
+.route-input:has(.el-input__inner:focus) {
+    width: 600px;
+}
+
 .color-bg {
    background-image: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
    background-size: cover;
