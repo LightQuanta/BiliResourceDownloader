@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import { open } from "@tauri-apps/plugin-dialog";
 import { globalConfig, resetConfig } from "../utils/globalConfig.ts";
 import { clearAPICache } from "../APIFetch.ts";
 
@@ -27,6 +27,23 @@ const reset = () => {
       type: 'success',
     })
   })
+}
+
+const selectImg = async () => {
+  const url = await open({
+    multiple: false,
+    directory: false,
+    filters: [
+      {
+        name: 'Images',
+        extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif',  'bmp', ],
+      },
+    ]
+  })
+
+  if (url) {
+    globalConfig.value.background.url = url
+  }
 }
 </script>
 
@@ -86,6 +103,42 @@ const reset = () => {
             v-model="globalConfig.maxConcurrentDownloadTasks"
             :min="1"
             :max="20"
+          />
+        </ElFormItem>
+      </ElForm>
+    </ElCard>
+
+    <ElCard>
+      <template #header>
+        背景图像
+      </template>
+      <ElForm
+        label-position="left"
+        label-width="120px"
+      >
+        <ElFormItem label="启用背景">
+          <ElSwitch v-model="globalConfig.background.enable" />
+        </ElFormItem>
+        <ElFormItem label="背景路径">
+          <ElInput
+            v-model="globalConfig.background.url"
+            :disabled="!globalConfig.background.enable"
+            placeholder="可以是网络图片，也可以是本地图片"
+          >
+            <template #append>
+              <ElButton @click="selectImg">
+                浏览
+              </ElButton>
+            </template>
+          </ElInput>
+        </ElFormItem>
+        <ElFormItem label="不透明度">
+          <ElSlider
+            :disabled="!globalConfig.background.enable"
+            v-model="globalConfig.background.opacity"
+            :min="0"
+            :max="1"
+            :step="0.01"
           />
         </ElFormItem>
       </ElForm>

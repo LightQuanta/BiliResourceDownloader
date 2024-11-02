@@ -12,6 +12,11 @@ const DEFAULT_CONFIG = {
     requestCacheTime: 300,
 
     maxConcurrentDownloadTasks: 3,
+    background: {
+        enable: false,
+        opacity: 0.6,
+        url: ``
+    }
 }
 
 const globalConfig = ref(DEFAULT_CONFIG)

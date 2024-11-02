@@ -4,6 +4,7 @@ import { emitter } from "./main.ts"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import Icon from '../src-tauri/icons/icon.png'
 import { globalConfig } from "./utils/globalConfig.ts";
+import AppBackground from "./components/AppBackground.vue";
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
@@ -58,7 +59,6 @@ const currentPath = ref('')
 watch(() => route.fullPath, () => {
   currentPath.value = route.fullPath
 })
-
 </script>
 
 <template>
@@ -185,7 +185,10 @@ watch(() => route.fullPath, () => {
       </div>
     </Teleport>
 
-    <div class="flex mt-[--title-bar-height] w-full h-full items-stretch color-bg">
+    <div
+      class="flex mt-[--title-bar-height] w-full h-full items-stretch relative"
+    >
+      <AppBackground />
       <!-- 菜单 -->
       <ElMenu
         :router="true"
@@ -294,7 +297,11 @@ watch(() => route.fullPath, () => {
 
 <style scoped>
 .color-bg {
-  background: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
+   background-image: linear-gradient(to left bottom, hsl(16, 100%, 85%) 0%, hsl(217, 100%, 85%) 100%);
+   background-size: cover;
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   background-position: center center;
 }
 
 .fade-enter-active,
