@@ -246,6 +246,7 @@ const generateDownloadTask = () => {
 }
 
 const loading = ref(false)
+const router = useRouter()
 const fetchData = async () => {
   ids.value = route.params.id.split(',')
 
@@ -257,6 +258,7 @@ const fetchData = async () => {
   let suitDetail: SuitDetail
   suitDetail = {
     name: route.query.name as string ?? '未知',
+    item_id: 0,
     part_id: 6,
     suit_items: {},
     buy_link: '',
@@ -296,12 +298,17 @@ const fetchData = async () => {
   suitDetail.name = suitDetail.name === '未知' ? results[0].name : suitDetail.name
 
   // 处理所有返回结果，合并多种类装扮信息
-  results.forEach(r => {
+  for (let r of results) {
     let skinProperties: SuitSkinProperties
     switch (r.part_id) {
       case SuitPartType.suit:
-        // 如果是完整装扮信息，直接返回
         suitDetail = r
+        // 若ID来自部分装扮信息，跳转至完整装扮信息ID链接
+        if (suitDetail.item_id.toString() !== ids.value[0]) {
+          await router.replace(`/suit/${suitDetail.item_id}`)
+          return
+        }
+        // 如果是完整装扮信息，直接停止解析并返回
         saleStartTime.value = r.properties?.sale_time_begin ?? 0
         suitDescription.value = r.properties?.desc
         break
@@ -363,7 +370,7 @@ const fetchData = async () => {
         })
         break
     }
-  })
+  }
 
   name.value = suitDetail.name
   mid.value = suitDetail.properties?.fan_mid ?? ''
@@ -455,7 +462,7 @@ const resolveLink = async () => {
           <QRCodeDialogButton
             button-text="在App端查看"
             title="在App端扫码查看该装扮"
-            :content="jumpLink.length > 0 ? jumpLink : `https://www.bilibili.com/h5/mall/suit/detail?id=${ids[0]}`"
+            :content="(jumpLink.length > 0) ? jumpLink : `https://www.bilibili.com/h5/mall/suit/detail?id=${ids[0]}`"
           />
           <BatchDownloadButton :task="generateDownloadTask" />
         </div>

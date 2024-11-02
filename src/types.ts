@@ -231,6 +231,7 @@ interface SuitPendantProperties {
 // https://api.bilibili.com/x/garb/v2/user/suit/benefit?item_id=${SuitID}
 interface SuitDetail {
     name: string
+    item_id: number
     part_id: SuitPartType
     properties?: SuitProperties
     // 销售类型，pay、vip等
