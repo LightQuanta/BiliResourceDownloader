@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppBackground: typeof import('./src/components/AppBackground.vue')['default']
     BatchDownloadButton: typeof import('./src/components/BatchDownloadButton.vue')['default']
     CustomDivider: typeof import('./src/components/CustomDivider.vue')['default']
     DebugButton: typeof import('./src/components/DebugButton.vue')['default']

@@ -31,7 +31,10 @@ async function readConfig() {
 }
 
 function resetConfig() {
-    globalConfig.value = JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as typeof DEFAULT_CONFIG
+    globalConfig.value = {
+        ...DEFAULT_CONFIG,
+        ...JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as typeof DEFAULT_CONFIG,
+    }
 }
 
 readConfig()
