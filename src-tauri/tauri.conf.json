@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2.0.0",
   "productName": "biliresourcedownloader",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "identifier": "tech.lq0.biliresourcedownloader",
   "build": {
     "beforeDevCommand": "bun run dev",
