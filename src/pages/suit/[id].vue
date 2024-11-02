@@ -48,6 +48,7 @@ const pendants = ref<GeneralSuitItem<SuitPendantProperties>[]>([])
 
 const suitDescription = ref<string>()
 const saleStartTime = ref(0)
+const saleEndTime = ref(0)
 
 const saleType = ref('')
 const currentState = ref('')
@@ -310,6 +311,7 @@ const fetchData = async () => {
         }
         // 如果是完整装扮信息，直接停止解析并返回
         saleStartTime.value = r.properties?.sale_time_begin ?? 0
+        saleEndTime.value = r.properties?.sale_time_end ?? 0
         suitDescription.value = r.properties?.desc
         break
       case SuitPartType.thumbUp:
@@ -519,12 +521,12 @@ const resolveLink = async () => {
         </div>
       </ElDescriptionsItem>
       <ElDescriptionsItem
-        label="开售时间"
+        label="销售时间"
         :span="2"
         v-if="saleStartTime > 0"
       >
         <div class="whitespace-pre-wrap">
-          {{ new Date(saleStartTime * 1000).toLocaleString() }}
+          {{ new Date(saleStartTime * 1000).toLocaleString() }} - {{ new Date(saleEndTime * 1000).toLocaleString() }}
         </div>
       </ElDescriptionsItem>
 

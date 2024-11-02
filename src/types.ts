@@ -85,6 +85,7 @@ interface SuitProperties {
 
     // 开售时间
     sale_time_begin: number
+    sale_time_end: number
 
     type: "ip"
 }
