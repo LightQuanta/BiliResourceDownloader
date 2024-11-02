@@ -116,6 +116,7 @@ const newSearch = async () => {
 }
 
 onMounted(() => {
+  emitter.emit('scrollToTop')
   keyword.value = route.query.keyword as string
   searchType.value = route.query.type as string ?? 'all'
   newSearch()
@@ -126,6 +127,7 @@ const updateSearchAndQuery = () => {
   updateQuery()
 }
 watch(() => route.query.keyword, () => {
+  emitter.emit('scrollToTop')
   keyword.value = route.query.keyword as string
   newSearch()
 })
@@ -165,7 +167,6 @@ const updateQuery = () => {
         class="mr-auto"
         @change="updateSearchAndQuery"
       >
-        <!-- TODO 视频等其他类型搜索 -->
         <ElRadio value="all">
           全部
         </ElRadio>

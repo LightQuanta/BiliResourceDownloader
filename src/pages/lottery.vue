@@ -29,7 +29,6 @@ const hiddenLotteryInfo = ref<{
   lottery_name: string
 }[]>([])
 
-// TODO 实现对应勋章的预览
 // 不同等级的收藏集勋章
 const medals = computed(() => JSON.parse(actInfo.value?.collector_medal_info ?? '[]') as MedalInfo[])
 

@@ -15,6 +15,10 @@ emitter.on('scrollUp', () => {
   mainDivRef.value?.scrollBy({ top: -100, behavior: 'smooth' })
 })
 
+emitter.on('scrollToTop', () => {
+  mainDivRef.value?.scrollTo({ top: 0, behavior: 'smooth' })
+})
+
 const rotate180 = ref(false)
 const minusX = ref(false)
 const minusY = ref(false)

@@ -75,6 +75,7 @@ const load = async () => {
 
 const route = useRoute<"/search/emoji">()
 onMounted(async () => {
+  emitter.emit('scrollToTop')
   keyword.value = route.query.keyword as string ?? ''
   await load()
   updateSearch()
@@ -85,6 +86,7 @@ const router = useRouter()
 
 // 浏览器返回或前进时，同步更新搜索参数
 watch(() => route.query.keyword, () => {
+  emitter.emit('scrollToTop')
   keyword.value = route.query.keyword as string ?? ''
   onlyMyEmoji.value = route.query.only_mine === 'true'
   updateSearch()
@@ -133,7 +135,6 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
       @keyup="updateSearch"
     >
       <template #append>
-        <!-- TODO type为啥无效？ -->
         <ElButton
           :icon="Search"
           type="primary"
@@ -157,7 +158,6 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
       v-loading="loading"
     >
       <TransitionGroup name="list">
-        <!-- TODO 修改这个抽象UI -->
         <div
           v-for="emojiGroup in filteredEmojiGroups"
           :key="emojiGroup.id"

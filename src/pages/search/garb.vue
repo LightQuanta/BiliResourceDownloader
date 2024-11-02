@@ -16,6 +16,7 @@ const cards = ref<GarbSearchResult<LotteryProperties | SuitProperties>[]>([])
 const hasMore = computed(() => totalCount.value > 0)
 
 onMounted(() => {
+  emitter.emit('scrollToTop')
   keyword.value = params.keyword as string ?? ''
   displayMode.value = params.display as string ?? 'all'
   if (keyword.value !== '') searched.value = true
@@ -47,6 +48,7 @@ watch(displayMode, () => updateQuery())
 
 const route = useRoute<'/search/garb'>()
 watch(() => route.query.keyword, () => {
+  emitter.emit('scrollToTop')
   keyword.value = route.query.keyword as string ?? ''
   newSearch()
 })
@@ -119,7 +121,6 @@ const filteredCards = computed(() => {
       @change="newSearch"
     >
       <template #append>
-        <!-- TODO type为啥无效？ -->
         <ElButton
           :icon="Search"
           type="primary"
@@ -152,7 +153,7 @@ const filteredCards = computed(() => {
 
     <div
       v-infinite-scroll="load"
-      class="flex flex-wrap gap-4 justify-center content-start min-h-screen"
+      class="flex flex-wrap gap-4 pb-32 justify-center content-start min-h-screen"
     >
       <TransitionGroup name="list">
         <GarbSearchCard
@@ -161,17 +162,17 @@ const filteredCards = computed(() => {
           :garb="card"
         />
       </TransitionGroup>
-    </div>
 
-    <CustomDivider v-if="!searched">
-      请输入关键词进行搜索
-    </CustomDivider>
-    <CustomDivider v-else-if="hasMore">
-      正在加载...
-    </CustomDivider>
-    <CustomDivider v-else>
-      已加载全部搜索结果
-    </CustomDivider>
+      <CustomDivider v-if="!searched">
+        请输入搜索关键词
+      </CustomDivider>
+      <CustomDivider v-else-if="hasMore">
+        正在加载...
+      </CustomDivider>
+      <CustomDivider v-else>
+        已加载全部搜索结果
+      </CustomDivider>
+    </div>
   </div>
 </template>
 
