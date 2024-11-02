@@ -11,11 +11,11 @@ const DEFAULT_CONFIG = {
     readClipboard: true,
     requestCacheTime: 300,
 
-    maxConcurrentDownloadTasks: 3,
+    maxConcurrentDownloadTasks: 5,
     background: {
         enable: false,
         opacity: 0.6,
-        url: ``
+        url: ''
     }
 }
 
