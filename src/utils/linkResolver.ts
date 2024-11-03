@@ -261,4 +261,5 @@ export {
     resolveActID,
     resolveSuitID,
     autoJump,
+    resolveB23Link,
 }

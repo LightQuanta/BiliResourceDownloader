@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { autoJump, canParseURL, resolveText } from "../utils/linkResolver.ts";
+import { autoJump, canParseURL, resolveB23Link, resolveText } from "../utils/linkResolver.ts";
 
 const inputText = ref('')
 const processedInputText = computed<string>(() => {
@@ -34,13 +34,26 @@ const jump = async () => {
     return
   }
 
-  const input = processedInputText.value
+  let input = processedInputText.value
 
   let type = selectedSearchType.value
   if (type === 'auto') {
-    const inferredType = resolveText(processedInputText.value)
+    if (input.startsWith('https://b23.tv/')) {
+      const link = await resolveB23Link(input)
+      if (link === null) {
+        ElMessage({
+          message: '请输入正确的b23短链接！',
+          type: 'error',
+        })
+        return
+      }
+      input = link
+    }
+
+    const inferredType = resolveText(input)
     if (inferredType !== null) {
       selectedSearchType.value = inferredType
+      type = inferredType
     } else {
       ElMessage({
         message: '无法自动推断出要解析的类型，请手动选择！',
