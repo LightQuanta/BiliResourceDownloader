@@ -47,7 +47,7 @@ const relatedLinks: RelatedLink[] = [
   <div class="flex flex-col w-full h-full sm:p-12 p-1">
     <div class="max-w-screen-lg overflow-hidden flex flex-col bg-gray-100 rounded-lg p-8">
       <span class="text-xl">BiliResourceDownloader</span>
-      <span class="text-sm">版本 0.9.0</span>
+      <span class="text-sm">版本 1.0.0</span>
       <ElDivider />
       <span>多功能资源下载工具</span>
       <span>本软件开源免费，基于MIT协议进行开源</span>
