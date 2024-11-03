@@ -24,9 +24,10 @@
 
 ## 下载
 
-GitHub Release, Gitee Release等
+1. 蓝奏云（仅Windows版）
 
-WIP
+2. 查看 [Release](./release) ，Windows用户请下载 `
+biliresourcedownloader_版本号_x64-setup.exe`
 
 ## 文档
 
@@ -39,6 +40,14 @@ WIP
 - 前端页面使用 [Vue.js](https://cn.vuejs.org/) 和 [ElementPlus](https://cn.element-plus.org/zh-CN/) 进行构建
 - Wbi签名算法，App
   API签名算法，部分API的文档参考 [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
+
+## TODO
+
+- Android端支持（缺布局适配，缺文件选择、下载适配）
+
+- 视频下载（也许会做？）
+
+- 专栏解析
 
 ## 开源协议
 
