@@ -2,9 +2,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { globalConfig, resetConfig } from "../utils/globalConfig.ts";
 import { clearAPICache } from "../APIFetch.ts";
-
-const enoughWidth = useMediaQuery('(min-width: 640px)')
-const labelPosition = computed(() => enoughWidth.value ? 'left' : 'top')
+import { invoke } from "@tauri-apps/api/core";
 
 const clearCache = async () => {
   await clearAPICache()
@@ -39,7 +37,7 @@ const selectImg = async () => {
     filters: [
       {
         name: 'Images',
-        extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp',],
+        extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif',  'bmp', ],
       },
     ]
   })
@@ -51,13 +49,13 @@ const selectImg = async () => {
 </script>
 
 <template>
-  <div class="sm:p-12 p-0 flex flex-col gap-4 max-w-screen-sm">
+  <div class="p-12 flex flex-col gap-4 max-w-screen-sm">
     <ElCard>
       <template #header>
         界面设置
       </template>
       <ElForm
-        :label-position="labelPosition"
+        label-position="left"
         label-width="200px"
       >
         <ElFormItem label="显示调试按钮">
@@ -77,7 +75,7 @@ const selectImg = async () => {
         功能设置
       </template>
       <ElForm
-        :label-position="labelPosition"
+        label-position="left"
         label-width="200px"
       >
         <ElFormItem label="自动识别剪切板里的有效链接">
@@ -98,7 +96,7 @@ const selectImg = async () => {
         下载设置
       </template>
       <ElForm
-        :label-position="labelPosition"
+        label-position="left"
         label-width="200px"
       >
         <ElFormItem label="最大同时下载任务数">
@@ -116,7 +114,7 @@ const selectImg = async () => {
         背景图像
       </template>
       <ElForm
-        :label-position="labelPosition"
+        label-position="left"
         label-width="120px"
       >
         <ElFormItem label="启用背景">
@@ -162,6 +160,12 @@ const selectImg = async () => {
         @click="clearCache"
       >
         清空请求缓存
+      </ElButton>
+      <ElButton
+        type="primary"
+        @click="() => invoke('open_webview_devtools')"
+      >
+        启动开发者工具
       </ElButton>
     </ElCard>
   </div>

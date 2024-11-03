@@ -1,3 +1,4 @@
+mod invoke;
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -35,7 +36,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![create_dir, save_data_url])
+        .invoke_handler(tauri::generate_handler![create_dir, save_data_url, invoke::open_webview_devtools])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
