@@ -26,7 +26,7 @@
 
 1. [蓝奏云（仅Windows版）](https://lightquanta.lanzn.com/iWIHN2e6dzyf)，密码：bfax
 
-2. 查看 [Release](./release) ，Windows用户请下载 `
+2. 查看项目发行版（Release），Windows用户请下载 `
 biliresourcedownloader_版本号_x64-setup.exe`
 
 ## 文档
