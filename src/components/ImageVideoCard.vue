@@ -95,6 +95,7 @@ function closeVideo() {
     v-model="videoVisible"
     :title="title"
     :before-close="closeVideo"
+    width="auto"
   >
     <div style="height: calc(100vh - 150px - var(--title-bar-height));">
       <video
@@ -107,7 +108,7 @@ function closeVideo() {
       />
     </div>
   </ElDialog>
-  <ElCard class="max-w-80">
+  <ElCard class="sm:max-w-80 max-w-32">
     <template
       v-if="title"
       #header

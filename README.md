@@ -35,6 +35,7 @@ WIP
 ## 主要技术栈
 
 - 软件本体使用 [Tauri框架](https://tauri.app/zh-cn/) 进行搭建
+- 前端包管理使用 [bun](https://bun.sh/)
 - 前端页面使用 [Vue.js](https://cn.vuejs.org/) 和 [ElementPlus](https://cn.element-plus.org/zh-CN/) 进行构建
 - Wbi签名算法，App
   API签名算法，部分API的文档参考 [bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)

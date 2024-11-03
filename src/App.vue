@@ -4,10 +4,19 @@ import { getCurrentWindow } from "@tauri-apps/api/window"
 import Icon from '../src-tauri/icons/icon.png'
 import { globalConfig } from "./utils/globalConfig.ts";
 import AppBackground from "./components/AppBackground.vue";
+import { platform } from "@tauri-apps/plugin-os";
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
 const showLoginDrawer = ref(false)
+
+const isMobile = ref(true)
+const enoughWidth = useMediaQuery('(min-width: 640px)')
+
+onMounted(() => {
+  const plat = platform()
+  isMobile.value = plat === 'android' || plat === 'ios'
+})
 
 const mainDivRef = ref<HTMLElement>()
 // 向上滚动页面，避免搜索界面滚动时卡住
@@ -63,6 +72,7 @@ const currentPath = ref('')
 watch(() => route.fullPath, () => {
   currentPath.value = route.fullPath
 })
+
 </script>
 
 <template>
@@ -74,6 +84,7 @@ watch(() => route.fullPath, () => {
         class="fixed top-0 w-full pointer-events-none h-[--title-bar-height] flex items-center z-[114515] justify-center gap-2"
       >
         <div class="pointer-events-auto flex max-w-screen-md">
+          <!-- 导航栏按钮 -->
           <ElButtonGroup
             class="shrink-0"
             v-if="globalConfig.showNavigationButtons"
@@ -103,9 +114,10 @@ watch(() => route.fullPath, () => {
               </ElIcon>
             </ElButton>
           </ElButtonGroup>
+          <!-- 地址栏 -->
           <ElInput
             v-if="globalConfig.showLocationBar"
-            class="ml-1 h-8 w-80 route-input transition-all"
+            class="ml-1 h-8 w-72 route-input transition-all"
             v-model="currentPath"
             @change="router.push(currentPath)"
           />
@@ -116,6 +128,7 @@ watch(() => route.fullPath, () => {
       <div
         class="fixed top-0 w-full h-[--title-bar-height] bg-gray-100 flex gap-2 items-center pl-2 z-[114514] shadow select-none"
         data-tauri-drag-region
+        v-if="!isMobile"
       >
         <ElPopover
           placement="bottom-start"
@@ -196,8 +209,9 @@ watch(() => route.fullPath, () => {
       <!-- 菜单 -->
       <ElMenu
         :router="true"
-        class="h-full w-40 m-0 shrink-0 router-mark select-none"
+        class="h-full sm:w-40 w-16 m-0 shrink-0 router-mark select-none overflow-y-auto pb-16"
         default-active="test"
+        :collapse="!enoughWidth"
       >
         <ElMenuItem index="/">
           <ElIcon>
@@ -308,8 +322,10 @@ watch(() => route.fullPath, () => {
 </template>
 
 <style scoped>
-.route-input:has(.el-input__inner:focus) {
-  width: 600px;
+@media (min-width: 640px) {
+  .route-input:has(.el-input__inner:focus) {
+    width: 600px;
+  }
 }
 
 .color-bg {

@@ -19,7 +19,7 @@ const jump = () => {
 </script>
 
 <template>
-  <ElCard class="w-80">
+  <ElCard class="sm:w-80 w-32">
     <template #header>
       <ElTooltip
         :content="garb.name"
@@ -52,7 +52,7 @@ const jump = () => {
       fit="contain"
       preview-teleported
       referrerpolicy="no-referrer"
-      class="h-96 w-full"
+      class="sm:h-96 h-36 w-full"
     />
     <template #footer>
       <div class="flex h-4 items-center justify-center">

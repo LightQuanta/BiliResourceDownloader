@@ -25,6 +25,7 @@
     "core:window:allow-minimize",
     "core:window:allow-close",
     "core:window:allow-start-dragging",
-    "fs:default"
+    "fs:default",
+    "os:default"
   ]
 }

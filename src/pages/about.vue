@@ -44,7 +44,7 @@ const relatedLinks: RelatedLink[] = [
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full p-12">
+  <div class="flex flex-col w-full h-full sm:p-12 p-1">
     <div class="max-w-screen-lg overflow-hidden flex flex-col bg-gray-100 rounded-lg p-8">
       <span class="text-xl">BiliResourceDownloader</span>
       <span class="text-sm">版本 0.9.0</span>

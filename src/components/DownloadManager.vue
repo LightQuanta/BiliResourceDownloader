@@ -96,30 +96,33 @@ const getProgress = (file: Progress) => {
 
 <template>
   <div>
-    <ElButton
-      type="primary"
-      @click="start"
-    >
-      开始下载
-    </ElButton>
-    <ElButton
-      type="primary"
-      @click="pause"
-    >
-      暂停下载
-    </ElButton>
-    <ElPopconfirm
-      title="确定要清空下载任务吗？"
-      confirm-button-text="确定"
-      cancel-button-text="取消"
-      @confirm="clear"
-    >
-      <template #reference>
-        <ElButton type="primary">
-          清空任务
-        </ElButton>
-      </template>
-    </ElPopconfirm>
+    <div class="flex sm:flex-row flex-col">
+      <ElButton
+        type="primary"
+        @click="start"
+      >
+        开始下载
+      </ElButton>
+      <ElButton
+        type="primary"
+        @click="pause"
+      >
+        暂停下载
+      </ElButton>
+      <ElPopconfirm
+        title="确定要清空下载任务吗？"
+        confirm-button-text="确定"
+        cancel-button-text="取消"
+        @confirm="clear"
+      >
+        <template #reference>
+          <ElButton type="primary">
+            清空任务
+          </ElButton>
+        </template>
+      </ElPopconfirm>
+    </div>
+
     <div class="flex flex-col overflow-hidden">
       <TransitionGroup name="list">
         <div
