@@ -48,6 +48,7 @@ const jump = async () => {
         return
       }
       input = link
+      inputText.value = link
     }
 
     const inferredType = resolveText(input)
