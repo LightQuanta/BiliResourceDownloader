@@ -137,42 +137,43 @@ function closeVideo() {
       </div>
     </template>
 
-    <!-- 优先展示图片 -->
-    <ElImage
-      v-if="image?.length ?? 0 > 0"
-      :alt="title"
-      :hide-on-click-modal="true"
-      :initial-index="index ?? 0"
-      :lazy="lazy ?? true"
-      :preview-src-list="previewImages ?? [image ?? '']"
-      :src="image"
-      fit="contain"
-      preview-teleported
-      referrerpolicy="no-referrer"
-    >
-      <template #error>
-        <ElText type="danger">
-          加载图片/视频出错
-        </ElText>
-      </template>
-    </ElImage>
+    <div class="sm:m-0 m-[-20px]">
+      <!-- 优先展示图片 -->
+      <ElImage
+        v-if="image?.length ?? 0 > 0"
+        :alt="title"
+        :hide-on-click-modal="true"
+        :initial-index="index ?? 0"
+        :lazy="lazy ?? true"
+        :preview-src-list="previewImages ?? [image ?? '']"
+        :src="image"
+        fit="contain"
+        preview-teleported
+        referrerpolicy="no-referrer"
+      >
+        <template #error>
+          <ElText type="danger">
+            加载图片/视频出错
+          </ElText>
+        </template>
+      </ElImage>
 
-    <!-- 仅在无图片时展示视频 -->
-    <video
-      v-else-if="video?.length ?? 0 > 0"
-      :src="video"
-      controls
-      autoplay
-      loop
-    />
+      <!-- 仅在无图片时展示视频 -->
+      <video
+        v-else-if="video?.length ?? 0 > 0"
+        :src="video"
+        controls
+        autoplay
+        loop
+      />
 
-    <ElText
-      type="danger"
-      v-else
-    >
-      加载图片/视频出错
-    </ElText>
-
+      <ElText
+        type="danger"
+        v-else
+      >
+        加载图片/视频出错
+      </ElText>
+    </div>
     <template #footer>
       <div class="flex h-4 items-center justify-center">
         <!-- 仅图片或视频 -->

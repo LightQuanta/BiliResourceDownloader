@@ -44,16 +44,18 @@ const jump = () => {
         </ElText>
       </div>
     </template>
-    <ElImage
-      :alt="garb.name"
-      :hide-on-click-modal="true"
-      :preview-src-list="[garb.properties?.image_cover]"
-      :src="garb.properties?.image_cover"
-      fit="contain"
-      preview-teleported
-      referrerpolicy="no-referrer"
-      class="sm:h-96 h-36 w-full"
-    />
+    <div class="sm:m-0 m-[-20px]">
+      <ElImage
+        :alt="garb.name"
+        :hide-on-click-modal="true"
+        :preview-src-list="[garb.properties?.image_cover]"
+        :src="garb.properties?.image_cover"
+        fit="contain"
+        preview-teleported
+        referrerpolicy="no-referrer"
+        class="sm:h-96 h-36 w-full"
+      />
+    </div>
     <template #footer>
       <div class="flex h-4 items-center justify-center">
         <ElButton
