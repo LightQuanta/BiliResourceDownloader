@@ -260,9 +260,9 @@ const generateDownloadTask = async () => {
 
     const combinedRedeemInfo: RedeemInfo[] = ([] as RedeemInfo[]).concat(detail.collect_list.collect_chain ?? [], detail.collect_list.collect_infos ?? [])
 
-    // 钻石头像背景、收藏集勋章、典藏卡、头像框
+    // 钻石头像背景、收藏集勋章、典藏卡、头像框、出框头像
     combinedRedeemInfo
-        .filter(i => [1000, 1001, 1, 3].includes(i.redeem_item_type))
+        .filter(i => [1000, 1001, 1, 3, 11].includes(i.redeem_item_type))
         .forEach(i => {
           downloadFileInfo.files.push({
             path: [detail.name, '其他', i.redeem_item_name].join(sep()),

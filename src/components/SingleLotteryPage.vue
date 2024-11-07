@@ -26,7 +26,7 @@ const saleEndTime = ref(0)
 const combinedRedeemInfo = computed<RedeemInfo[]>(() => ([] as RedeemInfo[]).concat(lotteryDetail.value?.collect_list.collect_chain ?? [], lotteryDetail.value?.collect_list.collect_infos ?? []))
 
 // 收藏集表情包(2)和动态表情包(15)信息
-const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2 || r.redeem_item_type === 15))
+const emojiInfos = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2 || r.redeem_item_type === 15))
 
 // 钻石头像背景
 const diamondBackgrounds = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 1000))
@@ -36,9 +36,11 @@ const medals = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item
 const specialCards = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 1))
 // 头像框
 const pendants = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 3))
+// 出框头像
+const outboundFaces = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 11))
 
 // 装扮
-const suit = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 5))
+const suits = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 5))
 
 onMounted(async () => {
   loading.value = true
@@ -155,10 +157,10 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
       <ElDescriptionsItem
         label="收藏集装扮"
         :span="1"
-        v-if="suit.length > 0"
+        v-if="suits.length > 0"
       >
         <RouterLink
-          v-for="info in suit"
+          v-for="info in suits"
           :key="info.redeem_item_id"
           :to="`/suit/${info.redeem_item_id.replaceAll('&', ',')}?name=${name}`"
           class="mr-2"
@@ -173,10 +175,10 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
       <ElDescriptionsItem
         label="表情包"
         :span="1"
-        v-if="emojiInfo.length > 0"
+        v-if="emojiInfos.length > 0"
       >
         <RouterLink
-          v-for="info in emojiInfo"
+          v-for="info in emojiInfos"
           :key="info.redeem_item_id"
           :to="`/emoji/${info.redeem_item_id}?suit=true`"
           class="mr-2"
@@ -254,6 +256,15 @@ const previewImages = computed(() => cards.value.map(c => c.card_img))
         :subtitle="pendant.redeem_text"
         :download-name="`${name} - ${pendant.redeem_item_name}`"
         :image="pendant.redeem_item_image"
+      />
+      <!-- 出框头像 -->
+      <ImageVideoCard
+        v-for="face in outboundFaces"
+        :key="face.redeem_item_name"
+        :title="face.redeem_item_name"
+        :subtitle="face.redeem_text"
+        :download-name="`${name} - ${face.redeem_item_name}`"
+        :image="face.redeem_item_image"
       />
     </ElSpace>
   </div>
