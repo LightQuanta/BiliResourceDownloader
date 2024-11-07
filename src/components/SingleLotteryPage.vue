@@ -25,8 +25,8 @@ const saleEndTime = ref(0)
 
 const combinedRedeemInfo = computed<RedeemInfo[]>(() => ([] as RedeemInfo[]).concat(lotteryDetail.value?.collect_list.collect_chain ?? [], lotteryDetail.value?.collect_list.collect_infos ?? []))
 
-// 收藏集表情包信息
-const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2))
+// 收藏集表情包(2)和动态表情包(15)信息
+const emojiInfo = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 2 || r.redeem_item_type === 15))
 
 // 钻石头像背景
 const diamondBackgrounds = computed(() => combinedRedeemInfo.value.filter(r => r.redeem_item_type === 1000))

@@ -107,7 +107,8 @@ const fetchData = async () => {
       emojiInfo.value = suitEmojiDetail.map(e => {
         return {
           name: e.name.split('_')[1]?.slice(0, -1) ?? e.name,
-          url: e.properties.image,
+          // 优先解析动态表情包
+          url: e.properties.image_webp ?? e.properties.image_gif ?? e.properties.image,
         }
       }) ?? []
 

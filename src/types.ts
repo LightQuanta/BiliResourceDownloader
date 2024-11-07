@@ -254,7 +254,11 @@ interface SuitDetail {
             }[]
         })[]
         // 获取收藏集表情信息时用
-        emoji?: GeneralSuitItem<{ image: string }>[]
+        emoji?: GeneralSuitItem<{
+            image: string
+            image_gif?: string
+            image_webp?: string
+        }>[]
 
         // 加载动画
         loading?: GeneralSuitItem<SuitLoadingProperties>[]
