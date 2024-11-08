@@ -24,7 +24,7 @@
 
 ## 下载
 
-1. [蓝奏云（仅Windows版）](https://lightquanta.lanzn.com/i77Vk2e6kfle)，密码：hj1j
+1. [蓝奏云（仅Windows版）](https://lightquanta.lanzn.com/iwWmV2ekx40j)，密码：drc0
 
 2. 查看项目发行版（Release），Windows用户请下载 `
 biliresourcedownloader_版本号_x64-setup.exe`
