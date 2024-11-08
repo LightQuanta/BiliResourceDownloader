@@ -1,6 +1,6 @@
 [package]
 name = "biliresourcedownloader"
-version = "1.0.1"
+version = "1.1.0"
 description = "A Resource Downloader"
 authors = ["Light_Quanta"]
 edition = "2021"
