@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { APIFetch } from "../../APIFetch.ts";
-import { BatchDownloadTask, EmojiPackageDetail, SuitDetail } from "../../types.ts";
+import {
+  BatchDownloadTask,
+  EmojiImages,
+  EmojiPackageDetail,
+  SuitDetail,
+  SuitEmojiPackageProperties
+} from "../../types.ts";
 import { autoJump, resolveText } from "../../utils/linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
+import { UnwrapRef } from "vue";
 
 const route = useRoute<'/emoji/[id]'>()
 const loading = ref(false)
 
 const id = ref('')
-const requestURL = ref('')
-const responseJSON = ref('')
-
-interface EmojiInfo {
-  name: string
-  url: string
-}
 
 const name = ref('')
-const emojiInfo = ref<EmojiInfo[]>([])
+const emojiInfo = ref<(EmojiImages & {
+  name: string
+})[]>([])
 const link = ref('')
 const createTime = ref(-1)
 
@@ -35,7 +37,7 @@ const generateDownloadTask = () => {
     files: emojiInfo.value?.map(e => {
       return {
         path: finalName + sep() + e.name,
-        url: e.url,
+        url: e.image_webp ?? e.image_gif ?? e.image,
       }
     }) ?? [],
   } as BatchDownloadTask
@@ -54,8 +56,6 @@ const fetchData = async () => {
     url.searchParams.set('ids', id.value)
     url.searchParams.set('business', 'reply')
 
-    requestURL.value = url.toString()
-
     try {
       const resp = await APIFetch<{
         packages: EmojiPackageDetail[]
@@ -72,14 +72,15 @@ const fetchData = async () => {
       emojiInfo.value = packageDetail.emote.map(e => {
         return {
           name: e.meta.alias ?? e.text,
-          url: e.url,
+          image: e.url,
+          image_gif: e.gif_url,
+          image_webp: e.webp_url,
         }
       }) ?? []
 
       createTime.value = packageDetail.mtime * 1000
       link.value = packageDetail.meta.item_url ?? ''
       isPureText.value = packageDetail.type === 4
-      responseJSON.value = JSON.stringify(packageDetail, null, 2)
     } catch (e) {
       console.error(e)
       ElMessage({
@@ -101,20 +102,27 @@ const fetchData = async () => {
         }
       })
 
-      const suitEmojiDetail = resp.data.suit_items.emoji ?? []
-
       name.value = resp.data.name
-      emojiInfo.value = suitEmojiDetail.map(e => {
-        return {
-          name: e.name.split('_')[1]?.slice(0, -1) ?? e.name,
-          // 优先解析动态表情包
-          url: e.properties.image_webp ?? e.properties.image_gif ?? e.properties.image,
-        }
-      }) ?? []
+
+      // 优先解析JSON字符串格式表情包信息
+      const emojiProps = resp.data.properties as unknown as SuitEmojiPackageProperties
+      if ((emojiProps.item_emoji_list?.length ?? 0) > 0) {
+        emojiInfo.value = JSON.parse(emojiProps.item_emoji_list) as UnwrapRef<typeof emojiInfo>
+      } else {
+        const suitEmojiDetail = resp.data.suit_items.emoji ?? []
+
+        emojiInfo.value = suitEmojiDetail.map(e => {
+          return {
+            name: e.name.split('_')[1]?.slice(0, -1) ?? e.name,
+            image: e.properties.image,
+            image_gif: e.properties.image_gif,
+            image_webp: e.properties.image_webp,
+          }
+        }) ?? []
+      }
 
       link.value = resp.data.buy_link
       isPureText.value = false
-      responseJSON.value = JSON.stringify(suitEmojiDetail, null, 2)
     } catch (e) {
       console.error(e)
       ElMessage({
@@ -137,7 +145,7 @@ const resolveLink = async () => {
   }
 }
 
-const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
+const pictureLinks = computed(() => emojiInfo.value.map(e => e.image_webp ?? e.image_gif ?? e.image))
 </script>
 
 <template>
@@ -198,7 +206,7 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.url))
       <ImageVideoCard
         v-for="(emoji, index) in emojiInfo"
         :key="emoji.name"
-        :image="emoji.url"
+        :image="emoji.image_webp ?? emoji.image_gif ?? emoji.image"
         :index="index"
         :preview-images="pictureLinks"
         :title="emoji.name"

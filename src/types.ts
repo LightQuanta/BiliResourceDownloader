@@ -229,6 +229,12 @@ interface SuitPendantProperties {
     image: string
 }
 
+interface EmojiImages {
+    image: string
+    image_gif?: string
+    image_webp?: string
+}
+
 // https://api.bilibili.com/x/garb/v2/user/suit/benefit?item_id=${SuitID}
 interface SuitDetail {
     name: string
@@ -254,11 +260,7 @@ interface SuitDetail {
             }[]
         })[]
         // 获取收藏集表情信息时用
-        emoji?: GeneralSuitItem<{
-            image: string
-            image_gif?: string
-            image_webp?: string
-        }>[]
+        emoji?: GeneralSuitItem<EmojiImages>[]
 
         // 加载动画
         loading?: GeneralSuitItem<SuitLoadingProperties>[]
@@ -779,6 +781,10 @@ interface EmoteInfo {
     text: string
     // 图片链接
     url: string
+    // 动态表情包gif链接
+    gif_url?: string
+    // 动态表情包webp链接
+    webp_url?: string
     meta: {
         size: number
         // 表情名称？
@@ -936,6 +942,7 @@ export type {
     MedalInfo,
     LotteryInfo,
     SuitProperties,
+    EmojiImages,
     SuitDetail,
     GeneralSuitItem,
     SuitSpaceBGProperties,
