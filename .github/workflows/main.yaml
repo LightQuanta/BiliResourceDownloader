@@ -116,9 +116,17 @@ jobs:
         run: |
           apk_path=$(bun tauri android build --apk 2>&1 | tee >(cat >&2) | grep -A 1 "Finished 1 APK at:" | tail -n 1 | xargs)
           echo "APK path: $apk_path"
-          echo "::set-output name=apk_path::$apk_path"
+          echo "apk_path=$apk_path" >> $GITHUB_OUTPUT
         env:
             NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
+
+      - name: Check APK exists
+        run: |
+          apk_path="${{ steps.build.outputs.apk_path }}"
+          if [ ! -f "$apk_path" ]; then
+            echo "APK not found at $apk_path"
+            exit 1
+          fi
 
       - name: Verify APK signing
         run: |
