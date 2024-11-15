@@ -72,6 +72,38 @@ android {
             isUniversalApk = true
         }
     }
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val abi = output.filters.find { it.filterType == "ABI" }?.identifier ?: "universal"
+                val buildType = variant.buildType.name
+                val versionName = variant.versionName
+                val abiName = when (abi) {
+                        "arm64-v8a" -> "arm64"
+                        "armeabi-v7a" -> "arm"
+                        "x86_64" -> "x64"
+                        "x86" -> "x86"
+                        else -> abi
+                    }
+                
+                val outputFileName = if (buildType == "debug") {
+                    // debug版本保持 Tauri 格式
+                     "app-${abiName}-${buildType}.apk"
+                } else {
+                    // release版本按照项目统一的命名规范
+                    
+                    if (abi == "universal") {
+                        "biliresourcedownloader_${versionName}_android.apk"
+                    } else {
+                        "biliresourcedownloader_${versionName}_android_${abiName}.apk"
+                    }
+                }
+                
+                output.outputFileName = outputFileName
+            }
+    }
     kotlinOptions {
         jvmTarget = "1.8"
     }

@@ -3,6 +3,8 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { globalConfig, resetConfig } from "../utils/globalConfig.ts";
 import { clearAPICache } from "../APIFetch.ts";
 import { invoke } from "@tauri-apps/api/core";
+import { isMobileDevice } from "../utils/deviceUtils.ts";
+import { resolveContentUri } from "../utils/deviceUtils";
 
 const enoughWidth = useMediaQuery('(min-width: 640px)')
 const labelPosition = computed(() => enoughWidth.value ? 'left' : 'top')
@@ -34,7 +36,7 @@ const reset = () => {
 }
 
 const selectImg = async () => {
-  const url = await open({
+  let url = await open({
     multiple: false,
     directory: false,
     filters: [
@@ -45,10 +47,28 @@ const selectImg = async () => {
     ]
   })
 
-  if (url) {
-    globalConfig.value.background.url = url
+  if (!url) return
+
+  // resolve content:// urls on mobile devices
+  if (isMobileDevice()) {
+    url = resolveContentUri(url)
   }
+
+    globalConfig.value.background.url = url
+  
 }
+
+const selectDownloadDir = async () => {
+  const path = await open({
+    defaultPath: globalConfig.value.downloadPath,
+    directory: true,
+  })
+
+  if (path === null) return null
+
+  globalConfig.value.downloadPath = path
+  }
+
 </script>
 
 <template>
@@ -108,6 +128,23 @@ const selectImg = async () => {
             :min="1"
             :max="20"
           />
+        </ElFormItem>
+
+        <ElFormItem label="下载目录">
+          <ElInput
+            v-model="globalConfig.downloadPath"
+            :disabled="isMobileDevice()"
+            placeholder="下载目录"
+          >
+            <template #append>
+              <ElButton 
+                v-if="!isMobileDevice()"
+                @click="selectDownloadDir"
+              >
+                浏览
+              </ElButton>
+            </template>
+          </ElInput>
         </ElFormItem>
       </ElForm>
     </ElCard>

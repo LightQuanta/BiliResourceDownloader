@@ -4,7 +4,8 @@ import { getCurrentWindow } from "@tauri-apps/api/window"
 import Icon from '../src-tauri/icons/icon.png'
 import { globalConfig } from "./utils/globalConfig.ts";
 import AppBackground from "./components/AppBackground.vue";
-import { platform } from "@tauri-apps/plugin-os";
+import { isMobileDevice } from "./utils/deviceUtils.ts";
+
 
 const window = getCurrentWindow()
 const showDownloadDrawer = ref(false)
@@ -14,8 +15,7 @@ const isMobile = ref(true)
 const enoughWidth = useMediaQuery('(min-width: 640px)')
 
 onMounted(() => {
-  const plat = platform()
-  isMobile.value = plat === 'android' || plat === 'ios'
+  isMobile.value = isMobileDevice()
 })
 
 const mainDivRef = ref<HTMLElement>()
