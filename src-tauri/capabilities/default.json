@@ -26,6 +26,12 @@
     "core:window:allow-close",
     "core:window:allow-start-dragging",
     "fs:default",
+    "fs:allow-download-write-recursive",
+    {
+      "identifier": "fs:allow-read-file",
+      "path": "*.*"
+    },
+    "fs:allow-write",
     "os:default"
   ]
 }

@@ -1,3 +1,4 @@
+import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -23,6 +24,23 @@ android {
         targetSdk = 34
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")) // Add this line
+        }
+    }
+    signingConfigs {
+        create("release") {
+        val keystorePropertiesFile = rootProject.file("keystore.properties")
+        val keystoreProperties = Properties()
+        if (keystorePropertiesFile.exists()) {
+            keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        }
+
+        keyAlias = keystoreProperties["keyAlias"] as String
+        keyPassword = keystoreProperties["password"] as String
+        storeFile = file(keystoreProperties["storeFile"] as String)
+        storePassword = keystoreProperties["password"] as String
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -37,6 +55,7 @@ android {
             }
         }
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }
@@ -44,6 +63,46 @@ android {
                     .toList().toTypedArray()
             )
         }
+    }
+    splits { // Add this block
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = true
+        }
+    }
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val abi = output.filters.find { it.filterType == "ABI" }?.identifier ?: "universal"
+                val buildType = variant.buildType.name
+                val versionName = variant.versionName
+                val abiName = when (abi) {
+                        "arm64-v8a" -> "arm64"
+                        "armeabi-v7a" -> "arm"
+                        "x86_64" -> "x64"
+                        "x86" -> "x86"
+                        else -> abi
+                    }
+                
+                val outputFileName = if (buildType == "debug") {
+                    // debug版本保持 Tauri 格式
+                     "app-${abiName}-${buildType}.apk"
+                } else {
+                    // release版本按照项目统一的命名规范
+                    
+                    if (abi == "universal") {
+                        "biliresourcedownloader_${versionName}_android.apk"
+                    } else {
+                        "biliresourcedownloader_${versionName}_android_${abiName}.apk"
+                    }
+                }
+                
+                output.outputFileName = outputFileName
+            }
     }
     kotlinOptions {
         jvmTarget = "1.8"

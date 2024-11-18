@@ -27,19 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: setup bun
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
@@ -47,17 +46,102 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: bun install # change this to npm or pnpm depending on which one you use.
+      - name: Install frontend dependencies
+        run: bun install
 
       - uses: tauri-apps/tauri-action@v0
+        id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          tagName: app-v__VERSION__
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+  build-android:
+    runs-on: ubuntu-latest
+    needs: publish-tauri
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+            targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install frontend dependencies
+        run: bun install
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: sdkmanager "ndk;27.0.11902837"
+
+      - name: setup Android signing
+        run: |
+          cd src-tauri/gen/android
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
+          echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
+          base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
+          echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
+
+      - name: Build app bundle
+        id: build
+        run: |
+          apk_path=$(bun tauri android build --apk 2>&1 | tee >(cat >&2) | grep -A 1 "Finished 1 APK at:" | tail -n 1 | xargs)
+          echo "APK path: $apk_path"
+          echo "apk_path=$apk_path" >> $GITHUB_OUTPUT
+        env:
+            NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
+
+      - name: Check APK exists
+        run: |
+          apk_path="${{ steps.build.outputs.apk_path }}"
+          if [ ! -f "$apk_path" ]; then
+            echo "APK not found at $apk_path"
+            exit 1
+          fi
+
+      - name: Verify APK signing
+        run: |
+          apk_path="${{ steps.build.outputs.apk_path }}"
+          jarsigner -verify -verbose -certs "$apk_path"
+
+      - name: Align the Universal APK (optional but recommended)
+        run: |
+          zipalign_path="${ANDROID_HOME}/build-tools/30.0.3/zipalign"
+          aligned_apk="src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed-aligned.apk"
+          $zipalign_path -v 4 "$apk_path" "$aligned_apk"
+
+      - name: Upload signed APK to existing release
+        run: |
+          asset_name="biliresourcedownloader-__VERSION__-android.apk"
+          gh release upload ${{ steps.get_release.outputs.upload_url }} "$aligned_apk" --name "$asset_name" --content-type application/vnd.android.package-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

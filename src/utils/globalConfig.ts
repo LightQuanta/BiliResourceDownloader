@@ -1,42 +1,55 @@
+import { getDownloadPath } from "../utils/deviceUtils.ts";
 import { LazyStore } from "@tauri-apps/plugin-store";
+import { ref, watch, UnwrapRef } from 'vue';
 
-
-const store = new LazyStore('config.json')
+const store = new LazyStore('config.json');
 
 const DEFAULT_CONFIG = {
     showDebugButton: true,
     showNavigationButtons: true,
     showLocationBar: true,
-
+    downloadPath: "", // Placeholder, will be updated
     readClipboard: true,
     requestCacheTime: 300,
-
     maxConcurrentDownloadTasks: 5,
     background: {
         enable: false,
         opacity: 0.6,
         url: ''
     }
-}
+};
 
-const globalConfig = ref(DEFAULT_CONFIG)
+const globalConfig = ref<UnwrapRef<typeof DEFAULT_CONFIG>>({ ...DEFAULT_CONFIG });
 
-// 自动保存
-watch(globalConfig, async () => {
-    await store.set('config', globalConfig.value)
-}, { deep: true })
+const initializeConfig = async () => {
+    const downloadPath = await getDownloadPath();
+    const storedConfig = await store.get<typeof DEFAULT_CONFIG>('config');
+    const config = storedConfig ? { ...DEFAULT_CONFIG, ...storedConfig } : { ...DEFAULT_CONFIG };
+    if (!config.downloadPath) {
+        config.downloadPath = downloadPath;
+    }
+    globalConfig.value = config;
+};
 
-async function readConfig() {
-    globalConfig.value = await store.get<typeof DEFAULT_CONFIG>('config') ?? DEFAULT_CONFIG
-}
+const setupConfig = async () => {
+    await initializeConfig();
+    watch(globalConfig, async () => {
+        await store.set('config', globalConfig.value);
+    }, { deep: true });
+};
 
-function resetConfig() {
+setupConfig().then(() => {
+    console.log("配置设置完成。");
+}).catch(error => {
+    console.error("配置设置失败：", error);
+});
+
+async function resetConfig() {
+    const downloadPath = await getDownloadPath();
     globalConfig.value = {
         ...DEFAULT_CONFIG,
-        ...JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as typeof DEFAULT_CONFIG,
-    }
+        downloadPath: downloadPath // Use the download path provided by the function
+    };
 }
 
-readConfig()
-
-export { globalConfig, resetConfig }
+export { globalConfig, resetConfig };
