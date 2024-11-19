@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ElMessage, FormInstance } from "element-plus";
 import type { BatchDownloadTask } from "../types.ts";
-import { pushNewTask } from "../utils/downloadManager.ts";
+import { pushNewTask, startDownload } from "../utils/downloadManager.ts";
 import { open } from "@tauri-apps/plugin-dialog";
 import { TreeInstance } from "element-plus/lib/components";
 import { sep } from "@tauri-apps/api/path";
+import { globalConfig } from "../utils/globalConfig.ts";
 
 const props = defineProps<{
   task: (() => BatchDownloadTask) | (() => Promise<BatchDownloadTask>)
@@ -129,13 +130,25 @@ const submit = async () => {
       path: downloadConfig.path,
       files: selectedFiles
     }
-
     await pushNewTask(finalTask)
 
-    ElMessage({
-      message: '已提交下载任务，请到下载管理界面进行查看',
-      type: 'success',
-    })
+    if (globalConfig.value.autoStartDownload) {
+      startDownload().then(() => {
+        ElMessage({
+          message: `${finalTask.name}下载完成！`,
+          type: 'success',
+        })
+      })
+      ElMessage({
+        message: '已开始批量下载，可至下载管理界面查看进度',
+        type: 'success',
+      })
+    } else {
+      ElMessage({
+        message: '已提交下载任务，请到下载管理界面进行查看',
+        type: 'success',
+      })
+    }
 
     showDialog.value = false
   })

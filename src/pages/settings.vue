@@ -54,8 +54,8 @@ const selectImg = async () => {
     url = resolveContentUri(url)
   }
 
-    globalConfig.value.background.url = url
-  
+  globalConfig.value.background.url = url
+
 }
 
 const selectDownloadDir = async () => {
@@ -67,7 +67,7 @@ const selectDownloadDir = async () => {
   if (path === null) return null
 
   globalConfig.value.downloadPath = path
-  }
+}
 
 </script>
 
@@ -130,6 +130,10 @@ const selectDownloadDir = async () => {
           />
         </ElFormItem>
 
+        <ElFormItem label="自动开始下载">
+          <ElSwitch v-model="globalConfig.autoStartDownload" />
+        </ElFormItem>
+
         <ElFormItem label="下载目录">
           <ElInput
             v-model="globalConfig.downloadPath"
@@ -137,7 +141,7 @@ const selectDownloadDir = async () => {
             placeholder="下载目录"
           >
             <template #append>
-              <ElButton 
+              <ElButton
                 v-if="!isMobileDevice()"
                 @click="selectDownloadDir"
               >

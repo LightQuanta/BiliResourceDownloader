@@ -1,6 +1,6 @@
-import { getDownloadPath } from "../utils/deviceUtils.ts";
+import { getDownloadPath } from "./deviceUtils.ts";
 import { LazyStore } from "@tauri-apps/plugin-store";
-import { ref, watch, UnwrapRef } from 'vue';
+import { ref, watch } from 'vue';
 
 const store = new LazyStore('config.json');
 
@@ -8,6 +8,7 @@ const DEFAULT_CONFIG = {
     showDebugButton: true,
     showNavigationButtons: true,
     showLocationBar: true,
+    autoStartDownload: true,
     downloadPath: "", // Placeholder, will be updated
     readClipboard: true,
     requestCacheTime: 300,
@@ -19,12 +20,12 @@ const DEFAULT_CONFIG = {
     }
 };
 
-const globalConfig = ref<UnwrapRef<typeof DEFAULT_CONFIG>>({ ...DEFAULT_CONFIG });
+const globalConfig = ref<typeof DEFAULT_CONFIG>({ ...DEFAULT_CONFIG });
 
 const initializeConfig = async () => {
     const downloadPath = await getDownloadPath();
     const storedConfig = await store.get<typeof DEFAULT_CONFIG>('config');
-    const config = storedConfig ? { ...DEFAULT_CONFIG, ...storedConfig } : { ...DEFAULT_CONFIG };
+    const config = { ...DEFAULT_CONFIG, ...storedConfig }
     if (!config.downloadPath) {
         config.downloadPath = downloadPath;
     }
