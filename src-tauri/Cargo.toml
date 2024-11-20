@@ -18,17 +18,17 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.0.0", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0", features = ["devtools"] }
-tauri-plugin-shell = "2.0.0"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
-tauri-plugin-store = "2"
-tauri-plugin-dialog = "2"
-tauri-plugin-upload = "2"
+tauri = { version = "2.1.1", features = ["devtools"] }
+tauri-plugin-shell = "2.0.2"
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+tauri-plugin-http = { version = "2.0.3", features = ["unsafe-headers"] }
+tauri-plugin-store = "2.1.0"
+tauri-plugin-dialog = "2.0.3"
+tauri-plugin-upload = "2.1.0"
 tauri-plugin-clipboard-manager = "2.0.1"
 base64 = "0.22.1"
-tauri-plugin-fs = "2"
+tauri-plugin-fs = "2.0.3"
 tauri-plugin-os = "2"
 image = "0.25.5"
 gif = "0.13.1"
