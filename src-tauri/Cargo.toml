@@ -30,6 +30,8 @@ tauri-plugin-clipboard-manager = "2.0.1"
 base64 = "0.22.1"
 tauri-plugin-fs = "2"
 tauri-plugin-os = "2"
+image = "0.25.5"
+gif = "0.13.1"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

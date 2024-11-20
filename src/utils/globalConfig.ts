@@ -9,6 +9,7 @@ const DEFAULT_CONFIG = {
     showNavigationButtons: true,
     showLocationBar: true,
     autoStartDownload: true,
+    imageSaveFormat: "gif",
     downloadPath: "", // Placeholder, will be updated
     readClipboard: true,
     requestCacheTime: 300,
@@ -21,6 +22,8 @@ const DEFAULT_CONFIG = {
 };
 
 const globalConfig = ref<typeof DEFAULT_CONFIG>({ ...DEFAULT_CONFIG });
+
+const allowedImageFormats = ['gif', 'webp', 'png'];
 
 const initializeConfig = async () => {
     const downloadPath = await getDownloadPath();
@@ -53,4 +56,4 @@ async function resetConfig() {
     };
 }
 
-export { globalConfig, resetConfig };
+export { globalConfig, resetConfig, allowedImageFormats };

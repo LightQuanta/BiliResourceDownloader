@@ -10,6 +10,8 @@ import {
 import { autoJump, resolveText } from "../../utils/linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
 import { UnwrapRef } from "vue";
+import { formatToUrl } from "../../utils/image.ts";
+import {globalConfig} from "../../utils/globalConfig.ts";
 
 const route = useRoute<'/emoji/[id]'>()
 const loading = ref(false)
@@ -37,7 +39,7 @@ const generateDownloadTask = () => {
     files: emojiInfo.value?.map(e => {
       return {
         path: finalName + sep() + e.name,
-        url: e.image_webp ?? e.image_gif ?? e.image,
+        url: formatToUrl(globalConfig.value.imageSaveFormat, e)
       }
     }) ?? [],
   } as BatchDownloadTask

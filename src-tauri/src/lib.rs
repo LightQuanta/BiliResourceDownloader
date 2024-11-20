@@ -36,7 +36,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![create_dir, save_data_url, invoke::open_webview_devtools])
+        .invoke_handler(tauri::generate_handler![create_dir, save_data_url, invoke::open_webview_devtools, invoke::convert_webp2gif])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

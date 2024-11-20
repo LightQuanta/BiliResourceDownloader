@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { open } from "@tauri-apps/plugin-dialog";
-import { globalConfig, resetConfig } from "../utils/globalConfig.ts";
+import {allowedImageFormats, globalConfig, resetConfig} from "../utils/globalConfig.ts";
 import { clearAPICache } from "../APIFetch.ts";
 import { invoke } from "@tauri-apps/api/core";
 import { isMobileDevice } from "../utils/deviceUtils.ts";
@@ -150,6 +150,17 @@ const selectDownloadDir = async () => {
             </template>
           </ElInput>
         </ElFormItem>
+        <ElSelect
+          v-model="globalConfig.imageSaveFormat"
+          placeholder="图片保存格式"
+        >
+          <ElOption
+            v-for="format in allowedImageFormats"
+            :key="format"
+            :label="format.toUpperCase()"
+            :value="format"
+          />
+        </ElSelect>
       </ElForm>
     </ElCard>
 
