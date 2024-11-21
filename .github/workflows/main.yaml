@@ -114,34 +114,39 @@ jobs:
       - name: Build app bundle
         id: build
         run: |
-          apk_path=$(bun tauri android build --apk 2>&1 | tee >(cat >&2) | grep -A 1 "Finished 1 APK at:" | tail -n 1 | xargs)
-          echo "APK path: $apk_path"
-          echo "apk_path=$apk_path" >> $GITHUB_OUTPUT
+          bun tauri android build --apk
+          apk_path="src-tauri/gen/android/app/build/outputs/apk/universal/release/"
         env:
             NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
-
-      - name: Check APK exists
-        run: |
-          apk_path="${{ steps.build.outputs.apk_path }}"
-          if [ ! -f "$apk_path" ]; then
-            echo "APK not found at $apk_path"
-            exit 1
-          fi
 
       - name: Verify APK signing
         run: |
           apk_path="${{ steps.build.outputs.apk_path }}"
-          jarsigner -verify -verbose -certs "$apk_path"
+          for apk in $apk_path/*.apk; do
+            echo "Verifying $apk..."
+            if jarsigner -verify -certs "$apk"; then
+              echo "Verification PASSED for $apk"
+            else
+              echo "Verification FAILED for $apk"
+            fi
+          done
 
       - name: Align the Universal APK (optional but recommended)
         run: |
+          apk_path="${{ steps.build.outputs.apk_path }}"
           zipalign_path="${ANDROID_HOME}/build-tools/30.0.3/zipalign"
-          aligned_apk="src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed-aligned.apk"
-          $zipalign_path -v 4 "$apk_path" "$aligned_apk"
+          for apk in $apk_path/*.apk; do
+            aligned_apk="${apk_path}/aligned-$(basename $apk)"
+            $zipalign_path -v 4 "$apk" "$aligned_apk"
+          done
 
-      - name: Upload signed APK to existing release
+      - name: Rename APKs
         run: |
-          asset_name="biliresourcedownloader-__VERSION__-android.apk"
-          gh release upload ${{ steps.get_release.outputs.upload_url }} "$aligned_apk" --name "$asset_name" --content-type application/vnd.android.package-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          apk_path="${{ steps.build.outputs.apk_path }}"
+          version_name=$(grep versionName build.gradle.kts | sed 's/.*versionName = "\(.*\)"/\1/')
+          for apk in $apk_path/*.apk; do
+            abi=$(basename "$apk" | sed 's/app-universal-\(.*\)-release.apk/\1/')
+            new_name="biliresourcedownloader_${version_name}_android_${abi}.apk"
+            mv "$apk" "$apk_path/$new_name"
+            echo "Renamed $apk to $new_name"
+          done

@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use image::codecs::webp::WebPDecoder;
 use image::{AnimationDecoder, ImageDecoder};
-use image::{ GenericImageView};
 use gif::{Encoder, Frame, Repeat };
 
 #[tauri::command]
