@@ -48,24 +48,23 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Setup Java
+      - name: Setup Java (Android only)
         if: matrix.mobile
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK (Android only)
         if: matrix.mobile
         uses: android-actions/setup-android@v3
         
-      - name: Install NDK
+      - name: Install NDK (Android only)
         if: matrix.mobile
         run: sdkmanager "ndk;27.0.11902837"
-        env:
-          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
-      - name: setup Android signing
+
+      - name: setup Android signing (Android only)
         if: matrix.mobile
         run: |
           cd src-tauri/gen/android
@@ -81,6 +80,7 @@ jobs:
       - uses: tauri-apps/tauri-action@3c20edcd47f6c6fa6d7bd17d279e1c1b454ff57d
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'v__VERSION__'
