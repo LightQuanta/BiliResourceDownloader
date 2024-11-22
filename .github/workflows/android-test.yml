@@ -40,8 +40,8 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: |
-            ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' }}
-            ${{ matrix.platform == 'ubuntu-22.04' && 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android' }}
+            ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+            ${{ matrix.platform == 'ubuntu-22.04' && 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
