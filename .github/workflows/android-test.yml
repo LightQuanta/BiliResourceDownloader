@@ -58,10 +58,12 @@ jobs:
       - name: Setup Android SDK
         if: matrix.mobile
         uses: android-actions/setup-android@v3
-
+        
       - name: Install NDK
         if: matrix.mobile
         run: sdkmanager "ndk;27.0.11902837"
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
       - name: setup Android signing
         if: matrix.mobile
@@ -85,5 +87,5 @@ jobs:
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          includeAndroid: true
+          includeAndroid: ${{ matrix.mobile || false }}
           args: ${{ matrix.args }}

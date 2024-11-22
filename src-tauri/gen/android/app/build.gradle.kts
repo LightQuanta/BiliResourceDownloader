@@ -66,14 +66,14 @@ android {
             )
         }
     }
-    splits { // Add this block
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
-        }
-    }
+    // splits { // Add this block
+    //     abi {
+    //         isEnable = true
+    //         reset()
+    //         include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+    //         isUniversalApk = true
+    //     }
+    // }
     kotlinOptions {
         jvmTarget = "1.8"
     }
