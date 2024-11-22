@@ -58,7 +58,7 @@ jobs:
       - name: Setup Android SDK (Android only)
         if: matrix.mobile
         uses: android-actions/setup-android@v3
-        
+
       - name: Install NDK (Android only)
         if: matrix.mobile
         run: sdkmanager "ndk;27.0.11902837"
@@ -82,8 +82,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
         with:
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'v__VERSION__'
+          tagName: app-android-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'App android v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
