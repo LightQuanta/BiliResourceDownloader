@@ -3,6 +3,9 @@ import { router } from "../main.ts";
 type Types = 'liveroom' | 'user' | 'dynamic' | 'video' | 'suit' | 'lottery'
 
 const canParseURL = (text: string) => {
+    if (text.toLowerCase().startsWith('uid:')) {
+        return false
+    }
     try {
         new URL(text)
         return true
@@ -17,7 +20,7 @@ function resolveText(text?: string): Types | null {
         const url = new URL(text)
         if (/^https:\/\/live\.bilibili\.com\/\d+(\?.+)?$/.test(text)) {
             return 'liveroom'
-        } else if (/^https:\/\/space\.bilibili\.com\/\d+(.+)?$/.test(text) || /^UID:\d+$/.test(text)) {
+        } else if (/^https:\/\/space\.bilibili\.com\/\d+(.+)?$/.test(text)) {
             return 'user'
         } else if (/^https:\/\/t\.bilibili\.com\/\d+(\?.+)?$/.test(text)
             || /^https:\/\/(www\.)?bilibili\.com\/opus\/\d+(\?.+)?$/.test(text)
@@ -55,6 +58,8 @@ function resolveText(text?: string): Types | null {
         }
     } else if (/^((av|AV)\d+|BV\w+)$/.test(text)) {
         return 'video'
+    } else if (/^uid: ?\d+$/.test(text.toLowerCase())) {
+        return 'user'
     }
     return null
 }
@@ -70,7 +75,7 @@ function resolveUID(text: string): string | null {
         if (canParseURL(text)) {
             uid = new URL(text).pathname.split('?')[0].split('/')[1]
         } else {
-            uid = text.substring(4)
+            uid = text.split(':')[1].trim()
         }
     } else if (/^\d+$/.test(text)) {
         uid = text
