@@ -696,15 +696,25 @@ const resolveLink = async () => {
           class="w-full justify-center"
           wrap
         >
-          <ImageVideoCard
+          <template
             v-for="([prop, desc], index) in skinProps.filter(([p]) => (skin.properties[p]?.length ?? 0) > 0)"
             :key="prop"
-            :title="desc ?? prop"
-            :image="skin.properties[prop]"
-            :download-name="`${name} - ${skin.name} - ${desc ?? prop}`"
-            :preview-images="skinProps.filter(([p]) => (skin.properties[p]?.length ?? 0) > 0).map(([p]) => skin.properties[p])"
-            :index="index"
-          />
+          >
+            <SVGACard
+              v-if="skin.properties[prop].endsWith('.bin')"
+              :title="desc ?? prop"
+              :url="skin.properties[prop]"
+              :download-name="`${name} - ${skin.name} - ${desc ?? prop}`"
+            />
+            <ImageVideoCard
+              v-else
+              :title="desc ?? prop"
+              :image="skin.properties[prop]"
+              :download-name="`${name} - ${skin.name} - ${desc ?? prop}`"
+              :preview-images="skinProps.filter(([p]) => (skin.properties[p]?.length ?? 0) > 0).map(([p]) => skin.properties[p])"
+              :index="index"
+            />
+          </template>
 
           <ImageVideoCard
             v-if="skin.properties.head_myself_mp4_bg"
