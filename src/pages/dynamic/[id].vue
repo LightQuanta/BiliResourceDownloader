@@ -56,6 +56,9 @@ const fetchData = async (paramID: string) => {
 
 watch(() => route.params.id, fetchData, { immediate: true })
 
+// 动态发布时间
+const publishTimeStamp = computed(() => authorInfo.value?.pub_ts ?? 0)
+
 // 动态内容，{ rich_text_node: RichTextNode[], text: string}
 const dynamicContent = computed(() => {
   if (dynamicInfo.value?.desc) {
@@ -246,6 +249,14 @@ const jump = async () => {
             referrerpolicy="no-referrer"
           />
         </div>
+      </ElDescriptionsItem>
+
+      <!-- 动态类型 -->
+      <ElDescriptionsItem
+        :span="2"
+        label="动态发布时间"
+      >
+        {{ new Date(publishTimeStamp * 1000).toLocaleString() }}
       </ElDescriptionsItem>
 
       <!-- 动态类型 -->

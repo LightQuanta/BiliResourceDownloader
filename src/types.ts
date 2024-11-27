@@ -407,7 +407,7 @@ interface DynamicInfo {
 
             // 发布时间（文本）
             pub_time: string
-            // 发布时间戳
+            // 发布时间戳（为什么这玩意在作者信息里）
             pub_ts: number
 
         }
