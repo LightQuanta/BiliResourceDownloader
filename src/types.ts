@@ -229,7 +229,7 @@ interface SuitPendantProperties {
     image: string
 }
 
-interface EmojiImages {
+interface EmojiImage {
     image: string
     image_gif?: string
     image_webp?: string
@@ -260,7 +260,7 @@ interface SuitDetail {
             }[]
         })[]
         // 获取收藏集表情信息时用
-        emoji?: GeneralSuitItem<EmojiImages>[]
+        emoji?: GeneralSuitItem<EmojiImage>[]
 
         // 加载动画
         loading?: GeneralSuitItem<SuitLoadingProperties>[]
@@ -942,7 +942,7 @@ export type {
     MedalInfo,
     LotteryInfo,
     SuitProperties,
-    EmojiImages,
+    EmojiImage,
     SuitDetail,
     GeneralSuitItem,
     SuitSpaceBGProperties,

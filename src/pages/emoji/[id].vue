@@ -2,7 +2,7 @@
 import { APIFetch } from "../../APIFetch.ts";
 import {
   BatchDownloadTask,
-  EmojiImages,
+  EmojiImage,
   EmojiPackageDetail,
   SuitDetail,
   SuitEmojiPackageProperties
@@ -11,7 +11,7 @@ import { autoJump, resolveText } from "../../utils/linkResolver.ts";
 import { sep } from "@tauri-apps/api/path";
 import { UnwrapRef } from "vue";
 import { formatToUrl } from "../../utils/image.ts";
-import {globalConfig} from "../../utils/globalConfig.ts";
+import { allowedImageFormats, globalConfig } from "../../utils/globalConfig.ts";
 
 const route = useRoute<'/emoji/[id]'>()
 const loading = ref(false)
@@ -19,7 +19,7 @@ const loading = ref(false)
 const id = ref('')
 
 const name = ref('')
-const emojiInfo = ref<(EmojiImages & {
+const emojiInfo = ref<(EmojiImage & {
   name: string
 })[]>([])
 const link = ref('')
@@ -147,7 +147,10 @@ const resolveLink = async () => {
   }
 }
 
-const pictureLinks = computed(() => emojiInfo.value.map(e => e.image_webp ?? e.image_gif ?? e.image))
+// 是否为动态表情包
+const hasDynamicImage = computed(() => emojiInfo.value.some(e => e.image_webp !== undefined || e.image_gif !== undefined))
+
+const pictureLinks = computed(() => emojiInfo.value.map(image => formatToUrl(globalConfig.value.imageSaveFormat, image)))
 </script>
 
 <template>
@@ -195,6 +198,24 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.image_webp ?? e.i
           点击解析
         </ElLink>
       </ElDescriptionsItem>
+
+      <ElDescriptionsItem
+        v-if="hasDynamicImage"
+        :span="2"
+        label="图片格式"
+      >
+        <ElSelect
+          v-model="globalConfig.imageSaveFormat"
+          placeholder="图片保存格式"
+        >
+          <ElOption
+            v-for="format in allowedImageFormats"
+            :key="format"
+            :label="format.toUpperCase()"
+            :value="format"
+          />
+        </ElSelect>
+      </ElDescriptionsItem>
     </ElDescriptions>
 
     <CustomDivider v-if="pictureLinks?.length ?? 0 > 0">
@@ -208,7 +229,7 @@ const pictureLinks = computed(() => emojiInfo.value.map(e => e.image_webp ?? e.i
       <ImageVideoCard
         v-for="(emoji, index) in emojiInfo"
         :key="emoji.name"
-        :image="emoji.image_webp ?? emoji.image_gif ?? emoji.image"
+        :image="pictureLinks[index]"
         :index="index"
         :preview-images="pictureLinks"
         :title="emoji.name"
