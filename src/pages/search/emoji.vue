@@ -125,7 +125,7 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
 </script>
 
 <template>
-  <LoginRequired class="flex gap-4 flex-col h-full pb-40">
+  <LoginRequired class="flex gap-4 flex-col h-full">
     <ElInput
       v-model="keyword"
       placeholder="输入要搜索的表情包"
@@ -154,7 +154,7 @@ const jumpToEmoji = (emoji: EmojiPackageInfo) => {
 
     <div
       v-infinite-scroll="showMore"
-      class="flex flex-wrap gap-4 items-center justify-center min-w-screen"
+      class="flex flex-wrap gap-4 items-center justify-center min-w-screen pb-40"
       v-loading="loading"
     >
       <TransitionGroup name="list">
