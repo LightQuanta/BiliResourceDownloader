@@ -38,6 +38,14 @@ const relatedLinks: RelatedLink[] = [
         name: 'Bilibili: 青夏家的Ela',
         link: 'https://space.bilibili.com/86894342',
       },
+      {
+        name: 'GitHub: YuenSzeHong',
+        link: 'https://github.com/YuenSzeHong',
+      },
+      {
+        name: 'Bilibili: TheOneHong阿康',
+        link: 'https://space.bilibili.com/357613233',
+      },
     ]
   }
 ]
@@ -47,7 +55,7 @@ const relatedLinks: RelatedLink[] = [
   <div class="flex flex-col w-full h-full sm:p-12 p-1">
     <div class="max-w-screen-lg overflow-hidden flex flex-col bg-gray-100 rounded-lg p-8">
       <span class="text-xl">BiliResourceDownloader</span>
-      <span class="text-sm">版本 1.1.0</span>
+      <span class="text-sm">版本 1.2.0</span>
       <ElDivider />
       <span>多功能资源下载工具</span>
       <span>本软件开源免费，基于MIT协议进行开源</span>
