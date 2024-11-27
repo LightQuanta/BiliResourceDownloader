@@ -33,6 +33,7 @@ declare module 'vue-router/auto-routes' {
     '/suit/[id]': RouteRecordInfo<'/suit/[id]', '/suit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/tool/lottie': RouteRecordInfo<'/tool/lottie', '/tool/lottie', Record<never, never>, Record<never, never>>,
     '/tool/svga': RouteRecordInfo<'/tool/svga', '/tool/svga', Record<never, never>, Record<never, never>>,
+    '/tool/webp': RouteRecordInfo<'/tool/webp', '/tool/webp', Record<never, never>, Record<never, never>>,
     '/video/[id]': RouteRecordInfo<'/video/[id]', '/video/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
   }
 }

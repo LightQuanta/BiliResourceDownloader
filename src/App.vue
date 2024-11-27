@@ -251,6 +251,9 @@ watch(() => route.fullPath, () => {
           <ElMenuItem index="/tool/lottie">
             Lottie动画解析
           </ElMenuItem>
+          <ElMenuItem index="/tool/webp">
+            WebP图片工具
+          </ElMenuItem>
         </ElSubMenu>
 
         <ElMenuItem @click="showDownloadDrawer = true">
