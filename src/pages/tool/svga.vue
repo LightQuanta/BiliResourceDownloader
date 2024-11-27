@@ -51,7 +51,7 @@ const process: UploadProps['onChange'] = async (file) => {
     <ElUpload
       ref="upload"
       drag
-      accept=".svga"
+      accept=".svga,.bin"
       show-file-list
       v-model="fileList"
       :auto-upload="false"
