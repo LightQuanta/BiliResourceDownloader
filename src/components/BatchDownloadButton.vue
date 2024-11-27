@@ -20,7 +20,7 @@ const formRef = ref<FormInstance>()
 const downloadTask = ref<BatchDownloadTask>()
 
 const downloadConfig = reactive({
-  path: '',
+  path: globalConfig.value.downloadPath,
 })
 
 const rules = reactive({
