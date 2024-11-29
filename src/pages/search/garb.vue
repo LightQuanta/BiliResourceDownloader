@@ -63,7 +63,7 @@ watch(() => route.query.display, () => {
 // 更新路由参数
 const updateQuery = async () => {
   updatingQuery = true
-  await router.push({ query: { keyword: keyword.value, display: displayMode.value } }).finally(() => {updatingQuery = false)
+  await router.push({ query: { keyword: keyword.value, display: displayMode.value } }).finally(() => updatingQuery = false)
 }
 
 const load = async () => {
