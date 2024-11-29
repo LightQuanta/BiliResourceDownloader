@@ -92,8 +92,12 @@ const load = async () => {
         extraParams: { key_word: '搜索关键词', pn: '页数' },
       }
     })
-
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
+
+    // 去重
+    const names: string[] = cards.value.map(item => item.name);
+    data = data.filter(item => !names.includes(item.name))
+
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return
     currentPage.value++
