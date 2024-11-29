@@ -47,16 +47,24 @@ watch(displayMode, () => updateQuery())
 // 浏览器返回或前进时，同步更新搜索参数和显示模式
 
 const route = useRoute<'/search/garb'>()
+
+let updatingQuery = false
 watch(() => route.query.keyword, () => {
+  if (updatingQuery) return
   emitter.emit('scrollToTop')
   keyword.value = route.query.keyword as string ?? ''
   newSearch()
 })
-watch(() => route.query.display, () => displayMode.value = route.query.display as string ?? 'all')
+watch(() => route.query.display, () => {
+  if (updatingQuery) return
+  displayMode.value = route.query.display as string ?? 'all'
+})
 
 // 更新路由参数
 const updateQuery = () => {
+  updatingQuery = true
   router.push({ query: { keyword: keyword.value, display: displayMode.value } })
+  updatingQuery = false
 }
 
 const load = async () => {
