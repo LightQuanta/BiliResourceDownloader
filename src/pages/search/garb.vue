@@ -95,8 +95,8 @@ const load = async () => {
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
 
     // 去重
-    const names: string[] = cards.value.map(item => item.name);
-    data = data.filter(item => !names.includes(item.name))
+    const names: string[] = cards.value.map(item => item.jump_link);
+    data = data.filter(item => !names.includes(item.jump_link))
 
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return
