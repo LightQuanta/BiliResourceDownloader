@@ -63,7 +63,12 @@ watch(() => route.query.display, () => {
 // 更新路由参数
 const updateQuery = async () => {
   updatingQuery = true
-  await router.push({ query: { keyword: keyword.value, display: displayMode.value } }).finally(() => updatingQuery = false)
+  await router.push({
+    query: {
+      keyword: keyword.value,
+      display: displayMode.value
+    }
+  }).finally(() => updatingQuery = false)
 }
 
 const load = async () => {
@@ -94,9 +99,8 @@ const load = async () => {
     })
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
 
-    // 去重
-    const names: string[] = cards.value.map(item => item.jump_link);
-    data = data.filter(item => !names.includes(item.jump_link))
+    const jumpLinks = new Set(cards.value.map(c => c.jump_link))
+    data = data.filter(item => !jumpLinks.has(item.jump_link))
 
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return
