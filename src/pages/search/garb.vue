@@ -63,8 +63,12 @@ watch(() => route.query.display, () => {
 // 更新路由参数
 const updateQuery = async () => {
   updatingQuery = true
-  await router.push({ query: { keyword: keyword.value, display: displayMode.value } })
-  updatingQuery = false
+  await router.push({
+    query: {
+      keyword: keyword.value,
+      display: displayMode.value
+    }
+  }).finally(() => updatingQuery = false)
 }
 
 const load = async () => {
@@ -93,8 +97,11 @@ const load = async () => {
         extraParams: { key_word: '搜索关键词', pn: '页数' },
       }
     })
-
     data = resp.data.list as GarbSearchResult<LotteryProperties | SuitProperties>[]
+
+    const jumpLinks = new Set(cards.value.map(c => c.jump_link))
+    data = data.filter(item => !jumpLinks.has(item.jump_link))
+
     totalCount.value = resp.data.total
     if (totalCount.value === 0) return
     currentPage.value++
