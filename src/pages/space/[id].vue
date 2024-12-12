@@ -210,7 +210,7 @@ const fetchData = async () => {
   userInfo.value = basicUserInfo
 
   // 尝试获取直播间号
-  if (roomID.value === 0) {
+  if (roomID.value <= 0) {
     debugRequestNames.value.push('用户直播间信息')
     try {
       const url = new URL('https://api.live.bilibili.com/live_user/v1/Master/info')
