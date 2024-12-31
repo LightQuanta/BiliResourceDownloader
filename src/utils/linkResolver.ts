@@ -64,7 +64,7 @@ function resolveText(text?: string): Types | null {
     return null
 }
 
-async function resolveB23Link(url: string): Promise<string | null> {
+async function resolveShortLink(url: string): Promise<string | null> {
     const resp = await fetch(url)
     return resp.url
 }
@@ -154,8 +154,13 @@ async function autoJump(input?: string, showMessage = false, typeOverride = ''):
     if (input === undefined) return false
 
     let processedInput = input.trim()
-    if (processedInput.startsWith('https://b23.tv/')) {
-        const link = await resolveB23Link(processedInput)
+    // 分享链接格式往往是`【内容标题】 内容链接`，这里尝试去除其中的标题部分
+    if (processedInput.trim().match(/^【.+】 ?http.+$/)) {
+        processedInput = processedInput.replace(/^【.+】 ?/, '')
+    }
+
+    if (processedInput.startsWith('https://b23.tv/') || processedInput.startsWith('https://bili2233.cn/')) {
+        const link = await resolveShortLink(processedInput)
         if (link === null) {
             if (showMessage) {
                 ElMessage({
@@ -266,5 +271,5 @@ export {
     resolveActID,
     resolveSuitID,
     autoJump,
-    resolveB23Link,
+    resolveShortLink,
 }

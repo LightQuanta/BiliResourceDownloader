@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import { autoJump, canParseURL, resolveB23Link, resolveText } from "../utils/linkResolver.ts";
+import { autoJump, canParseURL, resolveShortLink, resolveText } from "../utils/linkResolver.ts";
 
 const inputText = ref('')
 const processedInputText = computed<string>(() => {
-  if (canParseURL(inputText.value)) {
-    const url = new URL(inputText.value)
+  let replaced = inputText.value.trim()
+
+  // 分享链接格式往往是`【内容标题】 内容链接`，这里尝试去除其中的标题部分
+  if (replaced.trim().match(/^【.+】 ?http.+$/)) {
+    replaced = replaced.replace(/^【.+】 ?/, '')
+  }
+  if (canParseURL(replaced)) {
+    const url = new URL(replaced)
     if (url.protocol === 'http:') {
       url.protocol = 'https:'
     }
@@ -14,7 +20,7 @@ const processedInputText = computed<string>(() => {
     }
     return `${url.protocol}//${url.host}${url.pathname}${url.search}`
   }
-  return inputText.value.trim()
+  return replaced
 })
 const selectedSearchType = ref('auto')
 
@@ -38,11 +44,11 @@ const jump = async () => {
 
   let type = selectedSearchType.value
   if (type === 'auto') {
-    if (input.startsWith('https://b23.tv/')) {
-      const link = await resolveB23Link(input)
+    if (input.startsWith('https://b23.tv/') || input.startsWith('https://bili2233.cn/')) {
+      const link = await resolveShortLink(input)
       if (link === null) {
         ElMessage({
-          message: '请输入正确的b23短链接！',
+          message: '请输入正确的短链接！',
           type: 'error',
         })
         return
